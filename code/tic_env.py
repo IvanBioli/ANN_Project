@@ -9,11 +9,11 @@ class TictactoeEnv:
       Classical Tic-tac-toe game for two players who take turns marking the spaces in a three-by-three grid with X or O.
       The player who succeeds in placing three of their marks in a horizontal, vertical, or diagonal row is the winner.
 
-      The game is played by two players: player 'X' and player 'O'. Player 'x' moves first.
+      The game is played by two players: player 'X' and player 'O'. Player 'X' moves first.
 
       The grid is represented by a 3x3 numpy array, with value in {0, 1, -1}, with corresponding values:
-            0 - place unmarked
-            1 - place marked with X
+            0  - place unmarked
+            1  - place marked with X
             -1 - place marked with O
 
       The game environment will receive movement from two players in turn and update the grid.
