@@ -150,6 +150,7 @@
 
 ## REPORT
 - [x] Template
+- [ ] Fare sync con Overleaf per immagini 
 
 ## Authors
 - Federico Betti
