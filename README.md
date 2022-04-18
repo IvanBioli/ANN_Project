@@ -1,4 +1,5 @@
 # CS-456 Artificial Neural Networks, Mini-project 1
+- [ ] Aggiungere requirements.txt per sns e altri pacchetti aggiunti
 ## QUESTIONS
 ### 2. Q-Learning
 - [ ] **Question 1**
@@ -150,7 +151,7 @@
 
 ## REPORT
 - [x] Template
-- [ ] Fare sync con Overleaf per immagini 
+- [x] Fare sync con Overleaf per immagini 
 
 ## Authors
 - Federico Betti
