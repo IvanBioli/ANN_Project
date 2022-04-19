@@ -2,73 +2,87 @@
 - [ ] Aggiungere requirements.txt per sns e altri pacchetti aggiunti
 ## QUESTIONS
 ### 2. Q-Learning
+- [ ] Measure performance
+  - [x] Implementazione
+  - [ ] Documentazione (Ivan)
+
 - [ ] **Question 1**
   - [ ] Implementare Q-Learning algo
-    - [ ] Implementazione
-    - [ ] Documentazione 
+    - [x] Implementazione
+    - [ ] Documentazione (Ivan) 
   - [ ] Funzione per plot
-    - [ ] Implementazione
-    - [ ] Documentazione 
-  - [ ] Test con epsilon a piacere (provarne diversi)
-  - [ ] Commento plot (<50 parole)
+    - [x] Implementazione
+    - [ ] Documentazione (Fede) 
+  - [ ] Test con epsilon a piacere (eps = )
+  - [ ] Commento plot (<50 parole) (Ivan) (Cresce velocemente all'inizio e poi satura)
 
 
 - [ ] **Question 2**
   - [ ] Implementare decreasing epsilon
-    - [ ] Implementazione
-    - [ ] Documentazione 
-  - [ ] Testare effetto di n* (logspace?)
+    - [x] Implementazione
+    - [ ] Documentazione (Ivan)
+  - [x] Testare effetto di n*
   - [ ] Miglioramento performance? Effetto di n*? (<200 parole))
-
+  - [ ] Con n* più alto all'inizio si gioca più random e la reward è minore. Quando epsilon exploration decresce e diventa 
+  epsilon_min la reward è simile ma con il vantaggio di aver esplorato meglio gli stati all'inizio.
+  Cercare su libri/articoli il perchè. (Fede)
 
 - [ ] **Question 3**
   - [ ] Funzione per plot performance
-    - [ ] Implementazione
-    - [ ] Documentazione 
-  - [ ] Misurare performance
+    - [x] Implementazione
+    - [ ] Documentazione (Fede)
+    - [ ] Legenda unica per M_opt e M_rand
+  - [x] Misurare performance
   - [ ] Plot performance e descrizione (<100 parole)
+  - [ ] n* grandi rendono M_opt instabile e M_rand cresce più lentamente.
+  Cercare su libri/articoli il perchè. (Fede)
 
-
-- [ ] **Question 4**
-  - [ ] Trovare il miglior n*.
-  - [ ] Testare diversi epislon_opt (0+logspace o linspace?)
+- [ ] **Question 4** (Ivan)
+  - [ ] Trovare il miglior n* (attorno a 4000, da giustificare).
+  - [ ] Testare diversi epislon_opt
   - [ ] Plot performance per diversi epsilon
   - [ ] Commento (<250 parole)
+  - [ ] Giustificare scelta e_opt e perchè gli altri no. Con e_opt = 0 non vedo gli stati in cui potrei vincere. Con e_opt = 1 non imparo a difendermi dalla policy 
+  ottima e provo a vincere invece di coprire l'avversario, contando sul fatto che lui gioca a caso.
 
   
 - [ ] **Question 5**
-  - [ ] Migliori M_opt, M_rand
+  - [ ] Migliori M_opt, M_rand 
+  - Da fare alla fibe con seed fissato
 
-
-- [ ] **Question 6**
+- [ ] **Question 6** (Entrambi)
   - [ ] Domanda teorica (< 150 parole)
 
 
 - [ ] **Question 7**
-  - [ ] Implementare learning by self-practice
-  - [ ] Learning-by-self-practice con diversi epsilon (logspace/linspace?)
-  - [ ] M_opt e M_rand per diversi valori di epsilon
-  - [ ] Riesce ad imparare? Effetto di epislon? Commento (<100 parole)
+  - [ ] Q-learning by self-practice
+    - [x] Implementazione
+    - [ ] Documentazione (Federico)
+  - [x] Learning-by-self-practice con diversi epsilon
+  - [x] M_opt e M_rand per diversi valori di epsilon
+  - [ ] Riesce ad imparare? Effetto di epislon? Commento (<100 parole) (Ivan)
+  - Epsilon 0 si stabilizza in fretta e non migliora. Anche 0.005 (1 random su 200) migliora notevolmente.
 
 
-- [ ] **Question 8**
+- [ ] **Question 8** (Fede)
   - [ ] Usare epsilon(n)
   - [ ] Plot performance per diversi n*.
   - [ ] Aiuta rispetto a epsilon fisso? Effetto di n*?  Commento (<100 parole)
- 
+
  
 - [ ] **Question 9**
   - [ ] Usare epsilon(n)
   - [ ] Migliore performance?
+  - [ ] Fare alla fine con seed fissato.
 
 
 - [ ] **Question 10**
-  - [ ] Usare epsilon(n)
+  - [x] Usare epsilon(n)
   - [ ] Funzione per visualizzare Q-values su stato
-    - [ ] Implementazione
-    - [ ] Documentazione
-  - [ ] Scegliere configurazioni significative
-  - [ ] Commento (<200 parole)
+    - [ ] Implementazione (Scala uniforme, croci e cerchi) (Fede)
+    - [ ] Documentazione (Fede)
+  - [x] Scegliere configurazioni significative
+  - [ ] Commento (<200 parole) (Uno che può vincere e vince, può vincere e non vince e fork fatta giusta)(Ivan)
   
 
 ### 3. Deep Q-Learning
