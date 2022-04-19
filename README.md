@@ -31,7 +31,7 @@
   - [ ] Funzione per plot performance
     - [x] Implementazione
     - [ ] Documentazione (Fede)
-    - [ ] Legenda unica per M_opt e M_rand
+    - [x] Legenda unica per M_opt e M_rand
   - [x] Misurare performance
   - [ ] Plot performance e descrizione (<100 parole)
   - [ ] n* grandi rendono M_opt instabile e M_rand cresce più lentamente.
@@ -79,7 +79,9 @@
 - [ ] **Question 10**
   - [x] Usare epsilon(n)
   - [ ] Funzione per visualizzare Q-values su stato
-    - [ ] Implementazione (Scala uniforme, croci e cerchi) (Fede)
+    - [ ] Implementazione (Fede)
+      - [x] Scala uniforme
+      - [ ] Croci e cerchi  
     - [ ] Documentazione (Fede)
   - [x] Scegliere configurazioni significative
   - [ ] Commento (<200 parole) (Uno che può vincere e vince, può vincere e non vince e fork fatta giusta)(Ivan)
