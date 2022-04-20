@@ -12,7 +12,7 @@
     - [ ] Documentazione (Ivan) 
   - [ ] Funzione per plot
     - [x] Implementazione
-    - [ ] Documentazione (Fede) 
+    - [x] Documentazione (Fede) 
   - [ ] Test con epsilon a piacere (eps = )
   - [ ] Commento plot (<50 parole) (Ivan) (Cresce velocemente all'inizio e poi satura)
 
@@ -30,7 +30,7 @@
 - [ ] **Question 3**
   - [ ] Funzione per plot performance
     - [x] Implementazione
-    - [ ] Documentazione (Fede)
+    - [x] Documentazione (Fede)
     - [x] Legenda unica per M_opt e M_rand
   - [x] Misurare performance
   - [ ] Plot performance e descrizione (<100 parole)
