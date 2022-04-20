@@ -59,7 +59,7 @@
 - [ ] **Question 7**
   - [ ] Q-learning by self-practice
     - [x] Implementazione
-    - [ ] Documentazione (Federico)
+    - [x] Documentazione (Federico)
   - [x] Learning-by-self-practice con diversi epsilon
   - [x] M_opt e M_rand per diversi valori di epsilon
   - [ ] Riesce ad imparare? Effetto di epislon? Commento (<100 parole) (Ivan)
