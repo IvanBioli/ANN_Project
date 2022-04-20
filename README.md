@@ -1,5 +1,6 @@
 # CS-456 Artificial Neural Networks, Mini-project 1
 - [ ] Aggiungere requirements.txt per sns e altri pacchetti aggiunti
+- [ ] Trovare modo per aggiungere legenda dopo a tutti i plot (altrimenti bisogna salvare a mano tutto)
 ## QUESTIONS
 ### 2. Q-Learning
 - [ ] Measure performance
@@ -12,7 +13,7 @@
     - [ ] Documentazione (Ivan) 
   - [ ] Funzione per plot
     - [x] Implementazione
-    - [ ] Documentazione (Fede) 
+    - [x] Documentazione (Fede) 
   - [ ] Test con epsilon a piacere (eps = )
   - [ ] Commento plot (<50 parole) (Ivan) (Cresce velocemente all'inizio e poi satura)
 
@@ -22,7 +23,7 @@
     - [x] Implementazione
     - [ ] Documentazione (Ivan)
   - [x] Testare effetto di n*
-  - [ ] Miglioramento performance? Effetto di n*? (<200 parole))
+  - [x] Miglioramento performance? Effetto di n*? (<200 parole))
   - [ ] Con n* più alto all'inizio si gioca più random e la reward è minore. Quando epsilon exploration decresce e diventa 
   epsilon_min la reward è simile ma con il vantaggio di aver esplorato meglio gli stati all'inizio.
   Cercare su libri/articoli il perchè. (Fede)
@@ -30,8 +31,9 @@
 - [ ] **Question 3**
   - [ ] Funzione per plot performance
     - [x] Implementazione
-    - [ ] Documentazione (Fede)
+    - [x] Documentazione (Fede)
     - [x] Legenda unica per M_opt e M_rand
+    - [ ] Da discutere se va bene con la linea verticale (vedi report) per limite asintotico di epsilon
   - [x] Misurare performance
   - [ ] Plot performance e descrizione (<100 parole)
   - [ ] n* grandi rendono M_opt instabile e M_rand cresce più lentamente.
