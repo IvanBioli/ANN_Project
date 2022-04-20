@@ -24,7 +24,7 @@
     - [ ] Documentazione (Ivan)
   - [x] Testare effetto di n*
   - [x] Miglioramento performance? Effetto di n*? (<200 parole))
-  - [x] Con n* più alto all'inizio si gioca più random e la reward è minore. Quando epsilon exploration decresce e diventa 
+  - [ ] Con n* più alto all'inizio si gioca più random e la reward è minore. Quando epsilon exploration decresce e diventa 
   epsilon_min la reward è simile ma con il vantaggio di aver esplorato meglio gli stati all'inizio.
   Cercare su libri/articoli il perchè. (Fede)
 
@@ -33,8 +33,9 @@
     - [x] Implementazione
     - [x] Documentazione (Fede)
     - [x] Legenda unica per M_opt e M_rand
+    - [ ] Da discutere se va bene con la linea verticale (vedi report) per limite asintotico di epsilon
   - [x] Misurare performance
-  - [] Plot performance e descrizione (<100 parole)
+  - [ ] Plot performance e descrizione (<100 parole)
   - [ ] n* grandi rendono M_opt instabile e M_rand cresce più lentamente.
   Cercare su libri/articoli il perchè. (Fede)
 
