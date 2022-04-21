@@ -7,7 +7,7 @@
   - [x] Implementazione
   - [x] Documentazione (Ivan)
 
-- [ ] **Question 1**
+- [x] **Question 1**
   - [x] Implementare Q-Learning algo
     - [x] Implementazione
     - [x] Documentazione (Ivan) 
@@ -15,7 +15,7 @@
     - [x] Implementazione
     - [x] Documentazione (Fede) 
   - [x] Test con epsilon a piacere (eps = 0.1)
-  - [ ] Commento plot (<50 parole) (Ivan) (Cresce velocemente all'inizio e poi satura)
+  - [x] Commento plot (<50 parole) (Ivan) (Cresce velocemente all'inizio e poi satura)
 
 
 - [ ] **Question 2**
@@ -81,9 +81,9 @@
 - [ ] **Question 10**
   - [x] Usare epsilon(n)
   - [ ] Funzione per visualizzare Q-values su stato
-    - [ ] Implementazione (Fede)
+    - [x] Implementazione (Fede)
       - [x] Scala uniforme
-      - [ ] Croci e cerchi  
+      - [x] Croci e cerchi  
     - [ ] Documentazione (Fede)
   - [x] Scegliere configurazioni significative
   - [ ] Commento (<200 parole) (Uno che può vincere e vince, può vincere e non vince e fork fatta giusta)(Ivan)
