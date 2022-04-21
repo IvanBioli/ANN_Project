@@ -1,27 +1,27 @@
 # CS-456 Artificial Neural Networks, Mini-project 1
 - [ ] Aggiungere requirements.txt per sns e altri pacchetti aggiunti
-- [ ] Trovare modo per aggiungere legenda dopo a tutti i plot (altrimenti bisogna salvare a mano tutto)
+- [x] Trovare modo per aggiungere legenda dopo a tutti i plot (altrimenti bisogna salvare a mano tutto)
 ## QUESTIONS
 ### 2. Q-Learning
-- [ ] Measure performance
+- [x] Measure performance
   - [x] Implementazione
-  - [ ] Documentazione (Ivan)
+  - [x] Documentazione (Ivan)
 
 - [ ] **Question 1**
-  - [ ] Implementare Q-Learning algo
+  - [x] Implementare Q-Learning algo
     - [x] Implementazione
-    - [ ] Documentazione (Ivan) 
-  - [ ] Funzione per plot
+    - [x] Documentazione (Ivan) 
+  - [x] Funzione per plot
     - [x] Implementazione
     - [x] Documentazione (Fede) 
-  - [ ] Test con epsilon a piacere (eps = )
+  - [x] Test con epsilon a piacere (eps = 0.1)
   - [ ] Commento plot (<50 parole) (Ivan) (Cresce velocemente all'inizio e poi satura)
 
 
 - [ ] **Question 2**
-  - [ ] Implementare decreasing epsilon
+  - [x] Implementare decreasing epsilon
     - [x] Implementazione
-    - [ ] Documentazione (Ivan)
+    - [x] Documentazione (Ivan)
   - [x] Testare effetto di n*
   - [x] Miglioramento performance? Effetto di n*? (<200 parole))
   - [ ] Con n* più alto all'inizio si gioca più random e la reward è minore. Quando epsilon exploration decresce e diventa 
@@ -29,7 +29,7 @@
   Cercare su libri/articoli il perchè. (Fede)
 
 - [ ] **Question 3**
-  - [ ] Funzione per plot performance
+  - [x] Funzione per plot performance
     - [x] Implementazione
     - [x] Documentazione (Fede)
     - [x] Legenda unica per M_opt e M_rand
@@ -59,7 +59,7 @@
 - [ ] **Question 7**
   - [ ] Q-learning by self-practice
     - [x] Implementazione
-    - [x] Documentazione (Federico)
+    - [x] Documentazione (Fede)
   - [x] Learning-by-self-practice con diversi epsilon
   - [x] M_opt e M_rand per diversi valori di epsilon
   - [ ] Riesce ad imparare? Effetto di epislon? Commento (<100 parole) (Ivan)
