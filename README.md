@@ -33,7 +33,7 @@
     - [x] Implementazione
     - [x] Documentazione (Fede)
     - [x] Legenda unica per M_opt e M_rand
-    - [ ] Da discutere se va bene con la linea verticale (vedi report) per limite asintotico di epsilon
+    - [x] Da discutere se va bene con la linea verticale per limite asintotico di epsilon
   - [x] Misurare performance
   - [ ] Plot performance e descrizione (<100 parole)
   - [ ] n* grandi rendono M_opt instabile e M_rand cresce più lentamente.
