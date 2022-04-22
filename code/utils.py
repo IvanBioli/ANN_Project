@@ -230,8 +230,8 @@ def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
         output_folder = os.path.join(os.getcwd(), 'figures/')  # set the output folder
         os.makedirs(output_folder, exist_ok=True)
         fname = output_folder + saving_name
-        plot.save(filename=fname + '.png')
-        plot.save(filename=fname + '.eps')
+        plot.save(filename=fname + '.png', verbose=False)
+        plot.save(filename=fname + '.eps', verbose=False)
 
 
 def heatmaps_subplots(grids, Q):

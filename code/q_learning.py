@@ -197,4 +197,3 @@ def q_learning(env, alpha=0.5, gamma=0.99, num_episodes=20000, epsilon_explorati
     else:
         return q_learning_self_practice(env, alpha, gamma, num_episodes, epsilon_exploration,
                                         epsilon_exploration_rule, test_freq, verbose)
-    
