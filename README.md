@@ -80,12 +80,13 @@
 
 - [ ] **Question 10**
   - [x] Usare epsilon(n)
-  - [ ] Funzione per visualizzare Q-values su stato
+  - [x] Funzione per visualizzare Q-values su stato
     - [x] Implementazione (Fede)
       - [x] Scala uniforme
       - [x] Croci e cerchi  
-    - [ ] Documentazione (Fede)
+    - [x] Documentazione (Fede)
   - [x] Scegliere configurazioni significative
+  - [ ] Unire le tre immagini in una sola (non si possono fare subplots con ggplot su Python)
   - [ ] Commento (<200 parole) (Uno che può vincere e vince, può vincere e non vince e fork fatta giusta)(Ivan)
   
 
