@@ -12,4 +12,31 @@
 \usepackage{algcompatible}
 \usepackage{multirow}
 \usepackage{biblatex}
+\usepackage{verbatim}
+\usepackage{cleveref}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{subcaption}
 \addbibresource{references.bib}
+
+
+% Shortenings
+\newcommand{\eopt}{\ensuremath{\epsilon_{\text{opt}}}}
+\newcommand{\mopt}{\ensuremath{M_{\text{opt}}}}
+\newcommand{\mrand}{\ensuremath{M_{\text{rand}}}}
+
+% Word counting
+\newcommand{\detailtexcount}[1]{%
+  \immediate\write18{texcount -merge -sum -q #1.tex output.bbl > #1.wcdetail }%
+  \verbatiminput{#1.wcdetail}%
+}
+
+\newcommand{\quickwordcount}[1]{%
+  \immediate\write18{texcount -1 -sum -merge -q #1.tex output.bbl > #1-words.sum }%
+  \input{#1-words.sum} words%
+}
+
+\newcommand{\quickcharcount}[1]{%
+  \immediate\write18{texcount -1 -sum -merge -char -q #1.tex output.bbl > #1-chars.sum }%
+  \input{#1-chars.sum} characters (not including spaces)%
+}
