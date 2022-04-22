@@ -244,7 +244,4 @@ def heatmaps_subplots(grids, Q):
     for (num, grid) in enumerate(grids):
         grid = np.array(grid)
         name = 'heatmap_' + str(num)
-        if num == len(grids) - 1:
-            plot_qtable(grid, Q, save=True, saving_name=name, show_legend=True)
-        else:
-            plot_qtable(grid, Q, save=True, saving_name=name)
+        plot_qtable(grid, Q, save=True, saving_name=name)

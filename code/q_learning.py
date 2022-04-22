@@ -153,9 +153,9 @@ def q_learning_self_practice(env, alpha=0.5, gamma=0.99, num_episodes=20000, eps
             else:   # action_adv is the one that makes the game end
                 reward = - env.reward(player=env.current_player)    # reward of the player who made the game end, i.e. the adversary of the current player
                 # Update for the adversary of the current player
-                Q[encode_state(state_adv)][action_adv] += alpha * reward
+                Q[encode_state(state_adv)][action_adv] += alpha * (reward - Q[encode_state(state_adv)][action_adv])
                 # Target for the current player
-                target = - reward + gamma * Q[encode_state(next_state)][next_action]
+                target = - reward
             Q[encode_state(state)][action] += alpha * (target - Q[encode_state(state)][action])
 
             # Preparing for the next iteration

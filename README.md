@@ -41,23 +41,24 @@
 
 - [ ] **Question 4** (Ivan)
   - [ ] Trovare il miglior n* (attorno a 4000, da giustificare).
-  - [ ] Testare diversi epislon_opt
-  - [ ] Plot performance per diversi epsilon
-  - [ ] Commento (<250 parole)
-  - [ ] Giustificare scelta e_opt e perchè gli altri no. Con e_opt = 0 non vedo gli stati in cui potrei vincere. Con e_opt = 1 non imparo a difendermi dalla policy 
+  - [x] Testare diversi epislon_opt
+  - [x] Plot performance per diversi epsilon
+  - [x] Commento (<250 parole)
+  - [x] Giustificare scelta e_opt e perchè gli altri no. Con e_opt = 0 non vedo gli stati in cui potrei vincere. Con e_opt = 1 non imparo a difendermi dalla policy 
   ottima e provo a vincere invece di coprire l'avversario, contando sul fatto che lui gioca a caso.
-
+  - [ ] Tagliare numero parole
   
 - [ ] **Question 5**
   - [ ] Migliori M_opt, M_rand 
   - Da fare alla fibe con seed fissato
 
 - [ ] **Question 6** (Entrambi)
-  - [ ] Domanda teorica (< 150 parole)
+  - [x] Domanda teorica (< 150 parole)
+  - [ ] Tagliare numero parole
 
 
 - [ ] **Question 7**
-  - [ ] Q-learning by self-practice
+  - [x] Q-learning by self-practice
     - [x] Implementazione
     - [x] Documentazione (Fede)
   - [x] Learning-by-self-practice con diversi epsilon
