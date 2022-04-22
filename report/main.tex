@@ -36,33 +36,37 @@ In the following, we define as a \emph{win-booking state} every state in which t
 \end{figure}
 
 \subsection*{Question 2}
-In \Cref{secondplot_question2} we see that for values of $n^{*}$ such that more than half of the training episodes are played with constant $(1-\epsilon_{min})$-greedy policy, after an initial stage where action are chosen randomly more frequently and consequently the reward is lower, the majority of the actions are chosen in a greedy fashion so the average reward increases and approaches the same values seen for $n^{*} = 1$ but with the advantage of having explored more evenly the state space. 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width = 0.85\linewidth]{code/figures/rewards_n_star_first.eps}
-    \caption{Average rewards from training against Opt(0.5) for higher values of $n^{*}$.}
-    \label{firstplot_question2}
-\end{figure}
-In \Cref{firstplot_question2} we see on the other hand that for larger values of $n^{*}$ such that we never reach the constant $(1-\epsilon_{min})$-greedy policy the average reward attains lower values as the agent keeps paying the price of exploration, so it can never reach in terms of performance the $(1-\epsilon_{min})$-greedy agent. For the same reason a stronger decay of $\epsilon$ achieves eventually the same reward as observed in \Cref{plot_question1}.
+\Cref{firstplot_question2} shows the average reward during training for values of $n^{*}$ such that more than half of the training episodes are played with constant $(1-\epsilon_{min})$-greedy policy. It can be observed that in a first stage action are chosen randomly more frequently and consequently the reward is lower than the one obtained with fixed epsilon. However when $\epsilon(n)$ reaches $\epsilon_{\text{min}}$ the average reward increases and approaches the same values seen for $n^{*} = 1$, but with the advantage of having explored more evenly the state space. 
+
+\Cref{secondplot_question2} analyses the reward trend for larger values of $n^{*}$, in particular values such that we never reach the constant $(1-\epsilon_{min})$-greedy policy. The average reward attains lower values as the agent keeps paying the price of exploration, never reaching the performance of the $(1-\epsilon_{min})$-greedy agent. For the same reason a stronger decay of $\epsilon$ achieves eventually the same reward as observed in \Cref{plot_question1}.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width = 0.85\linewidth]{code/figures/rewards_n_star_second.eps}
-    \caption{Average rewards from training against Opt(0.5) for smaller values of $n^{*}$: the vertical lines correspond approximately to the episode at which the agent starts eventually choosing moves with the minimum rate of exploration (for $n^{*} = 1$ this holds true from the very first episodes).}
+    \caption{Average rewards during training against Opt(0.5) for lower values of $n^{*}$: the vertical lines correspond approximately to the episode at which the agent starts choosing moves with the minimum rate of exploration (for $n^{*} = 1$ this holds true from the very first episodes).}
+    \label{firstplot_question2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.85\linewidth]{code/figures/rewards_n_star_first.eps}
+    \caption{Average rewards during training against Opt(0.5) for higher values of $n^{*}$.}
     \label{secondplot_question2}
 \end{figure}
+
 
 \subsection*{Question 3}
 Due to the high exploration rates, we see in \Cref{firstplot_question3} that for high values of $n^{*}$ major oscillations of \mopt: this instability is caused by the agent not really being able to play as it prioritizes exploring during the learning process. On the other hand, \mrand\  increases slowly, meaning that the agent is not able to take advantage of the opponent's frequent wrong moves and coherently with the low rewards seen before. In \Cref{secondplot_question3} we observe that decreasing majorly $\epsilon$ helps stabilizing the learning process by dumping the oscillations of \mopt\  and increasing faster \mrand\ .
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{code/figures/performance_n_star_first.eps}
-    \caption{Behaviour of \mopt\  and \mrand\  over the training episodes for high values of $n^{*}$}
+    \caption{Behaviour of \mopt\  and \mrand\  every 250 training episodes for lower values of $n^{*}$}
     \label{firstplot_question3}
 \end{figure}
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{code/figures/performance_n_star_second.eps}
-    \caption{Behaviour of \mopt\  and \mrand\  over the training episodes for small values of $n^{*}$}
+    \caption{Behaviour of \mopt\  and \mrand\  every 250 training episodes for small values of $n^{*}$}
     \label{secondplot_question3}
 \end{figure}
 
@@ -83,6 +87,7 @@ In conclusion, the agent learns to gain optimal rewards (in expectation) against
 \end{figure}
 
 \subsection*{Question 5}
+DA FARE CON SEED FISSATO
 \subsection*{Question 6}
 We claim that $Q_1(s,a)$ and $Q_2(s,a)$ do not have the same values, as suggested by the experimental results shown in \emph{Question 4}.
 Indeed, the optimal $Q$-values, i.e. those satisfying the Bellman equation, represent the total expected (discounted) reward and depend on transition probabilities, which are different if playing against \texttt{Opt(1)} or \texttt{Opt(0)}. 
@@ -92,29 +97,53 @@ Agent 1 during training never encounters win-booking states, hence at the end of
 On the contrary, Agent 2 encounters win-booking states during training and we expect $Q_2(s,a) = 1$ (possibly discounted by $\gamma$) for actions that make the agent win, hence $Q_2(s,a) \neq Q_1(s,a)$. Furthermore we can expect $Q_2(s,a) \neq Q_1(s,a) -1$ for actions that bring the opponent in a win-booking state, because the \texttt{Opt(1)} plays randomly and might not take the chance to win.
 
 \subsection*{Question 7}
+Similarly to \emph{Question 4}, we pick for the plot and for clarity of exposition only values of $\epsilon$ which are representative of a peculiar behaviour. \Cref{plot_question7} shows that by training the agent with greedy policy its performance is really poor both against \texttt{Opt(0)} and \texttt{Opt(1)} due to its poor exploration of the state space. It suffices to slightly increase $\epsilon$ (in expectation only a non-greedy action every 200) to improve majorly. A too large exploration rate, however, makes the agent unable to be deterministic in crucial moves and hence its behaviour against \texttt{Opt(0)} remains oscillatory, whereas its performance against \texttt{Opt(1)} is always tied or exceeded by smaller $\epsilon$ values.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{code/figures/performance_epsilon_self.eps}
+    \caption{Behaviour of \mopt\ and \mrand\ every 250 training episodes for different exploration rates $\epsilon$}
+    \label{plot_question7}
+\end{figure}
 
 
 \subsection*{Question 8}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{code/figures/performance_n_star.eps}
+    \caption{Behaviour of \mopt\ and \mrand\ over the training episodes for different values of $n^*$}
+    \label{fig:my_label}
+\end{figure}
+
+
 
 \subsection*{Question 9}
+DA FARE CON SEED FISSATO
+
 \subsection*{Question 10}
 \begin{figure}[H]
-\centering
-\makebox[\textwidth][c]{
-\begin{subfigure}{0.33\textwidth}
-\includegraphics[width=\linewidth]{code/figures/heatmaps_0.eps}
-\caption{Heatmap 1}
-\end{subfigure}\hspace*{\fill}
-\begin{subfigure}{0.33\textwidth}
-\includegraphics[width=\linewidth]{code/figures/heatmaps_1.eps}
-\caption{Heatmap 2}
-\end{subfigure}\hspace*{\fill}
-\begin{subfigure}{0.33\textwidth}
-\includegraphics[width=\linewidth]{code/figures/heatmaps_2.eps}
-\caption{Heatmap 3}
-\end{subfigure}\hspace*{\fill}}
-\caption{Figure caption}
-\label{fig_heatmaps}
+     \centering
+     \begin{subfigure}[b]{0.32\linewidth}
+         \centering
+         \includegraphics[width=\linewidth]{code/figures/heatmap_0.eps}
+         \caption{}
+         \label{fig_heatmap_1}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.32\linewidth}
+         \centering
+         \includegraphics[width=\linewidth]{code/figures/heatmap_1.eps}
+         \caption{}
+         \label{fig_heatmap_2}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.32\linewidth}
+         \centering
+         \includegraphics[width=\linewidth]{code/figures/heatmap_2.eps}
+         \caption{}
+         \label{fig_heatmap_3}
+     \end{subfigure}
+        \caption{Heatmaps of the Q-values}
+        \label{plot_question_10}
 \end{figure}
 
 \section{Deep Q-Learning}
@@ -133,8 +162,8 @@ On the contrary, Agent 2 encounters win-booking states during training and we ex
 \section*{Questions to be asked}
 \begin{enumerate}
     \item La caption delle figure conta nel conteggio delle parole? Bisogna presentare la risposta alle domande tutta nella caption del plot?
-    \item Inizializzazione dei Q-values per la domanda 6
-    \item 
+    \item Inizializzazione dei Q-values per la domanda 6 
+    \item Valore dei Q-values dovrebbe essere tra -1 e 1 (RISOLTO)
 \end{enumerate}
 
 
