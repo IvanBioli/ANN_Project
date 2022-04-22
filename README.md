@@ -1,6 +1,7 @@
 # CS-456 Artificial Neural Networks, Mini-project 1
 - [ ] Aggiungere requirements.txt per sns e altri pacchetti aggiunti
 - [x] Trovare modo per aggiungere legenda dopo a tutti i plot (altrimenti bisogna salvare a mano tutto)
+- [ ] Rivedere le figsize
 ## QUESTIONS
 ### 2. Q-Learning
 - [x] Measure performance
@@ -35,7 +36,7 @@
     - [x] Legenda unica per M_opt e M_rand
     - [x] Da discutere se va bene con la linea verticale per limite asintotico di epsilon
   - [x] Misurare performance
-  - [ ] Plot performance e descrizione (<100 parole)
+  - [x] Plot performance e descrizione (<100 parole)
   - [ ] n* grandi rendono M_opt instabile e M_rand cresce più lentamente.
   Cercare su libri/articoli il perchè. (Fede)
 
@@ -63,11 +64,11 @@
     - [x] Documentazione (Fede)
   - [x] Learning-by-self-practice con diversi epsilon
   - [x] M_opt e M_rand per diversi valori di epsilon
-  - [ ] Riesce ad imparare? Effetto di epislon? Commento (<100 parole) (Ivan)
+  - [ ] Riesce ad imparare? Effetto di epislon? Commento (<100 parole) (Fede)
   - Epsilon 0 si stabilizza in fretta e non migliora. Anche 0.005 (1 random su 200) migliora notevolmente.
 
 
-- [ ] **Question 8** (Fede)
+- [ ] **Question 8** (Ivan)
   - [ ] Usare epsilon(n)
   - [ ] Plot performance per diversi n*.
   - [ ] Aiuta rispetto a epsilon fisso? Effetto di n*?  Commento (<100 parole)
@@ -87,8 +88,8 @@
       - [x] Croci e cerchi  
     - [x] Documentazione (Fede)
   - [x] Scegliere configurazioni significative
-  - [ ] Unire le tre immagini in una sola (non si possono fare subplots con ggplot su Python)
-  - [ ] Commento (<200 parole) (Uno che può vincere e vince, può vincere e non vince e fork fatta giusta)(Ivan)
+  - [x] Unire le tre immagini in una sola (non si possono fare subplots con ggplot su Python)
+  - [ ] Commento (<200 parole) (Win, block win e fork) (Ivan)
   
 
 ### 3. Deep Q-Learning
