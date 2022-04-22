@@ -19,20 +19,20 @@
   - [x] Commento plot (<50 parole) (Ivan) (Cresce velocemente all'inizio e poi satura)
 
 
-- [ ] **Question 2**
+- [x] **Question 2**
   - [x] Implementare decreasing epsilon
     - [x] Implementazione
     - [x] Documentazione (Ivan)
   - [x] Testare effetto di n*
   - [x] Miglioramento performance? Effetto di n*? (<200 parole))
-  - [ ] Con n* più alto all'inizio si gioca più random e la reward è minore. Quando epsilon exploration decresce e diventa 
+  - [x] Con n* più alto all'inizio si gioca più random e la reward è minore. Quando epsilon exploration decresce e diventa 
   epsilon_min la reward è simile ma con il vantaggio di aver esplorato meglio gli stati all'inizio.
   Cercare su libri/articoli il perchè. (Fede)
 
 - [ ] **Question 3**
-  - [x] Funzione per plot performance
+  - [ ] Funzione per plot performance
     - [x] Implementazione
-    - [x] Documentazione (Fede)
+    - [ ] Documentazione della parte aggiuntiva (Ivan)
     - [x] Legenda unica per M_opt e M_rand
     - [x] Da discutere se va bene con la linea verticale per limite asintotico di epsilon
   - [x] Misurare performance
@@ -51,9 +51,9 @@
   
 - [ ] **Question 5**
   - [ ] Migliori M_opt, M_rand 
-  - Da fare alla fibe con seed fissato
+  - Da fare alla fine con seed fissato
 
-- [ ] **Question 6** (Entrambi)
+- [ ] **Question 6** (Ivan)
   - [x] Domanda teorica (< 150 parole)
   - [ ] Tagliare numero parole
 
@@ -89,7 +89,8 @@
     - [x] Documentazione (Fede)
   - [x] Scegliere configurazioni significative
   - [x] Unire le tre immagini in una sola (non si possono fare subplots con ggplot su Python)
-  - [ ] Commento (<200 parole) (Win, block win e fork) (Ivan)
+  - [x] Commento (<200 parole) (Win, block win e fork) (Ivan)
+  - [ ] Da tagliare il numero di parole se la caption conta nelle parole e da aggiungere un altro commentino se la caption non conta.
   
 
 ### 3. Deep Q-Learning

@@ -92,16 +92,22 @@ def measure_performance(player_1, player_2, num_episodes=500):
     return meas/num_episodes
 
 
-def running_average(vec, windows_size=250):
+def running_average(vec, windows_size=250, no_idx = False):
     """
     Computes the running average of vec every windows_size elements
         Example: if windows_size=250 then it computes the mean of vec from 1 to 250, from 251 to 500 and so on.
     :param vec: numpy.ndarray
     :param windows_size: windows_size
-    :return: mean of vec every windows_size elements
+    :param no_idx: True not to return the indices of vec at which the mean is computed
+    :return:
+        - mean of vec every windows_size elements
+        - indices of vec at which the mean is computed
     """
     idx = np.arange(0, len(vec), windows_size)  # (i * windows_size for i = 1, ..., len(vec) / windows_size))
-    return np.array([np.sum(vec[i:i+windows_size])/windows_size for i in idx]), idx + windows_size
+    if no_idx:
+        return np.array([np.sum(vec[i:i + windows_size]) / windows_size for i in idx])
+    else:
+        return np.array([np.sum(vec[i:i+windows_size])/windows_size for i in idx]), idx + windows_size + 1
 
 
 def encode_state(state):
@@ -130,37 +136,75 @@ def available(grid):
             avail_mask[i] = True  # set the mask of the position i to True
     return avail_indices, avail_mask
 
+def stats_averaging(stats_dict_list, windows_size = 250):
+    """
 
-def plot_stats(stats_dict, vec_var, var_name, var_legend_name, save=False, decaying_exploration=False):
+    """
+    stats_dict_avg = dict.fromkeys(stats_dict_list[0].keys(), list())
+    for var in stats_dict_list[0].keys():
+        stats = {}
+        M_opt = np.mean([stats_dict[var][1]  for stats_dict in stats_dict_list], axis = 0)
+        M_rand = np.mean([stats_dict[var][2] for stats_dict in stats_dict_list], axis=0)
+        (tmp_stats, _, _) = stats_dict_list[0][var]
+        for key in tmp_stats.keys():
+            if key == 'rewards':
+                stats[key] = np.mean([running_average(stats_dict[var][0][key], windows_size=windows_size, no_idx=True)
+                                      for stats_dict in stats_dict_list], axis=0)
+                stats[key + '_std'] = np.std([running_average(stats_dict[var][0][key], windows_size=windows_size, no_idx=True)
+                                      for stats_dict in stats_dict_list], axis=0)
+            else:
+                stats[key] = np.mean([stats_dict[var][0][key]  for stats_dict in stats_dict_list], axis = 0)
+                stats[key+'_std'] = np.std([stats_dict[var][0][key] for stats_dict in stats_dict_list], axis=0)
+        # Saving in the stats_dict_avg
+        stats_dict_avg[var] = (stats, M_opt, M_rand)
+
+    return stats_dict_avg
+
+
+
+def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, decaying_exploration=False,
+               std = False, windows_size = 250):
     """
     Creates the plots for reward, M_opt, M_rand
-    :param stats_dict: dictionary containing the training statistics
+    :param stats_dict_list: list of dictionaries containing the training statistics
     :param vec_var: vector of variables to plot (need to be keys of stats_dict)
     :param var_name: variables name for the purpose of saving the plots
     :param var_legend_name: variables name for the legend (latex format)
     :param save: True to save figures in output folder
     :param decaying_exploration: True to plot the episode at which the decay stops and the exploration rate becomes constant
+    :param std:
+    :param windows_size: windows size for averaging rewards
     """
     # creating the environment for the two plots
     fig_reward, ax_reward = plt.subplots()
     fig_performance, ax = plt.subplots(1, 2, figsize=(13.4, 4.8))
     fig_performance.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)  # adjust the spacing between subplots
+    # averaging over multiple training runs
+    stats_dict = stats_averaging(stats_dict_list, windows_size=windows_size)
 
     for var in vec_var:
         (stats, M_opt, M_rand) = stats_dict[var]
         # Plot of the average reward during training
-        running_average_rewards, x_reward = running_average(stats['rewards'])  # compute average reward
+        running_average_rewards = stats['rewards']
+        x_reward = np.arange(0, len(running_average_rewards)*windows_size, windows_size)
         color = next(ax_reward._get_lines.prop_cycler)['color']
         ax_reward.plot(x_reward, running_average_rewards, label="$" + var_legend_name + " = " + str(var) + "$", color=color)
+        if std:
+            ax_reward.fill_between(x_reward, running_average_rewards - stats['rewards_std'], running_average_rewards + stats['rewards_std'], alpha=0.2)
         if decaying_exploration:  # if exploration decay plot also the episode at which the decay stops
             find_nearest = np.abs(x_reward - 7/8 * var).argmin()  # from here constant 1-epsilon_min greedy policy
             if np.abs(x_reward - 7/8 * var).min() < 250:  # no plot if the nearest value is too far away (think of n_star = 40000)
                 ax_reward.plot(x_reward[find_nearest], running_average_rewards[find_nearest], marker="o", color=color)
                 ax_reward.vlines(x=x_reward[find_nearest], ymin=-0.8, ymax=0.8, color=color, ls='--')
         # Plot of M_opt and M_rand during training
-        x_performance = np.arange(0, len(stats['rewards']) + 1, len(stats['rewards']) / (len(stats['test_Mopt']) - 1))
+        x_performance = np.arange(0, len(stats['rewards'])*windows_size + 1, len(stats['rewards'])*windows_size / (len(stats['test_Mopt']) - 1))
         ax[0].plot(x_performance, stats['test_Mopt'], label="$" + var_legend_name + " = " + str(var) + "$", color=color)
         ax[1].plot(x_performance, stats['test_Mrand'], label="$" + var_legend_name + " = " + str(var) + "$", color=color)
+        if std:
+            ax[0].fill_between(x_performance, stats['test_Mopt'] - stats['test_Mopt_std'],
+                               np.minimum(stats['test_Mopt'] + stats['test_Mopt_std'], 0), alpha=0.2)
+            ax[1].fill_between(x_performance, stats['test_Mrand'] - stats['test_Mrand_std'],
+                               np.minimum(stats['test_Mrand'] + stats['test_Mrand_std'], 1), alpha=0.2)
         print(var_name + " =", var, ": \tM_opt = ", M_opt, "\tM_rand = ", M_rand)  # print the performance
 
     ax_reward.set_ylim([-1, 1])
