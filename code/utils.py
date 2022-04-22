@@ -101,7 +101,7 @@ def running_average(vec, windows_size=250):
     :return: mean of vec every windows_size elements
     """
     idx = np.arange(0, len(vec), windows_size)  # (i * windows_size for i = 1, ..., len(vec) / windows_size))
-    return [np.sum(vec[i:i+windows_size])/windows_size for i in idx], idx + windows_size
+    return np.array([np.sum(vec[i:i+windows_size])/windows_size for i in idx]), idx + windows_size
 
 
 def encode_state(state):
