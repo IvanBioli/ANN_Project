@@ -56,19 +56,21 @@ In the following, we define as a \emph{win-booking state} every state in which t
 
 
 \subsection*{Question 3}
-Due to the high exploration rates, we see in \Cref{firstplot_question3} that for high values of $n^{*}$ major oscillations of \mopt: this instability is caused by the agent not really being able to play as it prioritizes exploring during the learning process. On the other hand, \mrand\  increases slowly, meaning that the agent is not able to take advantage of the opponent's frequent wrong moves and coherently with the low rewards seen before. In \Cref{secondplot_question3} we observe that decreasing majorly $\epsilon$ helps stabilizing the learning process by dumping the oscillations of \mopt\  and increasing faster \mrand\ .
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{code/figures/performance_n_star_first.eps}
-    \caption{Behaviour of \mopt\  and \mrand\  every 250 training episodes for lower values of $n^{*}$}
-    \label{firstplot_question3}
-\end{figure}
+Due to the high exploration rates, we see in \Cref{secondplot_question3} that for high values of $n^{*}$ major oscillations of \mopt: this instability is caused by the agent not really being able to play as it prioritizes exploring during the learning process. On the other hand, \mrand\  increases slowly, meaning that the agent is not able to take advantage of the opponent's frequent wrong moves and coherently with the low rewards seen before. In \Cref{firstplot_question3} we observe that decreasing majorly $\epsilon$ helps stabilizing the learning process by dumping the oscillations of \mopt\  and increasing faster \mrand.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{code/figures/performance_n_star_second.eps}
     \caption{Behaviour of \mopt\  and \mrand\  every 250 training episodes for small values of $n^{*}$}
+    \label{firstplot_question3}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{code/figures/performance_n_star_first.eps}
+    \caption{Behaviour of \mopt\  and \mrand\  every 250 training episodes for lower values of $n^{*}$}
     \label{secondplot_question3}
 \end{figure}
+
 
 \subsection*{Question 4}
 We compared the performance of the agent trained with Q-learning against \texttt{Opt($\eopt$)} for $\eopt = 0, \, 0.1, \dots, 0.9, \, 1$ and using decreasing exploration with \textcolor{red}{$n^{*} = ...$}. To have a less crowded plot and a clearer comparison, we select the values $\eopt = 0, \, 1, \, 0.5$, which are sufficient to represent the three major behaviours of the training adversary and to show different training trends. \Cref{plot_question4} shows the performance measures \mopt\  and \mrand\  every 250 training episodes.
