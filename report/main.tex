@@ -111,7 +111,7 @@ Similarly to \emph{Question 4}, we pick for the plot and for clarity of expositi
 \subsection*{Question 8}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{code/figures/performance_n_star.eps}
+    \includegraphics[width=\linewidth]{code/figures/performance_n_star_self_1.eps}
     \caption{Behaviour of \mopt\ and \mrand\ over the training episodes for different values of $n^*$}
     \label{fig:my_label}
 \end{figure}
@@ -122,29 +122,36 @@ Similarly to \emph{Question 4}, we pick for the plot and for clarity of expositi
 DA FARE CON SEED FISSATO
 
 \subsection*{Question 10}
+\Cref{plot_question_10} shows the $Q$-values of available actions for three significant board arrangements in which player X has the chance to win, to block a win of player O or to win for sure in two or more moves.
+
+In \Cref{fig_heatmap_1} the highest $Q$-value correctly corresponds to the action that makes the agent win, and it is close to 1, i.e. the reward. However, playing in any of the other two empty corners would also lead to winning the game in two moves, but this possibility has not been explored enough during training, leaving one of the two  $Q$-values equal to zero and the other equal to a value lower than 0.99. Similarly, in \Cref{fig_heatmap_3} the agent correctly picks the south-west corner, which brings to victory in at most two moves, but it would have won (in at most three moves) also taking the center or the south-east corner, which have estimated $Q$-value equal to zero.
+In \Cref{fig_heatmap_2} the agent (player O) correctly blocks the win of the adversary, predicting a negative reward for any other action.
+
+In conclusion, it could be argued that the agent learned the game quite well. Most of the times the Q-values do make sense and the agent plays one of the possible correct actions. However, the number of possible state-action pairs is too high to be sufficiently explored in $20000$ training episodes. 
+
 \begin{figure}[H]
      \centering
      \begin{subfigure}[b]{0.32\linewidth}
          \centering
          \includegraphics[width=\linewidth]{code/figures/heatmap_0.eps}
-         \caption{}
+         \caption{Chance of win}
          \label{fig_heatmap_1}
      \end{subfigure}
      \hfill
      \begin{subfigure}[b]{0.32\linewidth}
          \centering
          \includegraphics[width=\linewidth]{code/figures/heatmap_1.eps}
-         \caption{}
+         \caption{Chance of block}
          \label{fig_heatmap_2}
      \end{subfigure}
      \hfill
      \begin{subfigure}[b]{0.32\linewidth}
          \centering
          \includegraphics[width=\linewidth]{code/figures/heatmap_2.eps}
-         \caption{}
+         \caption{Chance to win or fork in the next move.}
          \label{fig_heatmap_3}
      \end{subfigure}
-        \caption{Heatmaps of the Q-values}
+        \caption{$Q$-values of available actions in three different board arrangements, where player who makes the first move is always X.}
         \label{plot_question_10}
 \end{figure}
 
