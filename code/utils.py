@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from plotnine import *
 import os
+import time
+import pickle
+from q_learning import *
 
 
 def epsilon_greedy_action(grid, Q, epsilon):
@@ -289,3 +292,35 @@ def heatmaps_subplots(grids, Q):
         grid = np.array(grid)
         name = 'heatmap_' + str(num)
         plot_qtable(grid, Q, save=True, saving_name=name)
+
+
+def train_avg(var_name, var_values, q_learning_params_list, num_avg = 10, save_stats = True):
+    """
+
+    """
+    stats_dict_list = []
+    for i in range(num_avg):
+        print('************** RUN', i+1, 'OF', num_avg, '**************')
+        stats_dict = {}
+        for (idx, var) in enumerate(var_values):
+            print("------------- Training with " + var_name + " =", var, "-------------")
+            start = time.time()
+            q_learning_params = q_learning_params_list[idx]
+            Q, stats = q_learning(**q_learning_params)
+            M_opt = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=0.))
+            M_rand = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=1.))
+            print("M_opt =", M_opt)
+            print("M_rand =", M_rand)
+            stats_dict.update({var: (stats, M_opt, M_rand)})
+            elapsed = time.time() - start
+            print("Training with " + var_name + " =", var, " took:", time.strftime("%Hh%Mm%Ss", time.gmtime(elapsed)), "\n\n")
+        stats_dict_list.append(stats_dict)
+
+    if save_stats:
+        output_folder = os.path.join(os.getcwd(), 'results')
+        os.makedirs(output_folder, exist_ok=True)
+        fname = output_folder + '/stats_dict_' + var_name + '_list.pkl'
+        with open(fname, 'wb') as handle:
+            pickle.dump(stats_dict_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    return stats_dict_list
