@@ -4,9 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from plotnine import *
 import os
-import time
 import pickle
-from q_learning import *
 
 
 def epsilon_greedy_action(grid, Q, epsilon):
@@ -95,7 +93,7 @@ def measure_performance(player_1, player_2, num_episodes=500):
     return meas/num_episodes
 
 
-def running_average(vec, windows_size=250, no_idx = False):
+def running_average(vec, windows_size=250, no_idx=False):
     """
     Computes the running average of vec every windows_size elements
         Example: if windows_size=250 then it computes the mean of vec from 1 to 250, from 251 to 500 and so on.
@@ -139,6 +137,7 @@ def available(grid):
             avail_mask[i] = True  # set the mask of the position i to True
     return avail_indices, avail_mask
 
+
 def stats_averaging(stats_dict_list, windows_size = 250):
     """
 
@@ -151,12 +150,14 @@ def stats_averaging(stats_dict_list, windows_size = 250):
         (tmp_stats, _, _) = stats_dict_list[0][var]
         for key in tmp_stats.keys():
             if key == 'rewards':
-                stats[key] = np.mean([running_average(stats_dict[var][0][key], windows_size=windows_size, no_idx=True)
+                stats[key] = np.mean([running_average(stats_dict[var][0][key],
+                                                      windows_size=windows_size, no_idx=True)
                                       for stats_dict in stats_dict_list], axis=0)
-                stats[key + '_std'] = np.std([running_average(stats_dict[var][0][key], windows_size=windows_size, no_idx=True)
-                                      for stats_dict in stats_dict_list], axis=0)
+                stats[key + '_std'] = np.std([running_average(stats_dict[var][0][key],
+                                              windows_size=windows_size, no_idx=True) for stats_dict in stats_dict_list],
+                                             axis=0)
             else:
-                stats[key] = np.mean([stats_dict[var][0][key]  for stats_dict in stats_dict_list], axis = 0)
+                stats[key] = np.mean([stats_dict[var][0][key] for stats_dict in stats_dict_list], axis=0)
                 stats[key+'_std'] = np.std([stats_dict[var][0][key] for stats_dict in stats_dict_list], axis=0)
         # Saving in the stats_dict_avg
         stats_dict_avg[var] = (stats, M_opt, M_rand)
@@ -164,9 +165,8 @@ def stats_averaging(stats_dict_list, windows_size = 250):
     return stats_dict_avg
 
 
-
 def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, decaying_exploration=False,
-               std = False, windows_size = 250):
+               std=False, windows_size=250):
     """
     Creates the plots for reward, M_opt, M_rand
     :param stats_dict_list: list of dictionaries containing the training statistics
@@ -191,18 +191,23 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
         running_average_rewards = stats['rewards']
         x_reward = np.arange(0, len(running_average_rewards)*windows_size, windows_size)
         color = next(ax_reward._get_lines.prop_cycler)['color']
-        ax_reward.plot(x_reward, running_average_rewards, label="$" + var_legend_name + " = " + str(var) + "$", color=color)
+        ax_reward.plot(x_reward, running_average_rewards, label="$" +
+                       var_legend_name + " = " + str(var) + "$", color=color)
         if std:
-            ax_reward.fill_between(x_reward, running_average_rewards - stats['rewards_std'], running_average_rewards + stats['rewards_std'], alpha=0.2)
+            ax_reward.fill_between(x_reward, running_average_rewards - stats['rewards_std'],
+                                   running_average_rewards + stats['rewards_std'], alpha=0.2)
         if decaying_exploration:  # if exploration decay plot also the episode at which the decay stops
             find_nearest = np.abs(x_reward - 7/8 * var).argmin()  # from here constant 1-epsilon_min greedy policy
-            if np.abs(x_reward - 7/8 * var).min() < 250:  # no plot if the nearest value is too far away (think of n_star = 40000)
+            if np.abs(x_reward - 7/8 * var).min() < 250:
+                # no plot if the nearest value is too far away (think of n_star = 40000)
                 ax_reward.plot(x_reward[find_nearest], running_average_rewards[find_nearest], marker="o", color=color)
                 ax_reward.vlines(x=x_reward[find_nearest], ymin=-0.8, ymax=0.8, color=color, ls='--')
         # Plot of M_opt and M_rand during training
         x_performance = np.arange(0, len(stats['rewards'])*windows_size + 1, len(stats['rewards'])*windows_size / (len(stats['test_Mopt']) - 1))
-        ax[0].plot(x_performance, stats['test_Mopt'], label="$" + var_legend_name + " = " + str(var) + "$", color=color)
-        ax[1].plot(x_performance, stats['test_Mrand'], label="$" + var_legend_name + " = " + str(var) + "$", color=color)
+        ax[0].plot(x_performance, stats['test_Mopt'], label="$"
+                   + var_legend_name + " = " + str(var) + "$", color=color)
+        ax[1].plot(x_performance, stats['test_Mrand'], label="$"
+                   + var_legend_name + " = " + str(var) + "$", color=color)
         if std:
             ax[0].fill_between(x_performance, stats['test_Mopt'] - stats['test_Mopt_std'],
                                np.minimum(stats['test_Mopt'] + stats['test_Mopt_std'], 0), alpha=0.2)
@@ -272,7 +277,7 @@ def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
         theme(figure_size=(2, 2), axis_text=element_blank(), axis_ticks=element_blank(),
               strip_text_x=element_blank(), axis_title=element_blank())
 
-# saving onto file
+    # saving onto file
     if save:
         output_folder = os.path.join(os.getcwd(), 'figures/')  # set the output folder
         os.makedirs(output_folder, exist_ok=True)
@@ -292,35 +297,3 @@ def heatmaps_subplots(grids, Q):
         grid = np.array(grid)
         name = 'heatmap_' + str(num)
         plot_qtable(grid, Q, save=True, saving_name=name)
-
-
-def train_avg(var_name, var_values, q_learning_params_list, num_avg = 10, save_stats = True):
-    """
-
-    """
-    stats_dict_list = []
-    for i in range(num_avg):
-        print('************** RUN', i+1, 'OF', num_avg, '**************')
-        stats_dict = {}
-        for (idx, var) in enumerate(var_values):
-            print("------------- Training with " + var_name + " =", var, "-------------")
-            start = time.time()
-            q_learning_params = q_learning_params_list[idx]
-            Q, stats = q_learning(**q_learning_params)
-            M_opt = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=0.))
-            M_rand = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=1.))
-            print("M_opt =", M_opt)
-            print("M_rand =", M_rand)
-            stats_dict.update({var: (stats, M_opt, M_rand)})
-            elapsed = time.time() - start
-            print("Training with " + var_name + " =", var, " took:", time.strftime("%Hh%Mm%Ss", time.gmtime(elapsed)), "\n\n")
-        stats_dict_list.append(stats_dict)
-
-    if save_stats:
-        output_folder = os.path.join(os.getcwd(), 'results')
-        os.makedirs(output_folder, exist_ok=True)
-        fname = output_folder + '/stats_dict_' + var_name + '_list.pkl'
-        with open(fname, 'wb') as handle:
-            pickle.dump(stats_dict_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-    return stats_dict_list
