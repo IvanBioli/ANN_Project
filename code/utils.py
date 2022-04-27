@@ -297,3 +297,7 @@ def heatmaps_subplots(grids, Q):
         grid = np.array(grid)
         name = 'heatmap_' + str(num)
         plot_qtable(grid, Q, save=True, saving_name=name)
+
+
+def return_lambda_explor(epsilon_min, epsilon_max, n_star):
+    return lambda n: np.max([epsilon_min, epsilon_max * (1 - n/n_star)])
