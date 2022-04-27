@@ -223,11 +223,11 @@ def train_avg(var_name, var_values, q_learning_params_list, num_avg=10, save_sta
                   time.strftime("%Hh%Mm%Ss", time.gmtime(elapsed)), "\n\n")
         stats_dict_list.append(stats_dict)
 
-    if save_stats:
-        output_folder = os.path.join(os.getcwd(), 'results')
-        os.makedirs(output_folder, exist_ok=True)
-        fname = output_folder + '/stats_dict_' + var_name + '_list.pkl'
-        with open(fname, 'wb') as handle:
-            pickle.dump(stats_dict_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        if save_stats:
+            output_folder = os.path.join(os.getcwd(), 'results')
+            os.makedirs(output_folder, exist_ok=True)
+            fname = output_folder + '/stats_dict_' + var_name + '_list.pkl'
+            with open(fname, 'wb') as handle:
+                pickle.dump(stats_dict_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     return stats_dict_list
