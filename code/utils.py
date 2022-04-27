@@ -145,7 +145,7 @@ def stats_averaging(stats_dict_list, windows_size = 250):
     stats_dict_avg = dict.fromkeys(stats_dict_list[0].keys(), list())
     for var in stats_dict_list[0].keys():
         stats = {}
-        M_opt = np.mean([stats_dict[var][1]  for stats_dict in stats_dict_list], axis = 0)
+        M_opt = np.mean([stats_dict[var][1] for stats_dict in stats_dict_list], axis = 0)
         M_rand = np.mean([stats_dict[var][2] for stats_dict in stats_dict_list], axis=0)
         (tmp_stats, _, _) = stats_dict_list[0][var]
         for key in tmp_stats.keys():
