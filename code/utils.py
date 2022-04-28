@@ -287,6 +287,8 @@ def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
         theme(figure_size=(2, 2), axis_text=element_blank(), axis_ticks=element_blank(),
               strip_text_x=element_blank(), axis_title=element_blank())
 
+    print(plot)
+
     # saving onto file
     if save:
         output_folder = os.path.join(os.getcwd(), 'figures/')  # set the output folder
