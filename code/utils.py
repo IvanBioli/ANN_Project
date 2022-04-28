@@ -138,7 +138,7 @@ def available(grid):
     return avail_indices, avail_mask
 
 
-def stats_averaging(stats_dict_list, windows_size = 250):
+def stats_averaging(stats_dict_list, windows_size=250):
     """
 
     """
@@ -198,7 +198,7 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                                    running_average_rewards + stats['rewards_std'], alpha=0.2)
         if decaying_exploration:  # if exploration decay plot also the episode at which the decay stops
             find_nearest = np.abs(x_reward - 7/8 * var).argmin()  # from here constant 1-epsilon_min greedy policy
-            if np.abs(x_reward - 7/8 * var).min() < 250:
+            if np.abs(x_reward - 7/8 * var).min() < windows_size:
                 # no plot if the nearest value is too far away (think of n_star = 40000)
                 ax_reward.plot(x_reward[find_nearest], running_average_rewards[find_nearest], marker="o", color=color)
                 ax_reward.vlines(x=x_reward[find_nearest], ymin=-0.8, ymax=0.8, color=color, ls='--')
@@ -206,8 +206,18 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
         x_performance = np.arange(0, len(stats['rewards'])*windows_size + 1, len(stats['rewards'])*windows_size / (len(stats['test_Mopt']) - 1))
         ax[0].plot(x_performance, stats['test_Mopt'], label="$"
                    + var_legend_name + " = " + str(var) + "$", color=color)
+        if decaying_exploration:
+            find_nearest = np.abs(x_performance-7/8 * var).argmin()
+            if np.abs(x_performance - 7/8 * var).min() < windows_size:
+                ax[0].plot(x_performance[find_nearest], stats['test_Mopt'][find_nearest], marker="o", color=color)
+                ax[0].vlines(x=x_performance[find_nearest], ymin=-1.0, ymax=0.0, color=color, ls='--')
         ax[1].plot(x_performance, stats['test_Mrand'], label="$"
                    + var_legend_name + " = " + str(var) + "$", color=color)
+        if decaying_exploration:
+            find_nearest = np.abs(x_performance-7/8 * var).argmin()
+            if np.abs(x_performance - 7/8 * var).min() < windows_size:
+                ax[1].plot(x_reward[find_nearest], stats['test_Mrand'][find_nearest], marker="o", color=color)
+                ax[1].vlines(x=x_reward[find_nearest], ymin=0.0, ymax=1.0, color=color, ls='--')
         if std:
             ax[0].fill_between(x_performance, stats['test_Mopt'] - stats['test_Mopt_std'],
                                np.minimum(stats['test_Mopt'] + stats['test_Mopt_std'], 0), alpha=0.2)
@@ -229,7 +239,7 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
     ax[0].set_ylabel('$M_{opt}$')
     ax[0].set_title('$M_{opt}$ during training')
 
-    ax[1].set_ylim([-1, 1])
+    ax[1].set_ylim([-0.1, 1])
     ax[1].set_xlabel('Episode')
     ax[1].set_ylabel('$M_{rand}$')
     ax[1].set_title('$M_{rand}$ during training')
