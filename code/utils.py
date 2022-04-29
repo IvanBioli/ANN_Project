@@ -298,7 +298,7 @@ def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
         plot.save(filename=fname + '.eps', verbose=False)
 
 
-def heatmaps_subplots(grids, Q):
+def heatmaps_subplots(grids, Q, save):
     """
     Generate heatmaps for all states in grids
     :param grids: current states
@@ -308,7 +308,7 @@ def heatmaps_subplots(grids, Q):
     for (num, grid) in enumerate(grids):
         grid = np.array(grid)
         name = 'heatmap_' + str(num)
-        plot_qtable(grid, Q, save=True, saving_name=name)
+        plot_qtable(grid, Q, save=save, saving_name=name)
 
 
 def return_lambda_explor(epsilon_min, epsilon_max, n_star):
