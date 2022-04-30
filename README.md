@@ -2,6 +2,8 @@
 - [ ] Aggiungere requirements.txt per sns e altri pacchetti aggiunti
 - [x] Trovare modo per aggiungere legenda dopo a tutti i plot (altrimenti bisogna salvare a mano tutto)
 - [ ] Rivedere le figsize
+- [ ] Rileggere/completare introduzione nel report
+
 ## QUESTIONS
 ### 2. Q-Learning
 - [x] Measure performance
@@ -17,6 +19,7 @@
     - [x] Documentazione (Fede) 
   - [x] Test con epsilon a piacere (eps = 0.1)
   - [x] Commento plot (<50 parole) (Ivan) (Cresce velocemente all'inizio e poi satura)
+  - [ ] Review della risposta nel report (Fede)
 
 
 - [x] **Question 2**
@@ -25,9 +28,9 @@
     - [x] Documentazione (Ivan)
   - [x] Testare effetto di n*
   - [x] Miglioramento performance? Effetto di n*? (<200 parole))
-  - [x] Con n* più alto all'inizio si gioca più random e la reward è minore. Quando epsilon exploration decresce e diventa 
-  epsilon_min la reward è simile ma con il vantaggio di aver esplorato meglio gli stati all'inizio.
-  Cercare su libri/articoli il perchè. (Fede)
+  - [x] Con n* più alto all'inizio si gioca più random e la reward è minore (Fede)
+  - [ ] Review della risposta nel report (Ivan)
+  
 
 - [ ] **Question 3**
   - [ ] Funzione per plot performance
@@ -37,17 +40,18 @@
     - [x] Da discutere se va bene con la linea verticale per limite asintotico di epsilon
   - [x] Misurare performance
   - [x] Plot performance e descrizione (<100 parole)
-  - [ ] n* grandi rendono M_opt instabile e M_rand cresce più lentamente.
-  Cercare su libri/articoli il perchè. (Fede)
+  - [ ] n* grandi rendono M_opt instabile e M_rand cresce più lentamente (Fede)
+  - [ ] Review della risposta nel report (Ivan)
 
 - [ ] **Question 4** (Ivan)
-  - [ ] Trovare il miglior n* (attorno a 4000, da giustificare).
+  - [ ] Trovare il miglior n* (attorno a 19000, da giustificare).
   - [x] Testare diversi epislon_opt
   - [x] Plot performance per diversi epsilon
   - [x] Commento (<250 parole)
   - [x] Giustificare scelta e_opt e perchè gli altri no. Con e_opt = 0 non vedo gli stati in cui potrei vincere. Con e_opt = 1 non imparo a difendermi dalla policy 
   ottima e provo a vincere invece di coprire l'avversario, contando sul fatto che lui gioca a caso.
   - [ ] Tagliare numero parole
+  - [ ] Review della risposta nel report (Fede)
   
 - [ ] **Question 5**
   - [ ] Migliori M_opt, M_rand 
@@ -56,6 +60,8 @@
 - [ ] **Question 6** (Ivan)
   - [x] Domanda teorica (< 150 parole)
   - [ ] Tagliare numero parole
+  - [ ] Review della domanda nel report (Fede)
+  - [ ] Chiedere per inizializzazione dei Q-values
 
 
 - [ ] **Question 7**
@@ -65,13 +71,14 @@
   - [x] Learning-by-self-practice con diversi epsilon
   - [x] M_opt e M_rand per diversi valori di epsilon
   - [ ] Riesce ad imparare? Effetto di epislon? Commento (<100 parole) (Fede)
-  - Epsilon 0 si stabilizza in fretta e non migliora. Anche 0.005 (1 random su 200) migliora notevolmente.
+  - [ ] Review della risposta nel report (Ivan)
 
 
 - [ ] **Question 8** (Ivan)
-  - [ ] Usare epsilon(n)
-  - [ ] Plot performance per diversi n*.
+  - [x] Usare epsilon(n)
+  - [x] Plot performance per diversi n*.
   - [ ] Aiuta rispetto a epsilon fisso? Effetto di n*?  Commento (<100 parole)
+  - [ ] Review della risposta nel report (Fede)
 
  
 - [ ] **Question 9**
@@ -91,6 +98,7 @@
   - [x] Unire le tre immagini in una sola (non si possono fare subplots con ggplot su Python)
   - [x] Commento (<200 parole) (Win, block win e fork) (Ivan)
   - [ ] Da tagliare il numero di parole se la caption conta nelle parole e da aggiungere un altro commentino se la caption non conta.
+  - [ ] Review della risposta nel report (Fede)
   
 
 ### 3. Deep Q-Learning
