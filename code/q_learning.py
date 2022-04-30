@@ -202,29 +202,43 @@ def q_learning(env, alpha=0.5, gamma=0.99, num_episodes=20000, epsilon_explorati
 
 def train_avg(var_name, var_values, q_learning_params_list, num_avg=10, save_stats=True):
     """
-
+    Function that computes all the quantities of interest by averaging over many training runs
+    :param var_name: name of the parameter
+    :param var_values: values for the parameter var_name
+    :param q_learning_params_list: list of dictionaries with the parameters
+        for the Q-learning for each value of var_name, for example {'test_freq': 250, 'self_practice': True, ...}
+    :param num_avg: number of training runs
+    :param save_stats: True to save the stats
+    :return:
+        - stats_dict_list: list of dictionaries which contain all the stats for the different values of var_name
     """
     stats_dict_list = []
     for i in range(num_avg):
         print('************** RUN', i+1, 'OF', num_avg, '**************')
-        stats_dict = {}
+        stats_dict = {}  # initialize the dictionary for the current training run
         for (idx, var) in enumerate(var_values):
             print("------------- Training with " + var_name + " =", var, "-------------")
             start = time.time()
+            # get the dictionary of the current parameters for the Q-learning
             q_learning_params = q_learning_params_list[idx]
+            # perform Q-learning with the current parameters
             Q, stats = q_learning(**q_learning_params)
+            # measure the final performance
             M_opt = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=0.))
             M_rand = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=1.))
             print("M_opt =", M_opt)
             print("M_rand =", M_rand)
+            # insert the stats of the current parameter in the dictionary of the current run
             stats_dict.update({var: (stats, M_opt, M_rand)})
             elapsed = time.time() - start
             print("Training with " + var_name + " =", var, " took:",
                   time.strftime("%Hh%Mm%Ss", time.gmtime(elapsed)), "\n\n")
+        # append the dictionary of the current run to the overall list
         stats_dict_list.append(stats_dict)
 
+        # saving onto file
         if save_stats:
-            output_folder = os.path.join(os.getcwd(), 'results')
+            output_folder = os.path.join(os.getcwd(), 'results')  # set the folder
             os.makedirs(output_folder, exist_ok=True)
             fname = output_folder + '/stats_dict_' + var_name + '_list.pkl'
             with open(fname, 'wb') as handle:

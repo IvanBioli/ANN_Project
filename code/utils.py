@@ -140,24 +140,44 @@ def available(grid):
 
 def stats_averaging(stats_dict_list, windows_size=250):
     """
+    Function that performs averaging of the stats collected during many training runs
+    :param stats_dict_list: a list of dictionaries with all the stats collected
+    :param windows_size: window size for the testing of the performance of the agent
+    :return:
+        - stats_dict_avg: a dictionary with the average over the training runs of all quantities of interest
 
+    Example:
+    stats_dict_list in an object of the form [dict_1, ..., dict_N]
+    Each dict_i is a dictionary with all the stats from the first run for all parameters,
+    so it is an object of the form {'var_values_1': (stats_1, M_opt_1, M_rand_1), 'var_values_2':
+    (stats_2, M_opt_2, M_rand_2), ..., ...}.
+    Recall that stats_i are themselves dictionaries of the form
+    {'rewards': list of the rewards during training, 'test_Mopt': list of the test values for M_opt during training,
+    'test_Mrand': list of the test values for M_rand during training}
     """
+    # initialize the final dictionary with the keys taken from the first run (they are always the same)
     stats_dict_avg = dict.fromkeys(stats_dict_list[0].keys(), list())
-    for var in stats_dict_list[0].keys():
-        stats = {}
-        M_opt = np.mean([stats_dict[var][1] for stats_dict in stats_dict_list], axis = 0)
+    for var in stats_dict_list[0].keys():  # for loop over all parameters
+        stats = {}  # initialize the dictionary with the stats
+        # compute means of final measurements of M_opt and M_rand
+        M_opt = np.mean([stats_dict[var][1] for stats_dict in stats_dict_list], axis=0)
         M_rand = np.mean([stats_dict[var][2] for stats_dict in stats_dict_list], axis=0)
+        # get the training stats for the current parameter
         (tmp_stats, _, _) = stats_dict_list[0][var]
-        for key in tmp_stats.keys():
+        for key in tmp_stats.keys():  # for loop over all the keys of the current dictionary (stats_i in the example)
             if key == 'rewards':
+                # for the rewards, compute the mean by calling the running average performance on each dictionary
                 stats[key] = np.mean([running_average(stats_dict[var][0][key],
                                                       windows_size=windows_size, no_idx=True)
                                       for stats_dict in stats_dict_list], axis=0)
+                # compute the standard deviation of the values obtained in the training runs
                 stats[key + '_std'] = np.std([running_average(stats_dict[var][0][key],
                                               windows_size=windows_size, no_idx=True) for stats_dict in stats_dict_list],
                                              axis=0)
             else:
+                # compute the mean directly from the dictionary
                 stats[key] = np.mean([stats_dict[var][0][key] for stats_dict in stats_dict_list], axis=0)
+                # compute the standard deviation directly from the dictionary
                 stats[key+'_std'] = np.std([stats_dict[var][0][key] for stats_dict in stats_dict_list], axis=0)
         # Saving in the stats_dict_avg
         stats_dict_avg[var] = (stats, M_opt, M_rand)
@@ -174,8 +194,9 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
     :param var_name: variables name for the purpose of saving the plots
     :param var_legend_name: variables name for the legend (latex format)
     :param save: True to save figures in output folder
-    :param decaying_exploration: True to plot the episode at which the decay stops and the exploration rate becomes constant
-    :param std:
+    :param decaying_exploration: True to plot the episode at which the decay stops
+        and the exploration rate becomes constant
+    :param std: True to show the standard deviation of the different measurements from many training runs
     :param windows_size: windows size for averaging rewards
     """
     # creating the environment for the two plots
@@ -203,7 +224,8 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                 ax_reward.plot(x_reward[find_nearest], running_average_rewards[find_nearest], marker="o", color=color)
                 ax_reward.vlines(x=x_reward[find_nearest], ymin=-0.8, ymax=0.8, color=color, ls='--')
         # Plot of M_opt and M_rand during training
-        x_performance = np.arange(0, len(stats['rewards'])*windows_size + 1, len(stats['rewards'])*windows_size / (len(stats['test_Mopt']) - 1))
+        x_performance = np.arange(0, len(stats['rewards']) * windows_size + 1,
+                                  len(stats['rewards']) * windows_size / (len(stats['test_Mopt']) - 1))
         ax[0].plot(x_performance, stats['test_Mopt'], label="$"
                    + var_legend_name + " = " + str(var) + "$", color=color)
         if decaying_exploration:
@@ -312,4 +334,12 @@ def heatmaps_subplots(grids, Q, save):
 
 
 def return_lambda_explor(epsilon_min, epsilon_max, n_star):
+    """
+    Rule for the decay of the exploration rate during training
+    :param epsilon_min: minimum allowed exploration rate
+    :param epsilon_max: maximum allowed exploration rate
+    :param n_star: parameter which governs the decay rate of epsilon
+    :return:
+        - the exploration rule at training episode n
+    """
     return lambda n: np.max([epsilon_min, epsilon_max * (1 - n/n_star)])
