@@ -40,7 +40,7 @@
     - [x] Da discutere se va bene con la linea verticale per limite asintotico di epsilon
   - [x] Misurare performance
   - [x] Plot performance e descrizione (<100 parole)
-  - [ ] n* grandi rendono M_opt instabile e M_rand cresce più lentamente (Fede)
+  - [x] n* grandi rendono M_opt instabile e M_rand cresce più lentamente (Fede)
   - [ ] Review della risposta nel report (Ivan)
 
 - [ ] **Question 4** (Ivan)
@@ -70,7 +70,7 @@
     - [x] Documentazione (Fede)
   - [x] Learning-by-self-practice con diversi epsilon
   - [x] M_opt e M_rand per diversi valori di epsilon
-  - [ ] Riesce ad imparare? Effetto di epislon? Commento (<100 parole) (Fede)
+  - [x] Riesce ad imparare? Effetto di epislon? Commento (<100 parole) (Fede)
   - [ ] Review della risposta nel report (Ivan)
 
 
