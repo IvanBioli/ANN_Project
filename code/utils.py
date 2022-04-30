@@ -277,9 +277,9 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
         # saving figures in "png" format
         fig_performance.savefig(output_folder + '/performance_'+var_name+'.png', bbox_inches='tight')
         fig_reward.savefig(output_folder + '/rewards_'+var_name+'.png', bbox_inches='tight')
-        # saving figures in "eps" format
-        fig_performance.savefig(output_folder + '/performance_'+var_name+'.eps', format='eps', bbox_inches='tight')
-        fig_reward.savefig(output_folder + '/rewards_'+var_name+'.eps', format='eps', bbox_inches='tight')
+        # saving figures in "pdf" format
+        fig_performance.savefig(output_folder + '/performance_'+var_name+'.pdf', format='pdf', bbox_inches='tight')
+        fig_reward.savefig(output_folder + '/rewards_'+var_name+'.pdf', format='pdf', bbox_inches='tight')
 
 
 def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
@@ -317,7 +317,7 @@ def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
         os.makedirs(output_folder, exist_ok=True)
         fname = output_folder + saving_name
         plot.save(filename=fname + '.png', verbose=False)
-        plot.save(filename=fname + '.eps', verbose=False)
+        plot.save(filename=fname + '.pdf', verbose=False)
 
 
 def heatmaps_subplots(grids, Q, save):
