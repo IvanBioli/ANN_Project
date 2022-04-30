@@ -35,7 +35,7 @@
 - [ ] **Question 3**
   - [ ] Funzione per plot performance
     - [x] Implementazione
-    - [ ] Documentazione della parte aggiuntiva (Ivan)
+    - [x] Documentazione della parte aggiuntiva (Fede)
     - [x] Legenda unica per M_opt e M_rand
     - [x] Da discutere se va bene con la linea verticale per limite asintotico di epsilon
   - [x] Misurare performance
