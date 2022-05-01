@@ -29,7 +29,7 @@
   - [x] Testare effetto di n*
   - [x] Miglioramento performance? Effetto di n*? (<200 parole))
   - [x] Con n* più alto all'inizio si gioca più random e la reward è minore (Fede)
-  - [ ] Review della risposta nel report (Ivan)
+  - [x] Review della risposta nel report (Ivan)
   
 
 - [ ] **Question 3**
@@ -41,7 +41,7 @@
   - [x] Misurare performance
   - [x] Plot performance e descrizione (<100 parole)
   - [x] n* grandi rendono M_opt instabile e M_rand cresce più lentamente (Fede)
-  - [ ] Review della risposta nel report (Ivan)
+  - [ ] Review della risposta nel report (Ivan) ---> Riletto, ma bisogna parlarne
 
 - [ ] **Question 4** (Ivan)
   - [ ] Trovare il miglior n* (attorno a 19000, da giustificare).
@@ -71,18 +71,18 @@
   - [x] Learning-by-self-practice con diversi epsilon
   - [x] M_opt e M_rand per diversi valori di epsilon
   - [x] Riesce ad imparare? Effetto di epislon? Commento (<100 parole) (Fede)
-  - [ ] Review della risposta nel report (Ivan)
+  - [ ] Review della risposta nel report (Ivan) ---> Riletto, ma bisogna parlarne
 
 
 - [ ] **Question 8** (Ivan)
   - [x] Usare epsilon(n)
   - [x] Plot performance per diversi n*.
-  - [ ] Aiuta rispetto a epsilon fisso? Effetto di n*?  Commento (<100 parole)
+  - [x] Aiuta rispetto a epsilon fisso? Effetto di n*?  Commento (<100 parole)
   - [ ] Review della risposta nel report (Fede)
 
  
 - [ ] **Question 9**
-  - [ ] Usare epsilon(n)
+  - [x] Usare epsilon(n)
   - [ ] Migliore performance?
   - [ ] Fare alla fine con seed fissato.
 
