@@ -19,7 +19,7 @@
     - [x] Documentazione (Fede) 
   - [x] Test con epsilon a piacere (eps = 0.1)
   - [x] Commento plot (<50 parole) (Ivan) (Cresce velocemente all'inizio e poi satura)
-  - [ ] Review della risposta nel report (Fede)
+  - [x] Review della risposta nel report (Fede)
 
 
 - [x] **Question 2**
@@ -98,6 +98,7 @@
   - [x] Unire le tre immagini in una sola (non si possono fare subplots con ggplot su Python)
   - [x] Commento (<200 parole) (Win, block win e fork) (Ivan)
   - [ ] Da tagliare il numero di parole se la caption conta nelle parole e da aggiungere un altro commentino se la caption non conta.
+  - [ ] Allineare le subfigures a [t] e non [b]
   - [ ] Review della risposta nel report (Fede)
   
 
