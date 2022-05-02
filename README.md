@@ -33,7 +33,7 @@
   
 
 - [ ] **Question 3**
-  - [ ] Funzione per plot performance
+  - [x] Funzione per plot performance
     - [x] Implementazione
     - [x] Documentazione della parte aggiuntiva (Fede)
     - [x] Legenda unica per M_opt e M_rand
@@ -51,7 +51,7 @@
   - [x] Giustificare scelta e_opt e perchè gli altri no. Con e_opt = 0 non vedo gli stati in cui potrei vincere. Con e_opt = 1 non imparo a difendermi dalla policy 
   ottima e provo a vincere invece di coprire l'avversario, contando sul fatto che lui gioca a caso.
   - [ ] Tagliare numero parole
-  - [ ] Review della risposta nel report (Fede)
+  - [x] Review della risposta nel report (Fede)
   
 - [ ] **Question 5**
   - [ ] Migliori M_opt, M_rand 
@@ -60,7 +60,7 @@
 - [ ] **Question 6** (Ivan)
   - [x] Domanda teorica (< 150 parole)
   - [ ] Tagliare numero parole
-  - [ ] Review della domanda nel report (Fede)
+  - [x] Review della domanda nel report (Fede)
   - [ ] Chiedere per inizializzazione dei Q-values
 
 
@@ -74,11 +74,11 @@
   - [ ] Review della risposta nel report (Ivan) ---> Riletto, ma bisogna parlarne
 
 
-- [ ] **Question 8** (Ivan)
+- [ ] **Question 8** (Fede)
   - [x] Usare epsilon(n)
   - [x] Plot performance per diversi n*.
   - [x] Aiuta rispetto a epsilon fisso? Effetto di n*?  Commento (<100 parole)
-  - [ ] Review della risposta nel report (Fede)
+  - [x] Review della risposta nel report (Ivan)
 
  
 - [ ] **Question 9**
@@ -98,8 +98,8 @@
   - [x] Unire le tre immagini in una sola (non si possono fare subplots con ggplot su Python)
   - [x] Commento (<200 parole) (Win, block win e fork) (Ivan)
   - [ ] Da tagliare il numero di parole se la caption conta nelle parole e da aggiungere un altro commentino se la caption non conta.
-  - [ ] Allineare le subfigures a [t] e non [b]
-  - [ ] Review della risposta nel report (Fede)
+  - [x] Allineare le subfigures a [t] e non [b] 
+  - [x] Review della risposta nel report (Fede) ---> Fatto, ci sono solamente alcuni dettagli
   
 
 ### 3. Deep Q-Learning
