@@ -21,12 +21,12 @@ In this report we present the results obtained from training an agent to play Ti
 \subsection{Notation}
 We use throughout the report the same notation as in the project instructions, if not stated otherwise.
 
-Moreover, in the following, we define as a \emph{win-booking state} every state in which the current player has the chance to win the game, either with the next move or in two moves with a fork, and similarly a \emph{block-win state} as every state in which the current player must block the chance of winning at the next turn of the adversary in order not to lose the game. Two examples of a \emph{win-booking state} and of a \emph{block-win state} are provided in \cref{plot_question_10}.
+Moreover, in the following, we define as a \emph{win-booking state} every state in which the current player has the chance to win the game, either with the next move or in two moves with a fork, and similarly a \emph{block-win state} as every state in which the current player must block the chance of winning at the next turn of the adversary in order not to lose the game. Two examples of a \emph{win-booking state} and of a \emph{block-win state} are provided in \Cref{plot_question_10}.
 
 \section{Q-Learning}
 Before discussing the results obtained with tabular Q-Learning, we clarify that in this section, in order to reduce the oscillations in the metrics that might occur during a particular training run, we averaged the results over 10 complete training runs. This helped us in particular to dump the oscillations which we observed for the measurements of $\mopt$, hence to obtain clearer plots of the training metrics. If not stated otherwise, throughout this section plots must be considered as averages over 10 training runs, with shaded regions possibly representing the standard deviation.
 
-Furthermore, in most of the figures of the report, we then present only those values of the various parameters which we considered significant and representative the main trends, referring to the notebook attached to the submission for the complete results for all the tested values.
+Furthermore, in most of the figures of the report, we then present only those values of the various parameters which we considered significant and representative of the main trends, referring to the notebook attached to the submission for the complete results for all the tested values.
 
 \subsection*{Question 1}
 \Cref{plot_question1} shows an increase in average reward with experience, when training with $\epsilon = 0.1$ against \texttt{Opt(0.5)} for 20'000 games. At the end of training the average reward is positive, which indicates that the agent wins more games than it loses against \texttt{Opt(0.5)}. Hence the agent learns to play Tic-Tac-Toe.
@@ -65,8 +65,8 @@ Furthermore, in most of the figures of the report, we then present only those va
 \subsection*{Question 4}
 \Cref{plot_question4} shows the performance measures \mopt\  and \mrand\  when training with Q-Learning against \texttt{Opt($\eopt$)} for different values of $\eopt$ and using decreasing exploration with $n^{*} = 19127$.
 
-When training against \texttt{Opt(0)} the agent quickly learns to draw against the optimal player, and \mopt\  reaches 0. However, the performance against the random player \mrand\  does not improve significantly. This is because, when playing against the optimal player, there is no possibility of ending up in a \emph{win-booking state}. Hence, all the $Q$-values $Q(s_t, a)$ with $s_t$ a win-booking state are equal to their initialization value zero and when the agent plays against the random policy and possibly reaches a win-booking state, it chooses the next move randomly. 
-Conversely, when training against \texttt{Opt(1)} \mrand\  quickly increases, while \mopt\  increases less sharply and without reaching zero. In this case, the agent learns to try to get a $+1$ reward taking advantage of possible mistakes of his opponent, even if this implies occasionally losing the game. 
+When training against \texttt{Opt(0)} the agent quickly learns to draw (i.e. the estimated Q-values of block-win states converge quickly towards the true values because these states are encountered frequently) against the optimal player, and \mopt\  reaches 0. On the other hand, the performance against the random player \mrand\  does not improve significantly because, when playing against the optimal player, there is no possibility of ending up in a \emph{win-booking state}. Hence, all the $Q$-values $Q(s_t, a)$ with $s_t$ a win-booking state are equal to their initialization value zero and when the agent plays against the random policy and possibly reaches a win-booking state, it chooses the next move randomly. 
+Conversely, when training against \texttt{Opt(1)} \mrand\  quickly increases, while \mopt\  increases less sharply and without reaching zero. In this case, the agent learns to try to get a $+1$ reward by taking advantage of possible mistakes of his opponent, even if this implies occasionally losing the game. 
 Training against \texttt{Opt(0.5)} both \mopt\  and \mrand\  increase significantly. The agent is able to win against the random policy and to draw against the optimal one, but not as good as if trained against \texttt{Opt(0)} or \texttt{Opt(1)} respectively. The values $\eopt = 0.2$ and $\eopt = 0.8$ show intermediate results. 
 
 In conclusion, the agent learns to gain optimal rewards (in expectation) against the opponent it is trained against. Indeed the optimal $Q$-values depend on the transition probabilities, which vary with the opponent. If compared with the agent trained against \texttt{Opt(0.5)}, choosing extreme values of $\eopt$ makes the agent gain little in one of the two performance measures and lose much in the other, resulting in a worse general performance.
@@ -117,7 +117,7 @@ The highest values of \mopt\  and \mrand\  training with Q-Learning by self prac
 
 \subsection*{Question 10}
 %\Cref{plot_question_10} shows the $Q$-values of available actions for three significant board arrangements in which player X has the chance to win, to block a win of player O or to win for sure in two or more moves.
-In \Cref{fig_heatmap_1} the highest $Q$-value correctly corresponds to the action that makes the agent (player X) win, and it is equal to 1, i.e. the reward. However, playing in any of the other empty corners would also lead to winning the game in two moves. Similarly, in \Cref{fig_heatmap_3} the agent correctly picks the center, which brings to victory in at most two moves and indeed has a $Q$-value close to $\gamma^2 = 0.98$, but other win-leading moves such as the south-east corner have a Q-value significantly lower than one. In \Cref{fig_heatmap_2} the agent (player O) correctly blocks the win of the adversary, predicting a negative reward for any other action.
+In \Cref{fig_heatmap_1} the highest $Q$-value correctly corresponds to the action that makes the agent (player X) win, and it is equal to 1, i.e. the reward. However, playing in any of the other empty corners would also lead to winning the game in two moves, but the estimates of the corresponding Q-values are inaccurate and lower than $\gamma^2 \sim 0.98$. Similarly, in \Cref{fig_heatmap_3} the agent correctly picks the center, which brings to victory in at most two moves and indeed has a $Q$-value close to $\gamma^2 = 0.98$, whereas the Q-values of other win-leading moves such as the south-east corner are still poorly estimated. In \Cref{fig_heatmap_2} the agent (player O) correctly blocks the win of the adversary, predicting a negative reward for any other action.
 
 It can be argued that the agent learned the game quite well. In the explored scenarios most of the Q-values do make sense and the agent plays one of the possible correct actions. However, the number of possible state-action pairs is too high to be sufficiently explored in $20000$ training episodes, hence not all of the $Q$-values converged to their optimal value. 
 
@@ -159,13 +159,6 @@ It can be argued that the agent learned the game quite well. In the explored sce
 \subsection*{Question 19}
 \subsection*{Question 20}
 \subsection*{Question 21}
-
-\section*{Questions to be asked}
-\begin{enumerate}
-    \item La caption delle figure conta nel conteggio delle parole? Bisogna presentare la risposta alle domande tutta nella caption del plot?
-    \item Inizializzazione dei Q-values per la domanda 6 
-\end{enumerate}
-
 
 \nocite{*}
 \printbibliography
