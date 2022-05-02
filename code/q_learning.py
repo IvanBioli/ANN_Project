@@ -65,7 +65,8 @@ def q_learning_against_opt(env, alpha=0.5, gamma=0.99, num_episodes=20000, epsil
             reward = env.reward(player=my_player)
             if not env.end:
                 next_action = epsilon_greedy_action(next_state, Q, epsilon_exploration_rule(itr+1))
-                target = reward + gamma * Q[encode_state(next_state)][next_action]
+                next_greedy_action = epsilon_greedy_action(next_state, Q, 0)
+                target = reward + gamma * Q[encode_state(next_state)][next_greedy_action]
             else:
                 target = reward
             Q[encode_state(state)][action] += alpha * (target - Q[encode_state(state)][action])
@@ -150,7 +151,8 @@ def q_learning_self_practice(env, alpha=0.5, gamma=0.99, num_episodes=20000, eps
             # Player's turn
             if not env.end:
                 next_action = epsilon_greedy_action(next_state, Q, epsilon_exploration_rule(itr + 1))
-                target = reward + gamma * Q[encode_state(next_state)][next_action]
+                next_greedy_action = epsilon_greedy_action(next_state, Q, 0)
+                target = reward + gamma * Q[encode_state(next_state)][next_greedy_action]
             else:   # action_adv is the one that makes the game end
                 reward = - env.reward(player=env.current_player)    # reward of the player who made the game end, i.e. the adversary of the current player
                 # Update for the adversary of the current player
