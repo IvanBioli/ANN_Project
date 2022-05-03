@@ -23,7 +23,7 @@ def epsilon_greedy_action(grid, Q, epsilon):
         return avail_indices[np.random.randint(0, len(avail_indices))]
     else:
         # with probability 1-epsilon choose the action with the highest immediate reward (exploitation)
-        q = Q[encode_state(grid)]
+        q = np.copy(Q[encode_state(grid)])
         q[np.logical_not(avail_mask)] = np.nan  # set the Q(state, action) with action currently non-available to nan
         max_indices = np.argwhere(q == np.nanmax(q))  # best action(s) along the available ones
         return int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
@@ -44,7 +44,7 @@ class QPlayer:
         self.Q = Q  # initialize Q-values
         self.player = player  # set the player
 
-    def set_player(self, player='X', j=-1):
+    def set_player(self, player='X'):
         """
         Set player to be either 'X' or 'O'
         :param self: self
@@ -52,8 +52,6 @@ class QPlayer:
         :param j: to change 'X' and 'O'
         """
         self.player = player
-        if j != -1:
-            self.player = 'X' if j % 2 == 0 else 'O'
 
     def act(self, grid, **kwargs):
         """
