@@ -67,11 +67,7 @@ class TictactoeEnv:
         elif type(position) is not tuple:
             position = tuple(position)
         if self.grid[position] != 0:
-            self.end = True
-            if self.current_player == 'X':
-                self.winner = 'O'
-            else:
-                self.winner = 'X'
+            raise ValueError('There is already a chess on position {}.'.format(position))
 
         # place a chess on the position
         self.grid[position] = self.player2value[self.current_player]
