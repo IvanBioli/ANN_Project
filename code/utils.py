@@ -1,8 +1,8 @@
 import numpy as np
 from tic_env import TictactoeEnv, OptimalPlayer
 import matplotlib.pyplot as plt
-import pandas as pd
-from plotnine import *
+#import pandas as pd
+#from plotnine import *
 import os
 import pickle
 
@@ -86,7 +86,14 @@ def measure_performance(player_1, player_2, num_episodes=500):
                 move = player_1.act(grid)  # move of the first player
             else:
                 move = player_2.act(grid)  # move of the second player
-            grid, _, _ = env.step(move, print_grid=False)  # updating the environment
+            try:
+                grid, _, _ = env.step(move, print_grid=False)  # updating the environment
+            except ValueError:
+                env.end = True
+                if env.current_player == 'X':
+                    env.winner = 'O'
+                else:
+                    env.winner = 'X'
         meas += env.reward(player=player_1.player)  # updating the reward of player_1
     return meas/num_episodes
 
