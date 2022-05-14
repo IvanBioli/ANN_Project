@@ -1,8 +1,8 @@
 import numpy as np
 from tic_env import TictactoeEnv, OptimalPlayer
 import matplotlib.pyplot as plt
-import pandas as pd
-from plotnine import *
+#import pandas as pd
+#from plotnine import *
 import os
 import pickle
 
@@ -23,7 +23,7 @@ def epsilon_greedy_action(grid, Q, epsilon):
         return avail_indices[np.random.randint(0, len(avail_indices))]
     else:
         # with probability 1-epsilon choose the action with the highest immediate reward (exploitation)
-        q = Q[encode_state(grid)]
+        q = np.copy(Q[encode_state(grid)])
         q[np.logical_not(avail_mask)] = np.nan  # set the Q(state, action) with action currently non-available to nan
         max_indices = np.argwhere(q == np.nanmax(q))  # best action(s) along the available ones
         return int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
@@ -44,7 +44,7 @@ class QPlayer:
         self.Q = Q  # initialize Q-values
         self.player = player  # set the player
 
-    def set_player(self, player='X', j=-1):
+    def set_player(self, player='X'):
         """
         Set player to be either 'X' or 'O'
         :param self: self
@@ -52,8 +52,6 @@ class QPlayer:
         :param j: to change 'X' and 'O'
         """
         self.player = player
-        if j != -1:
-            self.player = 'X' if j % 2 == 0 else 'O'
 
     def act(self, grid, **kwargs):
         """
@@ -88,7 +86,14 @@ def measure_performance(player_1, player_2, num_episodes=500):
                 move = player_1.act(grid)  # move of the first player
             else:
                 move = player_2.act(grid)  # move of the second player
-            grid, _, _ = env.step(move, print_grid=False)  # updating the environment
+            try:
+                grid, _, _ = env.step(move, print_grid=False)  # updating the environment
+            except ValueError:
+                env.end = True
+                if env.current_player == 'X':
+                    env.winner = 'O'
+                else:
+                    env.winner = 'X'
         meas += env.reward(player=player_1.player)  # updating the reward of player_1
     return meas/num_episodes
 

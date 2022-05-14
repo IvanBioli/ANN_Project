@@ -3,7 +3,7 @@ from collections import defaultdict
 import time
 
 
-def q_learning_against_opt(env, alpha=0.5, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
+def q_learning_against_opt(env, alpha=0.05, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
                            epsilon_exploration_rule=None, epsilon_opt=0.5, test_freq=None, verbose=False):
     """
     Trains a Q-Learning agent by playing against optimal strategy (up to an epsilon_opt level of randomness,
@@ -94,7 +94,7 @@ def q_learning_against_opt(env, alpha=0.5, gamma=0.99, num_episodes=20000, epsil
     return Q, stats
 
 
-def q_learning_self_practice(env, alpha=0.5, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
+def q_learning_self_practice(env, alpha=0.05, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
                              epsilon_exploration_rule=None, test_freq=None, verbose=False):
     """
     Trains a Q-Learning agent by self-practice (i.e. plays against itself).
@@ -186,7 +186,7 @@ def q_learning_self_practice(env, alpha=0.5, gamma=0.99, num_episodes=20000, eps
     return Q, stats
 
 
-def q_learning(env, alpha=0.5, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
+def q_learning(env, alpha=0.05, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
                epsilon_exploration_rule=None, epsilon_opt=0.5, test_freq=None, verbose=False,
                against_opt=False, self_practice=False):
     """
