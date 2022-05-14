@@ -204,6 +204,7 @@ def deep_q_learning_self_practice(env, lr=5e-4, gamma=0.99, num_episodes=20000, 
 
 def deep_q_learning(env, lr=5e-4, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
                     epsilon_exploration_rule=None, epsilon_opt=0.5, test_freq=None, verbose=False,
+                    batch_size=64, max_memory_length=10000, update_target_network=500, update_freq=1,
                     against_opt=False, self_practice=False):
     """
 
@@ -212,7 +213,9 @@ def deep_q_learning(env, lr=5e-4, gamma=0.99, num_episodes=20000, epsilon_explor
         raise ValueError("Please, select a training method")
     if against_opt:
         return deep_q_learning_against_opt(env, lr, gamma, num_episodes, epsilon_exploration,
-                                           epsilon_exploration_rule, epsilon_opt, test_freq, verbose)
+                                           epsilon_exploration_rule, epsilon_opt, test_freq, verbose,
+                                           batch_size, max_memory_length, update_target_network, update_freq)
     if self_practice:
         return deep_q_learning_self_practice(env, lr, gamma, num_episodes, epsilon_exploration,
-                                             epsilon_exploration_rule, test_freq, verbose)
+                                             epsilon_exploration_rule, test_freq, verbose,
+                                             batch_size, max_memory_length, update_target_network, update_freq)
