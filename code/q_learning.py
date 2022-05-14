@@ -146,15 +146,17 @@ def q_learning_self_practice(env, alpha=0.05, gamma=0.99, num_episodes=20000, ep
         while not env.end:
             # Adversarial turn
             state_adv, _, _ = env.observe()
-            reward = - env.reward(player=env.current_player)  # Reward of the player who made the last move
             next_state, _, _ = env.step(action_adv)
             # Player's turn
             if not env.end:
+                reward = env.reward(player=env.current_player)  # Reward of the current player
+                assert reward == 0
                 next_action = epsilon_greedy_action(next_state, Q, epsilon_exploration_rule(itr + 1))
                 next_greedy_action = epsilon_greedy_action(next_state, Q, 0)
                 target = reward + gamma * Q[encode_state(next_state)][next_greedy_action]
             else:   # action_adv is the one that makes the game end
                 reward = - env.reward(player=env.current_player)    # reward of the player who made the game end, i.e. the adversary of the current player
+                assert (reward == 1 or reward == 0)
                 # Update for the adversary of the current player
                 Q[encode_state(state_adv)][action_adv] += alpha * (reward - Q[encode_state(state_adv)][action_adv])
                 # Target for the current player
