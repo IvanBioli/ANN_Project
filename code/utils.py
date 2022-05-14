@@ -1,10 +1,16 @@
 import numpy as np
 from tic_env import TictactoeEnv, OptimalPlayer
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
 import matplotlib.pyplot as plt
-#import pandas as pd
-#from plotnine import *
+import pandas as pd
+from plotnine import *
 import os
 import pickle
+
+
+########## FUNCTIONS FOR TABULAR Q LEARNING ###########
 
 
 def epsilon_greedy_action(grid, Q, epsilon):
@@ -348,3 +354,71 @@ def return_lambda_explor(epsilon_min, epsilon_max, n_star):
         - the exploration rule at training episode n
     """
     return lambda n: np.max([epsilon_min, epsilon_max * (1 - n/n_star)])
+
+
+######### FUNCTIONS FOR DEEP Q LEARNING ###########
+
+
+# Network defined in the project description
+def create_q_model():
+    """
+
+    :return:
+    """
+    hidden_neurons = 128
+    num_actions = 9
+    # Inputs of shape = (3, 3, 2)
+    inputs = layers.Input(shape=(3, 3, 2,))
+
+    layer0 = layers.Flatten()(inputs)
+    # Two fully connected hidden layers each with 128 neurons and ReLU activation
+    layer1 = layers.Dense(units=hidden_neurons, activation="relu")(layer0)
+    layer2 = layers.Dense(units=hidden_neurons, activation="relu")(layer1)
+    # Output with linear activation function
+    action = layers.Dense(num_actions, activation="linear")(layer2)
+
+    return keras.Model(inputs=inputs, outputs=action)
+
+
+def grid_to_tensor(grid, player):
+    if player == 'X':
+        return tf.convert_to_tensor(np.stack((np.where(grid == 1, 1, 0), np.where(grid == -1, 1, 0)), -1))
+    else:
+        return tf.convert_to_tensor(np.stack((np.where(grid == -1, 1, 0), np.where(grid == 1, 1, 0)), -1))
+
+
+class DeepQPlayer:
+    """
+
+    """
+    def __init__(self, model, player='X'):
+        """
+        __init__
+        :param self: self
+        :param model:
+        :param player: 'X' or 'O'
+        """
+        self.model = model  # initialize model
+        self.player = player  # set the player
+
+    def set_player(self, player='X'):
+        """
+        Set player to be either 'X' or 'O'
+        :param self: self
+        :param player: 'X' or 'O' ('X' by default)
+        """
+        self.player = player
+
+    def act(self, grid, **kwargs):
+        """
+        Performs a greedy move, i.e. a (1-epsilon)-greedy action with epsilon equal to zero
+        :param self: self
+        :param grid: current state
+        :param kwargs: keyword arguments
+        :return: the action chosen greedily
+        """
+        grid = tf.expand_dims(grid_to_tensor(grid, self.player), axis=0)
+        action_probs = self.model(grid, training=False)
+        # Take best action
+        max_indices = tf.where(action_probs[0] == tf.reduce_max(action_probs[0]))
+        return int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly

@@ -142,7 +142,7 @@ def q_learning_self_practice(env, alpha=0.05, gamma=0.99, num_episodes=20000, ep
         # First two turns outside the loop (at least five turns are played)
         action = epsilon_greedy_action(state, Q, epsilon_exploration_rule(itr + 1))
         state_adv, _, _ = env.step(action)
-        action_adv = epsilon_greedy_action(state_adv, Q, epsilon_exploration_rule(itr + 1))
+        action_adv = epsilon_greedy_action(state_adv, Q, 0)
         while not env.end:
             # Adversarial turn
             state_adv, _, _ = env.observe()
@@ -195,7 +195,7 @@ def q_learning(env, alpha=0.05, gamma=0.99, num_episodes=20000, epsilon_explorat
     Calls q_learning_against_opt if against_opt = True and q_learning_self_practice if self_practice = True
     """
     if int(against_opt) + int(self_practice) != 1:
-        raise ValueError("Please choose a training method")
+        raise ValueError("Please, choose a training method")
     if against_opt:
         return q_learning_against_opt(env, alpha, gamma, num_episodes, epsilon_exploration,
                                       epsilon_exploration_rule,  epsilon_opt, test_freq, verbose)
