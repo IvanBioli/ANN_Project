@@ -142,7 +142,7 @@ def q_learning_self_practice(env, alpha=0.05, gamma=0.99, num_episodes=20000, ep
         # First two turns outside the loop (at least five turns are played)
         action = epsilon_greedy_action(state, Q, epsilon_exploration_rule(itr + 1))
         state_adv, _, _ = env.step(action)
-        action_adv = epsilon_greedy_action(state_adv, Q, 0)
+        action_adv = epsilon_greedy_action(state_adv, Q, epsilon_exploration_rule(itr + 1))
         while not env.end:
             # Adversarial turn
             state_adv, _, _ = env.observe()
