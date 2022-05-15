@@ -475,4 +475,4 @@ def heatmaps_deep_subplots(grids, model, save):
     for (num, grid) in enumerate(grids):
         grid = np.array(grid)
         name = 'deep_heatmap_' + str(num)
-        plot_qtable(grid, model, save=save, saving_name=name)
+        plot_deep_qtable(grid, model, save=save, saving_name=name)
