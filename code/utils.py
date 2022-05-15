@@ -446,8 +446,11 @@ def plot_deep_qtable(grid, model, save=False, saving_name=None, show_legend=Fals
     :return:
     """
     text_lut = {0: np.nan, 1: 'X', -1: 'O'}
-    q_vals = model(grid_to_tensor(grid, 'X'), training=False)
-    q_vals = q_vals.round(decimals=2)  # to avoid overlaps in the ggplot
+    tensor_grid = grid_to_tensor(grid, 'X')
+    tensor_grid = tf.expand_dims(tensor_grid, axis=0)
+    q_vals = model(tensor_grid, training=False)[0]
+    q_vals = np.array(q_vals).round(decimals=2)
+    # q_vals = q_vals.round(decimals=2)  # to avoid overlaps in the ggplot
     min_value = np.min(q_vals)  # get minimum value for the legend
     max_value = np.max(q_vals)  # get maximum value for the legend
     plot_data = pd.DataFrame({'x': np.tile([1, 2, 3], 3), 'y': np.repeat([1, 2, 3], 3),

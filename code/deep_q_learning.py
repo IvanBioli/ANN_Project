@@ -200,7 +200,188 @@ def deep_q_learning_self_practice(env, lr=5e-4, gamma=0.99, num_episodes=20000, 
     :param verbose: if True prints the statistics during training
     :return:
     """
-    raise NotImplementedError
+    num_actions = 9
+
+    # Experience replay buffers
+    action_history = []
+    state_history = []
+    state_next_history = []
+    rewards_history = []
+    done_history = []
+    frame_count = 0
+
+    model = create_q_model()
+    model_target = create_q_model()
+
+    # Adam optimizer
+    optimizer = keras.optimizers.Adam(learning_rate=lr)
+    # Using huber loss for stability
+    loss_function = keras.losses.Huber()
+
+    turns = np.array(['X', 'O'])
+    # Stats of training
+    episode_rewards = np.empty(num_episodes)
+    loss_train = np.empty(num_episodes)
+    if test_freq is not None:
+        episode_Mopt = [measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))]
+        episode_Mrand = [measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=1.))]
+    else:
+        episode_Mopt = []  # initialize
+        episode_Mrand = []  # initialize
+    if verbose and (test_freq is not None):
+        print('Episode  0 :\tM_opt = ', episode_Mopt[0], '\tM_rand = ', episode_Mrand[0])
+    # Rule for exploration
+    if epsilon_exploration_rule is None:
+        def epsilon_exploration_rule(n):
+            return epsilon_exploration  # if an exploration rule is not given, it is the constant one
+
+    for itr in range(num_episodes):
+        my_player = turns[itr % 2]
+        env.reset()
+        state, _, _ = env.observe()
+
+        for i in range(num_actions):
+
+            state_tensor = grid_to_tensor(state, my_player)
+            state_tensor = tf.expand_dims(state_tensor, axis=0)
+
+            # Use epsilon-greedy for exploration
+            if epsilon_exploration_rule(itr+1) > np.random.uniform(0, 1):
+                # Take random action
+                action = np.random.choice(num_actions)
+            else:
+                # Predict action Q-values
+                # From environment state
+                action_probs = model(state_tensor, training=False)
+                # Take best action
+                max_indices = tf.where(action_probs[0] == tf.reduce_max(action_probs[0]))
+                action = int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
+
+            try:
+                state_adv, _, _ = env.step(action)
+            except ValueError:
+                env.end = True
+                env.winner = 'X' if env.current_player == 'O' else 'O'
+                state_adv = state
+
+            done = env.end
+            reward = env.reward(player=my_player)
+
+            # Save actions and states in replay buffer
+            action_history.append(action)
+            state_history.append(grid_to_tensor(state, my_player))
+            state_next_history.append(grid_to_tensor(state_adv, my_player))
+            done_history.append(done)
+            rewards_history.append(reward)
+
+            if done:
+                break
+
+            state_tensor_adv = grid_to_tensor(state_adv, not my_player)
+            state_tensor_adv = tf.expand_dims(state_tensor_adv, axis=0)
+
+            # Use epsilon-greedy for exploration
+            if epsilon_exploration_rule(itr+1) > np.random.uniform(0, 1):
+                # Take random action
+                action_adv = np.random.choice(num_actions)
+            else:
+                # Predict action Q-values
+                # From environment state
+                action_probs = model(state_tensor_adv, training=False)
+                # Take best action
+                max_indices = tf.where(action_probs[0] == tf.reduce_max(action_probs[0]))
+                action_adv = int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
+
+            try:
+                state_next, _, _ = env.step(action_adv)
+            except ValueError:
+                env.end = True
+                env.winner = 'X' if env.current_player == 'O' else 'O'
+                state_next = state
+
+            done = env.end
+            reward = env.reward(player=not my_player)
+
+            # Save actions and states in replay buffer
+            action_history.append(action_adv)
+            state_history.append(grid_to_tensor(state_adv, not my_player))
+            state_next_history.append(grid_to_tensor(state_next, not my_player))
+            done_history.append(done)
+            rewards_history.append(reward)
+
+            state = state_next
+            # Update after every update_freq steps and once batch size is over 64
+            if frame_count % update_freq == 0 and len(done_history) > batch_size:
+                # Get indices of samples for replay buffers
+                indices = np.random.choice(range(len(done_history)), size=batch_size)
+
+                # Using list comprehension to sample from replay buffer
+                state_sample = tf.stack([state_history[i] for i in indices], axis=0)
+                state_next_sample = tf.stack([state_next_history[i] for i in indices], axis=0)
+                rewards_sample = [rewards_history[i] for i in indices]
+                action_sample = [action_history[i] for i in indices]
+                done_sample = tf.convert_to_tensor([float(done_history[i]) for i in indices])
+
+                # Build the updated Q-values for the sampled future states
+                # Use the target model for stability
+                future_rewards = model_target(state_next_sample, training=False)  # WHAT CHANGES WITH PREDICT
+                # Q value = reward + discount factor * expected future reward
+                updated_q_values = rewards_sample + gamma * tf.reduce_max(future_rewards, axis=1) * (1 - done_sample)
+
+                # If final frame set the last value to -1
+                # updated_q_values = updated_q_values * (1 - done_sample) #- done_sample
+
+                # Create a mask so we only calculate loss on the updated Q-values
+                masks = tf.one_hot(action_sample, num_actions)
+
+                with tf.GradientTape() as tape:
+                    # Train the model on the states and updated Q-values
+                    q_values = model(state_sample)
+                    # Apply the masks to the Q-values to get the Q-value for action taken
+                    q_action = tf.reduce_sum(tf.multiply(q_values, masks), axis=1)
+                    # Calculate loss between new Q-value and old Q-value
+                    loss = loss_function(updated_q_values, q_action)
+
+                # Backpropagation
+                grads = tape.gradient(loss, model.trainable_variables)
+                optimizer.apply_gradients(zip(grads, model.trainable_variables))
+
+            # Limit the state and reward history
+            if len(rewards_history) > max_memory_length:
+                del rewards_history[:1]
+                del state_history[:1]
+                del state_next_history[:1]
+                del action_history[:1]
+                del done_history[:1]
+
+            if done:
+                break
+
+        if itr % update_target_network == 0:
+            # update the target network with new weights
+            print("******* Updating target network *******")
+            model_target.set_weights(model.get_weights())
+
+        episode_rewards[itr] = env.reward(player=my_player)
+        if len(done_history) > batch_size:
+            loss_train[itr] = loss
+        # Testing the performance
+        if (test_freq is not None) and ((itr+1) % test_freq == 0):
+            M_opt = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))
+            M_rand = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=1.))
+            episode_Mopt.append(M_opt)
+            episode_Mrand.append(M_rand)
+            if verbose:
+                print('Episode ', itr+1, ':\tM_opt = ', M_opt, '\tM_rand = ', M_rand)
+
+    # Dictionary of stats
+    stats = {
+        'rewards': episode_rewards,
+        'test_Mopt': episode_Mopt,
+        'test_Mrand': episode_Mrand,
+        'loss_train': loss_train
+    }
+    return model, stats
 
 
 def deep_q_learning(env, lr=5e-4, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
