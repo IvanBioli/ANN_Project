@@ -178,20 +178,25 @@ def stats_averaging(stats_dict_list, windows_size=250):
         # get the training stats for the current parameter
         (tmp_stats, _, _) = stats_dict_list[0][var]
         for key in tmp_stats.keys():  # for loop over all the keys of the current dictionary (stats_i in the example)
-            if key == 'rewards':
+            if key == 'rewards' or key == 'loss':
                 # for the rewards, compute the mean by calling the running average performance on each dictionary
                 stats[key] = np.mean([running_average(stats_dict[var][0][key],
                                                       windows_size=windows_size, no_idx=True)
                                       for stats_dict in stats_dict_list], axis=0)
-                # compute the standard deviation of the values obtained in the training runs
-                stats[key + '_std'] = np.std([running_average(stats_dict[var][0][key],
-                                              windows_size=windows_size, no_idx=True) for stats_dict in stats_dict_list],
-                                             axis=0)
+                # compute the 25 and 75 percentiles of the values obtained in the training runs
+                stats[key + '_25'] = np.percentile([running_average(stats_dict[var][0][key],
+                                             windows_size=windows_size, no_idx=True) for stats_dict in stats_dict_list],
+                                                    q=25, axis=0)
+                stats[key + '_75'] = np.percentile([running_average(stats_dict[var][0][key],
+                                                                     windows_size=windows_size, no_idx=True) for
+                                                     stats_dict in stats_dict_list],
+                                                    q=75, axis=0)
             else:
                 # compute the mean directly from the dictionary
                 stats[key] = np.mean([stats_dict[var][0][key] for stats_dict in stats_dict_list], axis=0)
-                # compute the standard deviation directly from the dictionary
-                stats[key+'_std'] = np.std([stats_dict[var][0][key] for stats_dict in stats_dict_list], axis=0)
+                # compute the percentiles deviation directly from the dictionary
+                stats[key + '_25'] = np.percentile([stats_dict[var][0][key] for stats_dict in stats_dict_list], q=25, axis=0)
+                stats[key+'_75'] = np.percentile([stats_dict[var][0][key] for stats_dict in stats_dict_list], q=75, axis=0)
         # Saving in the stats_dict_avg
         stats_dict_avg[var] = (stats, M_opt, M_rand)
 
@@ -199,7 +204,7 @@ def stats_averaging(stats_dict_list, windows_size=250):
 
 
 def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, decaying_exploration=False,
-               std=False, windows_size=250):
+               perc=False, windows_size=250, keys = None):
     """
     Creates the plots for reward, M_opt, M_rand
     :param stats_dict_list: list of dictionaries containing the training statistics
@@ -209,90 +214,94 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
     :param save: True to save figures in output folder
     :param decaying_exploration: True to plot the episode at which the decay stops
         and the exploration rate becomes constant
-    :param std: True to show the standard deviation of the different measurements from many training runs
+    :param perc: True to show the 25 and 75 percentiles of the different measurements from many training runs
     :param windows_size: windows size for averaging rewards
     """
-    # creating the environment for the two plots
-    fig_reward, ax_reward = plt.subplots()
-    fig_performance, ax = plt.subplots(1, 2, figsize=(13.4, 4.8))
-    fig_performance.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)  # adjust the spacing between subplots
     # averaging over multiple training runs
     stats_dict = stats_averaging(stats_dict_list, windows_size=windows_size)
+    # defining variables to plot
+    (stats, M_opt, M_rand) = stats_dict[vec_var[0]] # reference element from the dictionary
+    if keys is None:
+        keys = stats.keys()
+    # creating the environment for the two plots
+    if 'loss' in keys and 'rewards' in keys:
+        fig_1, ax_1 = plt.subplots(1,2,figsize=(13.4, 4.8), squeeze=False)
+        fig_1.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)  # adjust the spacing between subplots
+    elif 'loss' in keys or 'rewards' in keys:
+        fig_1, ax_1 = plt.subplots(1,1, squeeze=False)
+    if 'test_Mopt' in keys:
+        fig_performance, ax = plt.subplots(1, 2, figsize=(13.4, 4.8))
+        fig_performance.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)  # adjust the spacing between subplots
 
     for var in vec_var:
         (stats, M_opt, M_rand) = stats_dict[var]
-        # Plot of the average reward during training
-        running_average_rewards = stats['rewards']
-        x_reward = np.arange(0, len(running_average_rewards)*windows_size, windows_size)
-        color = next(ax_reward._get_lines.prop_cycler)['color']
-        ax_reward.plot(x_reward, running_average_rewards, label="$" +
-                       var_legend_name + " = " + str(var) + "$", color=color)
-        if std:
-            ax_reward.fill_between(x_reward, running_average_rewards - stats['rewards_std'],
-                                   running_average_rewards + stats['rewards_std'], alpha=0.2)
-        if decaying_exploration:  # if exploration decay plot also the episode at which the decay stops
-            find_nearest = np.abs(x_reward - 7/8 * var).argmin()  # from here constant 1-epsilon_min greedy policy
-            if np.abs(x_reward - 7/8 * var).min() < windows_size:
-                # no plot if the nearest value is too far away (think of n_star = 40000)
-                ax_reward.plot(x_reward[find_nearest], running_average_rewards[find_nearest], marker="o", color=color)
-                ax_reward.vlines(x=x_reward[find_nearest], ymin=-0.8, ymax=0.8, color=color, ls='--')
-        # Plot of M_opt and M_rand during training
-        x_performance = np.arange(0, len(stats['rewards']) * windows_size + 1,
-                                  len(stats['rewards']) * windows_size / (len(stats['test_Mopt']) - 1))
-        ax[0].plot(x_performance, stats['test_Mopt'], label="$"
-                   + var_legend_name + " = " + str(var) + "$", color=color)
-        if decaying_exploration:
-            find_nearest = np.abs(x_performance-7/8 * var).argmin()
-            if np.abs(x_performance - 7/8 * var).min() < windows_size:
-                ax[0].plot(x_performance[find_nearest], stats['test_Mopt'][find_nearest], marker="o", color=color)
-                ax[0].vlines(x=x_performance[find_nearest], ymin=-1.0, ymax=0.0, color=color, ls='--')
-        ax[1].plot(x_performance, stats['test_Mrand'], label="$"
-                   + var_legend_name + " = " + str(var) + "$", color=color)
-        if decaying_exploration:
-            find_nearest = np.abs(x_performance-7/8 * var).argmin()
-            if np.abs(x_performance - 7/8 * var).min() < windows_size:
-                ax[1].plot(x_reward[find_nearest], stats['test_Mrand'][find_nearest], marker="o", color=color)
-                ax[1].vlines(x=x_reward[find_nearest], ymin=0.0, ymax=1.0, color=color, ls='--')
-        if std:
-            ax[0].fill_between(x_performance, stats['test_Mopt'] - stats['test_Mopt_std'],
-                               np.minimum(stats['test_Mopt'] + stats['test_Mopt_std'], 0), alpha=0.2)
-            ax[1].fill_between(x_performance, stats['test_Mrand'] - stats['test_Mrand_std'],
-                               np.minimum(stats['test_Mrand'] + stats['test_Mrand_std'], 1), alpha=0.2)
+        for key in keys:
+            # Plot of the average reward/loss during training
+            if key == 'rewards' or key == 'loss':
+                idx = int(key == 'loss') # idx = 0 for reward and idx = 1 for loss
+                running_average = stats[key]
+                x_1 = np.arange(0, len(running_average)*windows_size, windows_size)
+                color = next(ax_1[0,idx]._get_lines.prop_cycler)['color']
+                ax_1[0,idx].plot(x_1, running_average, label="$" +
+                               var_legend_name + " = " + str(var) + "$", color=color)
+                if perc:
+                    ax_1[0,idx].fill_between(x_1, stats[key+'_25'], stats[key+'_75'], alpha=0.2)
+                if decaying_exploration:  # if exploration decay plot also the episode at which the decay stops
+                    find_nearest = np.abs(x_1 - 7/8 * var).argmin()  # from here constant 1-epsilon_min greedy policy
+                    if np.abs(x_1 - 7/8 * var).min() < windows_size:
+                        # no plot if the nearest value is too far away (think of n_star = 40000)
+                        ax_1[0,idx].plot(x_1[find_nearest], running_average[find_nearest], marker="o", color=color)
+                        ax_1[0,idx].vlines(x=x_1[find_nearest], ymin=-1, ymax=1, color=color, ls='--')
+                # Legend and axis names
+                if key == 'reward':
+                    ax_1[0,idx].set_ylim([-1, 1])
+                ax_1[0,idx].set_xlabel('Episode')
+                ax_1[0,idx].set_ylabel(key.capitalize())
+                ax_1[0,idx].set_title('Average ' + key + ' during training')
+                ax_1[0,idx].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
+                                 fancybox=True, shadow=True, ncol=4, fontsize=10)  # legend below outside the plot
+
+            # Plot of M_opt and M_rand during training
+            if key == 'test_Mopt' or key == 'test_Mrand':
+                idx = int(key == 'test_Mrand')   #idx = 0 for Mopt and idx = 1 for Mrand
+                x_performance = np.arange(0, len(stats['rewards']) * windows_size + 1,
+                                          len(stats['rewards']) * windows_size / (len(stats[key]) - 1))
+                color = next(ax[idx]._get_lines.prop_cycler)['color']
+                ax[idx].plot(x_performance, stats[key], label="$" + var_legend_name + " = " + str(var) + "$", color=color)
+                if decaying_exploration:
+                    find_nearest = np.abs(x_performance-7/8 * var).argmin()
+                    if np.abs(x_performance - 7/8 * var).min() < windows_size:
+                        ax[idx].plot(x_performance[find_nearest], stats[key][find_nearest], marker="o", color=color)
+                        ax[idx].vlines(x=x_performance[find_nearest], ymin=-1., ymax=idx, color=color, ls='--')
+                if perc:
+                    ax[idx].fill_between(x_performance, stats[key+'_25'], stats[key+'_75'], alpha=0.2)
+                # Legend and axis names
+                ax[0].hlines(y=0, xmin=x_performance[0], xmax=x_performance[-1], color='r', linestyle='--')  # plot also the zero line for M_opt, as it is the highest M_opt achievable
+                ax[0].set_ylim([-1, 0.1])
+                ax[0].set_xlabel('Episode')
+                ax[0].set_ylabel('$M_{opt}$')
+                ax[0].set_title('$M_{opt}$ during training')
+                ax[1].set_ylim(top = 1)
+                ax[1].set_xlabel('Episode')
+                ax[1].set_ylabel('$M_{rand}$')
+                ax[1].set_title('$M_{rand}$ during training')
+                ax.flatten()[-2].legend(loc='upper center', bbox_to_anchor=(1.1, -0.15), fancybox=True, shadow=True,
+                                        ncol=5, fontsize=10)  # unique legend for the two plots
+
         print(var_name + " =", var, ": \tM_opt = ", M_opt, "\tM_rand = ", M_rand)  # print the performance
-
-    ax_reward.set_ylim([-1, 1])
-    ax_reward.set_xlabel('Episode')
-    ax_reward.set_ylabel('Reward')
-    ax_reward.set_title('Average reward during training')
-    ax_reward.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
-                     fancybox=True, shadow=True, ncol=4, fontsize=10)  # legend below outside the plot
-
-    ax[0].hlines(y=0, xmin=x_reward[0], xmax=x_reward[-1],
-                 color='r', linestyle='--')  # plot also the zero line for M_opt, as it is the highest M_opt achievable
-    ax[0].set_ylim([-1, 0.1])
-    ax[0].set_xlabel('Episode')
-    ax[0].set_ylabel('$M_{opt}$')
-    ax[0].set_title('$M_{opt}$ during training')
-
-    ax[1].set_ylim([-0.1, 1])
-    ax[1].set_xlabel('Episode')
-    ax[1].set_ylabel('$M_{rand}$')
-    ax[1].set_title('$M_{rand}$ during training')
-
-    ax.flatten()[-2].legend(loc='upper center', bbox_to_anchor=(1.1, -0.15),
-                            fancybox=True, shadow=True, ncol=5, fontsize=10)  # unique legend for the two plots
     plt.show()
 
     # saving onto file
     if save:
         output_folder = os.path.join(os.getcwd(), 'figures')  # set the output folder
         os.makedirs(output_folder, exist_ok=True)
-        # saving figures in "png" format
-        fig_performance.savefig(output_folder + '/performance_'+var_name+'.png', bbox_inches='tight')
-        fig_reward.savefig(output_folder + '/rewards_'+var_name+'.png', bbox_inches='tight')
-        # saving figures in "pdf" format
-        fig_performance.savefig(output_folder + '/performance_'+var_name+'.pdf', format='pdf', bbox_inches='tight')
-        fig_reward.savefig(output_folder + '/rewards_'+var_name+'.pdf', format='pdf', bbox_inches='tight')
+        # saving figures in "png" and "pdf" format
+        if 'loss' in keys or 'rewards' in keys:
+            fig_1.savefig(output_folder + '/rewards_'+var_name+'.png', bbox_inches='tight')
+            fig_1.savefig(output_folder + '/rewards_' + var_name + '.pdf', format='pdf', bbox_inches='tight')
+        if 'test_Mopt' in keys:
+            fig_performance.savefig(output_folder + '/performance_'+var_name+'.png', bbox_inches='tight')
+            fig_performance.savefig(output_folder + '/performance_' + var_name + '.pdf', format='pdf', bbox_inches='tight')
 
 
 def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
