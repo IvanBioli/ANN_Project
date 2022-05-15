@@ -1,5 +1,5 @@
 from utils import *
-
+from deep_q_learning import *
 
 def q_learning_against_opt(env, alpha=0.05, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
                            epsilon_exploration_rule=None, epsilon_opt=0.5, test_freq=None, verbose=False):
@@ -202,7 +202,7 @@ def q_learning(env, alpha=0.05, gamma=0.99, num_episodes=20000, epsilon_explorat
                                         epsilon_exploration_rule, test_freq, verbose)
 
 
-def train_avg(var_name, var_values, q_learning_params_list, num_avg=10, save_stats=True):
+def train_avg(var_name, var_values, q_learning_params_list, dqn = False, num_avg=10, save_stats=True):
     """
     Function that computes all the quantities of interest by averaging over many training runs
     :param var_name: name of the parameter
@@ -223,11 +223,16 @@ def train_avg(var_name, var_values, q_learning_params_list, num_avg=10, save_sta
             start = time.time()
             # get the dictionary of the current parameters for the Q-learning
             q_learning_params = q_learning_params_list[idx]
-            # perform Q-learning with the current parameters
-            Q, stats = q_learning(**q_learning_params)
-            # measure the final performance
-            M_opt = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=0.))
-            M_rand = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=1.))
+            if not dqn:
+                # perform Q-learning with the current parameters
+                Q, stats = q_learning(**q_learning_params)
+                # measure the final performance
+                M_opt = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=0.))
+                M_rand = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=1.))
+            else:
+                model, stats = deep_q_learning(**q_learning_params)
+                M_opt = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))
+                M_rand = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=1.))
             print("M_opt =", M_opt)
             print("M_rand =", M_rand)
             # insert the stats of the current parameter in the dictionary of the current run
