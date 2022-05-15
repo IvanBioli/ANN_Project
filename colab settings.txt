@@ -3,3 +3,6 @@ COLAB SETTINGS
 from google.colab import drive
 drive.mount('/content/drive')
 %cd /content/drive/Othercomputers/Il mio laptop/ANN_Project/code
+
+!pip install line_profiler
+%load_ext line_profiler
