@@ -1,6 +1,4 @@
 from utils import *
-from collections import defaultdict
-import time
 
 
 def q_learning_against_opt(env, alpha=0.05, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,

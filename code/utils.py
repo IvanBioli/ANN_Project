@@ -5,6 +5,8 @@ from tensorflow import keras
 from tensorflow.keras import layers
 import matplotlib.pyplot as plt
 import pandas as pd
+from collections import defaultdict
+import time
 from plotnine import *
 import os
 import pickle
@@ -422,3 +424,55 @@ class DeepQPlayer:
         # Take best action
         max_indices = tf.where(action_probs[0] == tf.reduce_max(action_probs[0]))
         return int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
+
+
+def plot_deep_qtable(grid, model, save=False, saving_name=None, show_legend=False):
+    """
+    Generates and saves a simil heatmap for the Q-values
+    :param model: the current model
+    :param grid: current state
+    :param save: True to save figures
+    :param saving_name: saving name
+    :param show_legend: True to show the legend
+    :return:
+    """
+    text_lut = {0: np.nan, 1: 'X', -1: 'O'}
+    q_vals = model(grid_to_tensor(grid, 'X'), training=False)
+    q_vals = q_vals.round(decimals=2)  # to avoid overlaps in the ggplot
+    min_value = np.min(q_vals)  # get minimum value for the legend
+    max_value = np.max(q_vals)  # get maximum value for the legend
+    plot_data = pd.DataFrame({'x': np.tile([1, 2, 3], 3), 'y': np.repeat([1, 2, 3], 3),
+                              'board_state': [text_lut[val] for val in grid.flatten()],
+                              'Q': q_vals})  # creating the dataframe to be passed to ggplot
+    plot = ggplot(plot_data, aes(x='x', y='y')) + \
+        geom_tile(aes(fill='Q'), show_legend=show_legend) + \
+        geom_text(aes(label='board_state'), color='white', size=30) + \
+        geom_text(aes(label="Q"), show_legend=False) + \
+        scale_fill_gradient2(limits=(min_value, max_value)) + \
+        scale_y_reverse() + \
+        theme(figure_size=(2, 2), axis_text=element_blank(), axis_ticks=element_blank(),
+              strip_text_x=element_blank(), axis_title=element_blank())
+
+    print(plot)
+
+    # saving onto file
+    if save:
+        output_folder = os.path.join(os.getcwd(), 'figures/')  # set the output folder
+        os.makedirs(output_folder, exist_ok=True)
+        fname = output_folder + saving_name
+        plot.save(filename=fname + '.png', verbose=False)
+        plot.save(filename=fname + '.pdf', verbose=False)
+
+
+def heatmaps_deep_subplots(grids, model, save):
+    """
+    Generate heatmaps for all states in grids
+    :param save: True to save the figures
+    :param model: the current model
+    :param grids: current states
+    :return:
+    """
+    for (num, grid) in enumerate(grids):
+        grid = np.array(grid)
+        name = 'deep_heatmap_' + str(num)
+        plot_qtable(grid, model, save=save, saving_name=name)

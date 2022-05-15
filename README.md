@@ -103,8 +103,8 @@
   
 
 ### 3. Deep Q-Learning
-- [ ] Tutorial Keras
-- [ ] Impostare la Neural Network
+- [x] Tutorial Keras
+- [x] Impostare la Neural Network
 
 
 - [ ] Optional (da fare)
@@ -113,9 +113,9 @@
 
 
 - [ ] **Question 11**
-  - [ ] Implementare DQN
-    - [ ] Implementation
-    - [ ] Documentation
+  - [x] Implementare DQN
+    - [x] Implementation
+    - [ ] Documentation (Fede)
   - [ ] Plot loss
   - [ ] Commento (<50 parole a figura)
 
