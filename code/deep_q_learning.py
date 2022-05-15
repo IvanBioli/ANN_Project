@@ -1,5 +1,5 @@
 from utils import *
-
+from tqdm import tqdm
 
 def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
                                 epsilon_exploration_rule=None, epsilon_opt=0.5, test_freq=None, verbose=False,
@@ -56,7 +56,7 @@ def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, ep
         def epsilon_exploration_rule(n):
             return epsilon_exploration  # if an exploration rule is not given, it is the constant one
 
-    for itr in range(num_episodes):
+    for itr in tqdm(range(num_episodes)):
         my_player = turns[itr % 2]
         player_opt = OptimalPlayer(epsilon=epsilon_opt, player=turns[(itr+1) % 2])
         state, _, _ = env.reset()
@@ -154,7 +154,8 @@ def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, ep
 
         if itr % update_target_network == 0:
             # update the target network with new weights
-            print("******* Updating target network *******")
+            if verbose:
+                print("******* Updating target network *******")
             model_target.set_weights(model.get_weights())
 
         episode_rewards[itr] = env.reward(player=my_player)
@@ -174,7 +175,7 @@ def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, ep
         'rewards': episode_rewards,
         'test_Mopt': episode_Mopt,
         'test_Mrand': episode_Mrand,
-        'loss_train': loss_train
+        'loss': loss_train
     }
     return model, stats
 
