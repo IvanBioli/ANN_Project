@@ -3,6 +3,10 @@
 - [x] Trovare modo per aggiungere legenda dopo a tutti i plot (altrimenti bisogna salvare a mano tutto)
 - [ ] Rivedere le figsize
 - [ ] Rileggere/completare introduzione nel report
+- [ ] Merge finale dei due notebook per riproducibilità
+- [ ] Tenere solamente dizionari finali e ultima run del notebook finale per controllare tutto
+- [ ] Documentazione di tutto il codice, rivedere
+- [ ] Spiegare ulteriormente oscillazioni di M_opt
 
 ## QUESTIONS
 ### 2. Q-Learning
