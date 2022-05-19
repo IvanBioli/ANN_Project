@@ -136,35 +136,32 @@ def q_learning_self_practice(env, alpha=0.05, gamma=0.99, num_episodes=20000, ep
     for itr in range(num_episodes):
         my_player = turns[itr % 2]
         env.reset()
-        state, _, _ = env.observe()
         # First two turns outside the loop (at least five turns are played)
-        action = epsilon_greedy_action(state, Q, epsilon_exploration_rule(itr + 1))
-        state_adv, _, _ = env.step(action)
-        action_adv = epsilon_greedy_action(state_adv, Q, epsilon_exploration_rule(itr + 1))
+        action_vec = []
+        greedy_action_vec = []
+        state_vec = []
         while not env.end:
-            # Adversarial turn
-            state_adv, _, _ = env.observe()
-            next_state, _, _ = env.step(action_adv)
-            # Player's turn
-            if not env.end:
-                reward = env.reward(player=env.current_player)  # Reward of the current player
-                assert reward == 0
-                next_action = epsilon_greedy_action(next_state, Q, epsilon_exploration_rule(itr + 1))
-                next_greedy_action = epsilon_greedy_action(next_state, Q, 0)
-                target = reward + gamma * Q[encode_state(next_state)][next_greedy_action]
-            else:   # action_adv is the one that makes the game end
-                reward = - env.reward(player=env.current_player)    # reward of the player who made the game end, i.e. the adversary of the current player
-                assert (reward == 1 or reward == 0)
-                # Update for the adversary of the current player
-                Q[encode_state(state_adv)][action_adv] += alpha * (reward - Q[encode_state(state_adv)][action_adv])
-                # Target for the current player
-                target = - reward
-            Q[encode_state(state)][action] += alpha * (target - Q[encode_state(state)][action])
+            state, _, _ = env.observe()
+            action = epsilon_greedy_action(state, Q, epsilon_exploration_rule(itr + 1))
+            greedy_action = epsilon_greedy_action(state, Q, 0)
+            env.step(action)
+            state_vec.append(state)
+            action_vec.append(action)
+            greedy_action_vec.append(greedy_action)
 
-            # Preparing for the next iteration
-            action = action_adv
-            state = state_adv
-            action_adv = next_action
+
+        for i in range(len(state_vec)-2):
+            state = state_vec[i]
+            action = action_vec[i]
+            next_state = state_vec[i+2]
+            next_greedy_action = greedy_action_vec[i+2]
+            Q[encode_state(state)][action] += alpha * (gamma * Q[encode_state(next_state)][next_greedy_action] - Q[encode_state(state)][action])
+        i = len(state_vec)-3
+        reward = env.reward(player=env.current_player)
+        assert(reward <= 0)
+        Q[encode_state(state_vec[i+1])][action_vec[i+1]] += alpha * (reward - Q[encode_state(state_vec[i+1])][action_vec[i+1]])
+        Q[encode_state(state_vec[i+2])][action_vec[i+2]] += alpha * (-reward - Q[encode_state(state_vec[i+2])][action_vec[i+2]])
+
 
         episode_rewards[itr] = env.reward(player=my_player)
 
