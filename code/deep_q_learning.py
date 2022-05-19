@@ -6,16 +6,15 @@ def dqn_epsilon_greedy(model, state_tensor, epsilon):
     # Use epsilon-greedy for exploration
     if epsilon > np.random.uniform(0, 1):
         # Take random action
-        action = np.random.choice(num_actions)
+        avail_indices, avail_mask = available(state_tensor[0,:,:,0] + state_tensor[0,:,:,1])
+        return avail_indices[np.random.randint(0, len(avail_indices))]
     else:
         # Predict action Q-values
         # From environment state
         action_probs = model(state_tensor, training=False)
         # Take best action
         max_indices = tf.where(action_probs[0] == tf.reduce_max(action_probs[0]))
-        action = int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
-
-    return action
+        return int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
 
 
 
@@ -287,7 +286,8 @@ def deep_q_learning_self_practice(env, lr=5e-4, gamma=0.99, num_episodes=20000, 
             # Preparing the next update (curr_player becomes the adversarial)
             curr_player = adv_player
             action = action_adv
-            action_adv = dqn_epsilon_greedy(model, tf.expand_dims(next_state_tensor, axis=0), epsilon_exploration_rule(itr + 1))
+            if not done:
+                action_adv = dqn_epsilon_greedy(model, tf.expand_dims(next_state_tensor, axis=0), epsilon_exploration_rule(itr + 1))
             state = state_adv
             state_adv = next_state
 
