@@ -1,21 +1,42 @@
 from utils import *
-from tqdm import tqdm
 
-def dqn_epsilon_greedy(model, state_tensor, epsilon):
-    num_actions = 9
-    # Use epsilon-greedy for exploration
-    if epsilon > np.random.uniform(0, 1):
-        # Take random action
-        avail_indices, avail_mask = available(state_tensor[0,:,:,0] + state_tensor[0,:,:,1])
-        return avail_indices[np.random.randint(0, len(avail_indices))]
-    else:
-        # Predict action Q-values
-        # From environment state
-        action_probs = model(state_tensor, training=False)
+
+class DeepQPlayer:
+    """
+    Class to implement a player that plays according to the greedy policy defined
+    by (empirical estimates of) the Q-values as the output of an MLP.
+    """
+    def __init__(self, model, player='X'):
+        """
+        __init__
+        :param self: self
+        :param model:
+        :param player: 'X' or 'O'
+        """
+        self.model = model  # initialize model
+        self.player = player  # set the player
+
+    def set_player(self, player='X'):
+        """
+        Set player to be either 'X' or 'O'
+        :param self: self
+        :param player: 'X' or 'O' ('X' by default)
+        """
+        self.player = player
+
+    def act(self, grid, **kwargs):
+        """
+        Performs a greedy move, i.e. a (1-epsilon)-greedy action with epsilon equal to zero
+        :param self: self
+        :param grid: current state
+        :param kwargs: keyword arguments
+        :return: the action chosen greedily
+        """
+        grid = tf.expand_dims(grid_to_tensor(grid, self.player), axis=0)
+        action_probs = self.model(grid, training=False)
         # Take best action
         max_indices = tf.where(action_probs[0] == tf.reduce_max(action_probs[0]))
         return int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
-
 
 
 def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
@@ -127,14 +148,14 @@ def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, ep
 
                 # Build the updated Q-values for the sampled future states
                 # Use the target model for stability
-                future_rewards = model_target(state_next_sample, training=False)  # WHAT CHANGES WITH PREDICT
+                future_rewards = model_target(state_next_sample, training=False)
                 # Q value = reward + discount factor * expected future reward
                 updated_q_values = rewards_sample + gamma * tf.reduce_max(future_rewards, axis=1) * (1 - done_sample)
 
                 # If final frame set the last value to -1
                 # updated_q_values = updated_q_values * (1 - done_sample) #- done_sample
 
-                # Create a mask so we only calculate loss on the updated Q-values
+                # Create a mask as to calculate the loss on the updated Q-values
                 masks = tf.one_hot(action_sample, num_actions)
 
                 with tf.GradientTape() as tape:
@@ -244,32 +265,33 @@ def deep_q_learning_self_practice(env, lr=5e-4, gamma=0.99, num_episodes=20000, 
 
     for itr in tqdm(range(num_episodes)):
         my_player = turns[itr % 2]
-        curr_player = 'X' # The one who makes the update
+        curr_player = 'X'  # The one who makes the update
         env.reset()
         state, _, _ = env.observe()
         state_tensor = grid_to_tensor(state, 'X')   # X always makes the first move
-        next_state = state # Not to be used in the real updates
+        next_state = state  # Not to be used in the real updates
         # First step outside the loop
         action = dqn_epsilon_greedy(model, tf.expand_dims(state_tensor, axis=0), epsilon_exploration_rule(itr+1))
         state_adv, _, _ = env.step(action)
         state_adv_tensor = grid_to_tensor(state_adv, 'O')
-        action_adv = dqn_epsilon_greedy(model, tf.expand_dims(state_adv_tensor, axis=0), epsilon_exploration_rule(itr + 1))
+        action_adv = dqn_epsilon_greedy(model, tf.expand_dims(state_adv_tensor, axis=0),
+                                        epsilon_exploration_rule(itr+1))
         for i in range(num_actions):
             # Adversarial turn
             adv_player = 'X' if curr_player == 'O' else 'O'
             try:
                 next_state, _, _ = env.step(action_adv)
-                #next_state_tensor = grid_to_tensor(next_state, adv_player)
+                # next_state_tensor = grid_to_tensor(next_state, adv_player)
             except ValueError:
                 env.end = True
                 env.winner = curr_player
             done_adv = env.end
             if done_adv:  # The adversarial won the game or chose the wrong move
-                reward_adv = env.reward(player = adv_player)
+                reward_adv = env.reward(player=adv_player)
                 action_history.append(action_adv)
                 state_adv_tensor = grid_to_tensor(state_adv, adv_player)
                 state_history.append(state_adv_tensor)
-                state_next_history.append(state_adv_tensor) # Will not be used
+                state_next_history.append(state_adv_tensor)  # Will not be used
                 done_history.append(done_adv)
                 rewards_history.append(reward_adv)
             # curr_player's turn
@@ -287,7 +309,8 @@ def deep_q_learning_self_practice(env, lr=5e-4, gamma=0.99, num_episodes=20000, 
             curr_player = adv_player
             action = action_adv
             if not done:
-                action_adv = dqn_epsilon_greedy(model, tf.expand_dims(next_state_tensor, axis=0), epsilon_exploration_rule(itr + 1))
+                action_adv = dqn_epsilon_greedy(model, tf.expand_dims(next_state_tensor, axis=0),
+                                                epsilon_exploration_rule(itr + 1))
             state = state_adv
             state_adv = next_state
 
@@ -313,7 +336,7 @@ def deep_q_learning_self_practice(env, lr=5e-4, gamma=0.99, num_episodes=20000, 
                 # If final frame set the last value to -1
                 # updated_q_values = updated_q_values * (1 - done_sample) #- done_sample
 
-                # Create a mask so we only calculate loss on the updated Q-values
+                # Create a mask as to calculate the loss on the updated Q-values
                 masks = tf.one_hot(action_sample, num_actions)
 
                 with tf.GradientTape() as tape:
@@ -395,7 +418,7 @@ def deep_q_learning(env, lr=5e-4, gamma=0.99, num_episodes=20000, epsilon_explor
 
 def deep_train_avg(var_name, var_values, deep_q_learning_params_list, num_avg=10, save_stats=True):
     """
-    Function that computes all the quantities of interest by averaging over many training runs
+    Function that computes all the quantities of interest averaging over many training runs
     :param var_name: name of the parameter
     :param var_values: values for the parameter var_name
     :param deep_q_learning_params_list: list of dictionaries with the parameters

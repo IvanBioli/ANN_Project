@@ -7,69 +7,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from collections import defaultdict
 import time
+import pickle
+from tqdm import tqdm
 from plotnine import *
 import os
-import pickle
 
 
-########## FUNCTIONS FOR TABULAR Q LEARNING ###########
-
-
-def epsilon_greedy_action(grid, Q, epsilon):
-    """
-    Performs a (1-epsilon)-greedy action starting from a given state and given Q-values
-    :param grid: current state
-    :param Q: current Q-values
-    :param epsilon: exploration parameter
-    :return: the chosen action
-    """
-    # get the available positions
-    avail_indices, avail_mask = available(grid)
-
-    if np.random.uniform(0, 1) < epsilon:
-        # with probability epsilon make a random move (exploration)
-        return avail_indices[np.random.randint(0, len(avail_indices))]
-    else:
-        # with probability 1-epsilon choose the action with the highest immediate reward (exploitation)
-        q = np.copy(Q[encode_state(grid)])
-        q[np.logical_not(avail_mask)] = np.nan  # set the Q(state, action) with action currently non-available to nan
-        max_indices = np.argwhere(q == np.nanmax(q))  # best action(s) along the available ones
-        return int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
-
-
-class QPlayer:
-    """
-    Class to implement a player that plays according to the greedy policy defined
-    by (empirical estimates of) the Q-values.
-    """
-    def __init__(self, Q, player='X'):
-        """
-        __init__
-        :param self: self
-        :param Q: Q-values
-        :param player: 'X' or 'O'
-        """
-        self.Q = Q  # initialize Q-values
-        self.player = player  # set the player
-
-    def set_player(self, player='X'):
-        """
-        Set player to be either 'X' or 'O'
-        :param self: self
-        :param player: 'X' or 'O' ('X' by default)
-        :param j: to change 'X' and 'O'
-        """
-        self.player = player
-
-    def act(self, grid, **kwargs):
-        """
-        Performs a greedy move, i.e. a (1-epsilon)-greedy action with epsilon equal to zero
-        :param self: self
-        :param grid: current state
-        :param kwargs: keyword arguments
-        :return: the action chosen greedily
-        """
-        return epsilon_greedy_action(grid, self.Q, 0)
+"COMMON UTILS FUNCTION FOR TABULAR AND DEEP Q LEARNING"
 
 
 def measure_performance(player_1, player_2, num_episodes=500):
@@ -109,7 +53,7 @@ def measure_performance(player_1, player_2, num_episodes=500):
 def running_average(vec, windows_size=250, no_idx=False):
     """
     Computes the running average of vec every windows_size elements
-        Example: if windows_size=250 then it computes the mean of vec from 1 to 250, from 251 to 500 and so on.
+        Example: if windows_size=250 then it computes the mean of vec from 1 to 250, from 251 to 500 and so on
     :param vec: numpy.ndarray
     :param windows_size: windows_size
     :param no_idx: True not to return the indices of vec at which the mean is computed
@@ -151,6 +95,18 @@ def available(grid):
     return avail_indices, avail_mask
 
 
+def return_lambda_explor(epsilon_min, epsilon_max, n_star):
+    """
+    Rule for the decay of the exploration rate during training
+    :param epsilon_min: minimum allowed exploration rate
+    :param epsilon_max: maximum allowed exploration rate
+    :param n_star: parameter which governs the decay rate of epsilon
+    :return:
+        - the exploration rule at training episode n
+    """
+    return lambda n: np.max([epsilon_min, epsilon_max * (1 - n/n_star)])
+
+
 def stats_averaging(stats_dict_list, windows_size=250):
     """
     Function that performs averaging of the stats collected during many training runs
@@ -185,18 +141,19 @@ def stats_averaging(stats_dict_list, windows_size=250):
                                       for stats_dict in stats_dict_list], axis=0)
                 # compute the 25 and 75 percentiles of the values obtained in the training runs
                 stats[key + '_25'] = np.percentile([running_average(stats_dict[var][0][key],
-                                             windows_size=windows_size, no_idx=True) for stats_dict in stats_dict_list],
-                                                    q=25, axis=0)
+                                                                    windows_size=windows_size, no_idx=True)
+                                                    for stats_dict in stats_dict_list], q=25, axis=0)
                 stats[key + '_75'] = np.percentile([running_average(stats_dict[var][0][key],
-                                                                     windows_size=windows_size, no_idx=True) for
-                                                     stats_dict in stats_dict_list],
-                                                    q=75, axis=0)
+                                                                    windows_size=windows_size, no_idx=True)
+                                                    for stats_dict in stats_dict_list], q=75, axis=0)
             else:
                 # compute the mean directly from the dictionary
                 stats[key] = np.mean([stats_dict[var][0][key] for stats_dict in stats_dict_list], axis=0)
-                # compute the percentiles deviation directly from the dictionary
-                stats[key + '_25'] = np.percentile([stats_dict[var][0][key] for stats_dict in stats_dict_list], q=25, axis=0)
-                stats[key+'_75'] = np.percentile([stats_dict[var][0][key] for stats_dict in stats_dict_list], q=75, axis=0)
+                # compute the percentiles' deviation directly from the dictionary
+                stats[key + '_25'] = np.percentile([stats_dict[var][0][key] for stats_dict in stats_dict_list],
+                                                   q=25, axis=0)
+                stats[key+'_75'] = np.percentile([stats_dict[var][0][key] for stats_dict in stats_dict_list],
+                                                 q=75, axis=0)
         # Saving in the stats_dict_avg
         stats_dict_avg[var] = (stats, M_opt, M_rand)
 
@@ -204,9 +161,10 @@ def stats_averaging(stats_dict_list, windows_size=250):
 
 
 def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, decaying_exploration=False,
-               perc=False, windows_size=250, keys = None):
+               perc=False, windows_size=250, keys=None):
     """
     Creates the plots for reward, M_opt, M_rand
+    :param keys: keys of the variables to be plotted
     :param stats_dict_list: list of dictionaries containing the training statistics
     :param vec_var: vector of variables to plot (need to be keys of stats_dict)
     :param var_name: variables name for the purpose of saving the plots
@@ -220,54 +178,55 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
     # averaging over multiple training runs
     stats_dict = stats_averaging(stats_dict_list, windows_size=windows_size)
     # defining variables to plot
-    (stats, M_opt, M_rand) = stats_dict[vec_var[0]] # reference element from the dictionary
+    (stats, M_opt, M_rand) = stats_dict[vec_var[0]]  # reference element from the dictionary
     if keys is None:
         keys = stats.keys()
     # creating the environment for the two plots
     if 'loss' in keys and 'rewards' in keys:
-        fig_1, ax_1 = plt.subplots(1,2,figsize=(13.4, 4.8), squeeze=False)
+        fig_1, ax_1 = plt.subplots(1, 2, figsize=(13.4, 4.8), squeeze=False)
         fig_1.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)  # adjust the spacing between subplots
     elif 'loss' in keys or 'rewards' in keys:
-        fig_1, ax_1 = plt.subplots(1,1, squeeze=False)
+        fig_1, ax_1 = plt.subplots(1, 1, squeeze=False)
     if 'test_Mopt' in keys:
         fig_performance, ax = plt.subplots(1, 2, figsize=(13.4, 4.8))
-        fig_performance.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)  # adjust the spacing between subplots
+        fig_performance.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)  # adjust spacing between subplots
 
     for var in vec_var:
         (stats, M_opt, M_rand) = stats_dict[var]
         for key in keys:
             # Plot of the average reward/loss during training
             if key == 'rewards' or key == 'loss':
-                idx = int(key == 'loss') # idx = 0 for reward and idx = 1 for loss
+                idx = int(key == 'loss')  # idx = 0 for reward and idx = 1 for loss
                 running_average = stats[key]
                 x_1 = np.arange(0, len(running_average)*windows_size, windows_size)
-                color = next(ax_1[0,idx]._get_lines.prop_cycler)['color']
-                ax_1[0,idx].plot(x_1, running_average, label="$" +
-                               var_legend_name + " = " + str(var) + "$", color=color)
+                color = next(ax_1[0, idx]._get_lines.prop_cycler)['color']
+                ax_1[0, idx].plot(x_1, running_average, label="$" +
+                                                              var_legend_name + " = " + str(var) + "$", color=color)
                 if perc:
-                    ax_1[0,idx].fill_between(x_1, stats[key+'_25'], stats[key+'_75'], alpha=0.2)
+                    ax_1[0, idx].fill_between(x_1, stats[key+'_25'], stats[key+'_75'], alpha=0.2)
                 if decaying_exploration:  # if exploration decay plot also the episode at which the decay stops
                     find_nearest = np.abs(x_1 - 7/8 * var).argmin()  # from here constant 1-epsilon_min greedy policy
                     if np.abs(x_1 - 7/8 * var).min() < windows_size:
                         # no plot if the nearest value is too far away (think of n_star = 40000)
-                        ax_1[0,idx].plot(x_1[find_nearest], running_average[find_nearest], marker="o", color=color)
-                        ax_1[0,idx].vlines(x=x_1[find_nearest], ymin=-1, ymax=1, color=color, ls='--')
+                        ax_1[0, idx].plot(x_1[find_nearest], running_average[find_nearest], marker="o", color=color)
+                        ax_1[0, idx].vlines(x=x_1[find_nearest], ymin=-1, ymax=1, color=color, ls='--')
                 # Legend and axis names
                 if key == 'reward':
-                    ax_1[0,idx].set_ylim([-1, 1])
-                ax_1[0,idx].set_xlabel('Episode')
-                ax_1[0,idx].set_ylabel(key.capitalize())
-                ax_1[0,idx].set_title('Average ' + key + ' during training')
-                ax_1[0,idx].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
-                                 fancybox=True, shadow=True, ncol=4, fontsize=10)  # legend below outside the plot
+                    ax_1[0, idx].set_ylim([-1, 1])
+                ax_1[0, idx].set_xlabel('Episode')
+                ax_1[0, idx].set_ylabel(key.capitalize())
+                ax_1[0, idx].set_title('Average ' + key + ' during training')
+                ax_1[0, idx].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
+                                    fancybox=True, shadow=True, ncol=4, fontsize=10)  # legend below outside the plot
 
             # Plot of M_opt and M_rand during training
             if key == 'test_Mopt' or key == 'test_Mrand':
-                idx = int(key == 'test_Mrand')   #idx = 0 for Mopt and idx = 1 for Mrand
+                idx = int(key == 'test_Mrand')   # idx = 0 for Mopt and idx = 1 for Mrand
                 x_performance = np.arange(0, len(stats['rewards']) * windows_size + 1,
                                           len(stats['rewards']) * windows_size / (len(stats[key]) - 1))
                 color = next(ax[idx]._get_lines.prop_cycler)['color']
-                ax[idx].plot(x_performance, stats[key], label="$" + var_legend_name + " = " + str(var) + "$", color=color)
+                ax[idx].plot(x_performance, stats[key], label="$" + var_legend_name + " = "
+                                                              + str(var) + "$", color=color)
                 if decaying_exploration:
                     find_nearest = np.abs(x_performance-7/8 * var).argmin()
                     if np.abs(x_performance - 7/8 * var).min() < windows_size:
@@ -276,12 +235,13 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                 if perc:
                     ax[idx].fill_between(x_performance, stats[key+'_25'], stats[key+'_75'], alpha=0.2)
                 # Legend and axis names
-                ax[0].hlines(y=0, xmin=x_performance[0], xmax=x_performance[-1], color='r', linestyle='--')  # plot also the zero line for M_opt, as it is the highest M_opt achievable
+                ax[0].hlines(y=0, xmin=x_performance[0], xmax=x_performance[-1],
+                             color='r', linestyle='--')  # plot also the zero line for M_opt (highest M_opt achievable)
                 ax[0].set_ylim([-1, 0.1])
                 ax[0].set_xlabel('Episode')
                 ax[0].set_ylabel('$M_{opt}$')
                 ax[0].set_title('$M_{opt}$ during training')
-                ax[1].set_ylim(top = 1)
+                ax[1].set_ylim(top=1)
                 ax[1].set_xlabel('Episode')
                 ax[1].set_ylabel('$M_{rand}$')
                 ax[1].set_title('$M_{rand}$ during training')
@@ -300,8 +260,34 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
             fig_1.savefig(output_folder + '/rewards_'+var_name+'.png', bbox_inches='tight')
             fig_1.savefig(output_folder + '/rewards_' + var_name + '.pdf', format='pdf', bbox_inches='tight')
         if 'test_Mopt' in keys:
-            fig_performance.savefig(output_folder + '/performance_'+var_name+'.png', bbox_inches='tight')
-            fig_performance.savefig(output_folder + '/performance_' + var_name + '.pdf', format='pdf', bbox_inches='tight')
+            fig_performance.savefig(output_folder + '/performance_' + var_name + '.png', bbox_inches='tight')
+            fig_performance.savefig(output_folder + '/performance_' + var_name + '.pdf', format='pdf',
+                                    bbox_inches='tight')
+
+
+"UTILS FUNCTIONS FOR TABULAR Q LEARNING"
+
+
+def epsilon_greedy_action(grid, Q, epsilon):
+    """
+    Performs a (1-epsilon)-greedy action starting from a given state and given Q-values
+    :param grid: current state
+    :param Q: current Q-values
+    :param epsilon: exploration parameter
+    :return: the chosen action
+    """
+    # get the available positions
+    avail_indices, avail_mask = available(grid)
+
+    if np.random.uniform(0, 1) < epsilon:
+        # with probability epsilon make a random move (exploration)
+        return avail_indices[np.random.randint(0, len(avail_indices))]
+    else:
+        # with probability 1-epsilon choose the action with the highest immediate reward (exploitation)
+        q = np.copy(Q[encode_state(grid)])
+        q[np.logical_not(avail_mask)] = np.nan  # set the Q(state, action) with action currently non-available to nan
+        max_indices = np.argwhere(q == np.nanmax(q))  # best action(s) along the available ones
+        return int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
 
 
 def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
@@ -345,6 +331,7 @@ def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
 def heatmaps_subplots(grids, Q, save):
     """
     Generate heatmaps for all states in grids
+    :param save: True to save the figure
     :param grids: current states
     :param Q: current Q-values
     :return:
@@ -355,19 +342,7 @@ def heatmaps_subplots(grids, Q, save):
         plot_qtable(grid, Q, save=save, saving_name=name)
 
 
-def return_lambda_explor(epsilon_min, epsilon_max, n_star):
-    """
-    Rule for the decay of the exploration rate during training
-    :param epsilon_min: minimum allowed exploration rate
-    :param epsilon_max: maximum allowed exploration rate
-    :param n_star: parameter which governs the decay rate of epsilon
-    :return:
-        - the exploration rule at training episode n
-    """
-    return lambda n: np.max([epsilon_min, epsilon_max * (1 - n/n_star)])
-
-
-######### FUNCTIONS FOR DEEP Q LEARNING ###########
+"UTILS FUNCTIONS FOR DEEP Q LEARNING"
 
 
 # Network defined in the project description
@@ -398,38 +373,24 @@ def grid_to_tensor(grid, player):
         return tf.convert_to_tensor(np.stack((np.where(grid == -1, 1, 0), np.where(grid == 1, 1, 0)), -1))
 
 
-class DeepQPlayer:
+def dqn_epsilon_greedy(model, state_tensor, epsilon):
     """
 
+    :param model:
+    :param state_tensor:
+    :param epsilon:
+    :return:
     """
-    def __init__(self, model, player='X'):
-        """
-        __init__
-        :param self: self
-        :param model:
-        :param player: 'X' or 'O'
-        """
-        self.model = model  # initialize model
-        self.player = player  # set the player
-
-    def set_player(self, player='X'):
-        """
-        Set player to be either 'X' or 'O'
-        :param self: self
-        :param player: 'X' or 'O' ('X' by default)
-        """
-        self.player = player
-
-    def act(self, grid, **kwargs):
-        """
-        Performs a greedy move, i.e. a (1-epsilon)-greedy action with epsilon equal to zero
-        :param self: self
-        :param grid: current state
-        :param kwargs: keyword arguments
-        :return: the action chosen greedily
-        """
-        grid = tf.expand_dims(grid_to_tensor(grid, self.player), axis=0)
-        action_probs = self.model(grid, training=False)
+    # num_actions = 9
+    # Use epsilon-greedy for exploration
+    if epsilon > np.random.uniform(0, 1):
+        # Take random action
+        avail_indices, avail_mask = available(state_tensor[0, :, :, 0] + state_tensor[0, :, :, 1])
+        return avail_indices[np.random.randint(0, len(avail_indices))]
+    else:
+        # Predict action Q-values
+        # From environment state
+        action_probs = model(state_tensor, training=False)
         # Take best action
         max_indices = tf.where(action_probs[0] == tf.reduce_max(action_probs[0]))
         return int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
