@@ -170,33 +170,30 @@ def q_learning_self_practice(env, alpha=0.05, gamma=0.99, num_episodes=20000, ep
     for itr in range(num_episodes):
         my_player = turns[itr % 2]
         env.reset()
-        # First two turns outside the loop (at least five turns are played)
-        action_vec = []
-        greedy_action_vec = []
-        state_vec = []
+        # First two turns outside the while loop (at least five turns are played)
+        state, _, _ = env.observe()  # my state
+        action = epsilon_greedy_action(state, Q, epsilon_exploration_rule(itr+1))  # my first action
+        state_adv, _, _ = env.step(action)  # the adversary first state
+        action_adv = epsilon_greedy_action(state_adv, Q, epsilon_exploration_rule(itr + 1))  # adversary act
         while not env.end:
-            state, _, _ = env.observe()
-            action = epsilon_greedy_action(state, Q, epsilon_exploration_rule(itr + 1))
-            greedy_action = epsilon_greedy_action(state, Q, 0)
-            env.step(action)
-            state_vec.append(state)
-            action_vec.append(action)
-            greedy_action_vec.append(greedy_action)
+            state_adv, _, _ = env.observe()
+            next_state, _, _ = env.step(action_adv)
+            reward = env.reward(player=my_player)
+            if not env.end:
+                next_action = epsilon_greedy_action(next_state, Q, epsilon_exploration_rule(itr+1))
+                next_greedy_action = epsilon_greedy_action(next_state, Q, 0)
+                target = reward + gamma * Q[encode_state(next_state)][next_greedy_action]
+            else:
+                reward = - env.reward(player=env.current_player)
+                target = - reward
+                Q[encode_state(state_adv)][action_adv] += alpha * (reward - Q[encode_state(state_adv)][action_adv])
 
-        for i in range(len(state_vec)-2):
-            state = state_vec[i]
-            action = action_vec[i]
-            next_state = state_vec[i+2]
-            next_greedy_action = greedy_action_vec[i+2]
-            Q[encode_state(state)][action] += alpha * (gamma * Q[encode_state(next_state)][next_greedy_action]
-                                                       - Q[encode_state(state)][action])
-        i = len(state_vec) - 3
-        reward = env.reward(player=env.current_player)
-        assert(reward <= 0)
-        Q[encode_state(state_vec[i+1])][action_vec[i+1]] += alpha * (reward -
-                                                                     Q[encode_state(state_vec[i+1])][action_vec[i+1]])
-        Q[encode_state(state_vec[i+2])][action_vec[i+2]] += alpha * (- reward -
-                                                                     Q[encode_state(state_vec[i+2])][action_vec[i+2]])
+            Q[encode_state(state)][action] += alpha * (target - Q[encode_state(state)][action])
+
+            action = action_adv
+            state = state_adv
+            action_adv = next_action
+
         episode_rewards[itr] = env.reward(player=my_player)
 
         # Testing the performance
@@ -233,54 +230,54 @@ def q_learning(env, alpha=0.05, gamma=0.99, num_episodes=20000, epsilon_explorat
                                         epsilon_exploration_rule, test_freq, verbose)
 
 
-# def train_avg(var_name, var_values, q_learning_params_list, dqn=False, num_avg=10, save_stats=True):
-#     """
-#     Function that computes all the quantities of interest averaging over many training runs
-#     :param dqn:
-#     :param var_name: name of the parameter
-#     :param var_values: values for the parameter var_name
-#     :param q_learning_params_list: list of dictionaries with the parameters
-#         for the Q-learning for each value of var_name, for example {'test_freq': 250, 'self_practice': True, ...}
-#     :param num_avg: number of training runs
-#     :param save_stats: True to save the stats
-#     :return:
-#         - stats_dict_list: list of dictionaries which contain all the stats for the different values of var_name
-#     """
-#     stats_dict_list = []
-#     for i in range(num_avg):
-#         print('************** RUN', i+1, 'OF', num_avg, '**************')
-#         stats_dict = {}  # initialize the dictionary for the current training run
-#         for (idx, var) in enumerate(var_values):
-#             print("------------- Training with " + var_name + " =", var, "-------------")
-#             start = time.time()
-#             # get the dictionary of the current parameters for the Q-learning
-#             q_learning_params = q_learning_params_list[idx]
-#             if not dqn:
-#                 # perform Q-learning with the current parameters
-#                 Q, stats = q_learning(**q_learning_params)
-#                 # measure the final performance
-#                 M_opt = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=0.))
-#                 M_rand = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=1.))
-#             else:
-#                 model, stats = deep_q_learning(**q_learning_params)
-#                 M_opt = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))
-#                 M_rand = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=1.))
-#             print("M_opt =", M_opt)
-#             print("M_rand =", M_rand)
-#             # insert the stats of the current parameter in the dictionary of the current run
-#             stats_dict.update({var: (stats, M_opt, M_rand)})
-#             elapsed = time.time() - start
-#             print("Training with " + var_name + " =", var, " took:",
-#                   time.strftime("%Hh%Mm%Ss", time.gmtime(elapsed)), "\n\n")
-#         # append the dictionary of the current run to the overall list
-#         stats_dict_list.append(stats_dict)
-#
-#         # saving onto file
-#         if save_stats:
-#             output_folder = os.path.join(os.getcwd(), 'results')  # set the folder
-#             os.makedirs(output_folder, exist_ok=True)
-#             fname = output_folder + '/stats_dict_' + var_name + '_list.pkl'
-#             with open(fname, 'wb') as handle:
-#                 pickle.dump(stats_dict_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
-#
-#     return stats_dict_list
+def train_avg(var_name, var_values, q_learning_params_list, dqn=False, num_avg=10, save_stats=True):
+    """
+    Function that computes all the quantities of interest averaging over many training runs
+    :param dqn:
+    :param var_name: name of the parameter
+    :param var_values: values for the parameter var_name
+    :param q_learning_params_list: list of dictionaries with the parameters
+        for the Q-learning for each value of var_name, for example {'test_freq': 250, 'self_practice': True, ...}
+    :param num_avg: number of training runs
+    :param save_stats: True to save the stats
+    :return:
+        - stats_dict_list: list of dictionaries which contain all the stats for the different values of var_name
+    """
+    stats_dict_list = []
+    for i in range(num_avg):
+        print('************** RUN', i+1, 'OF', num_avg, '**************')
+        stats_dict = {}  # initialize the dictionary for the current training run
+        for (idx, var) in enumerate(var_values):
+            print("------------- Training with " + var_name + " =", var, "-------------")
+            start = time.time()
+            # get the dictionary of the current parameters for the Q-learning
+            q_learning_params = q_learning_params_list[idx]
+            if not dqn:
+                # perform Q-learning with the current parameters
+                Q, stats = q_learning(**q_learning_params)
+                # measure the final performance
+                M_opt = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=0.))
+                M_rand = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=1.))
+            else:
+                model, stats = deep_q_learning(**q_learning_params)
+                M_opt = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))
+                M_rand = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=1.))
+            print("M_opt =", M_opt)
+            print("M_rand =", M_rand)
+            # insert the stats of the current parameter in the dictionary of the current run
+            stats_dict.update({var: (stats, M_opt, M_rand)})
+            elapsed = time.time() - start
+            print("Training with " + var_name + " =", var, " took:",
+                  time.strftime("%Hh%Mm%Ss", time.gmtime(elapsed)), "\n\n")
+        # append the dictionary of the current run to the overall list
+        stats_dict_list.append(stats_dict)
+
+        # saving onto file
+        if save_stats:
+            output_folder = os.path.join(os.getcwd(), 'results')  # set the folder
+            os.makedirs(output_folder, exist_ok=True)
+            fname = output_folder + '/stats_dict_' + var_name + '_list.pkl'
+            with open(fname, 'wb') as handle:
+                pickle.dump(stats_dict_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    return stats_dict_list
