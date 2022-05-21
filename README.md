@@ -7,6 +7,7 @@
 - [ ] Tenere solamente dizionari finali e ultima run del notebook finale per controllare tutto
 - [ ] Documentazione di tutto il codice, rivedere
 - [ ] Spiegare ulteriormente oscillazioni di M_opt
+- [ ] Preparare file separato con conteggio parole
 
 ## QUESTIONS
 ### 2. Q-Learning
