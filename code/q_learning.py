@@ -180,10 +180,12 @@ def q_learning_self_practice(env, alpha=0.05, gamma=0.99, num_episodes=20000, ep
             next_state, _, _ = env.step(action_adv)
             reward = env.reward(player=env.current_player)
             if not env.end:
+                assert reward == 0
                 next_action = epsilon_greedy_action(next_state, Q, epsilon_exploration_rule(itr+1))
                 next_greedy_action = epsilon_greedy_action(next_state, Q, 0)
                 target = reward + gamma * Q[encode_state(next_state)][next_greedy_action]
             else:
+                assert reward <= 0
                 target = reward
                 Q[encode_state(state_adv)][action_adv] += alpha * (-reward - Q[encode_state(state_adv)][action_adv])
 
