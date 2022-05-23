@@ -1,5 +1,5 @@
 from utils import *
-
+from deep_q_learning import *
 
 class QPlayer:
     """
