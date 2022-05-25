@@ -281,13 +281,13 @@ def epsilon_greedy_action(grid, Q, epsilon):
 
     if np.random.uniform(0, 1) < epsilon:
         # with probability epsilon make a random move (exploration)
-        return avail_indices[np.random.randint(0, len(avail_indices))]
+        return int(np.random.choice(avail_indices))
     else:
         # with probability 1-epsilon choose the action with the highest immediate reward (exploitation)
         q = np.copy(Q[encode_state(grid)])
         q[np.logical_not(avail_mask)] = np.nan  # set the Q(state, action) with action currently non-available to nan
         max_indices = np.argwhere(q == np.nanmax(q))  # best action(s) along the available ones
-        return int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
+        return int(np.random.choice(max_indices))  # ties are split randomly
 
 
 def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
@@ -385,15 +385,16 @@ def dqn_epsilon_greedy(model, state_tensor, epsilon):
     # Use epsilon-greedy for exploration
     if epsilon > np.random.uniform(0, 1):
         # Take random action
-        avail_indices, avail_mask = available(state_tensor[0, :, :, 0] + state_tensor[0, :, :, 1])
-        return avail_indices[np.random.randint(0, len(avail_indices))]
+        avail_indices = np.argwhere(state_tensor[0, :, :, 0].numpy().flatten() ==  state_tensor[0, :, :, 1].numpy().flatten()).flatten()
+        return int(np.random.choice(avail_indices))
     else:
         # Predict action Q-values
         # From environment state
-        action_probs = model(state_tensor, training=False)
+        action_probs = model(state_tensor, training=False).numpy().flatten()
         # Take best action
-        max_indices = tf.where(action_probs[0] == tf.reduce_max(action_probs[0]))
-        return int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
+        q_max = np.amax(action_probs)
+        max_indices = np.argwhere(action_probs == q_max).flatten()
+        return int(np.random.choice(max_indices))  # ties are split randomly
 
 
 def plot_deep_qtable(grid, model, save=False, saving_name=None, show_legend=False):

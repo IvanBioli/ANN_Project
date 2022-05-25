@@ -26,17 +26,17 @@ class DeepQPlayer:
 
     def act(self, grid, **kwargs):
         """
-        Performs a greedy move, i.e. a (1-epsilon)-greedy action with epsilon equal to zero
+        Performs a greedy move
         :param self: self
         :param grid: current state
         :param kwargs: keyword arguments
         :return: the action chosen greedily
         """
         grid = tf.expand_dims(grid_to_tensor(grid, self.player), axis=0)
-        action_probs = self.model(grid, training=False)
+        action_probs = self.model(grid, training=False).numpy().flatten()
         # Take best action
-        max_indices = tf.where(action_probs[0] == tf.reduce_max(action_probs[0]))
-        return int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
+        max_indices = np.argwhere(action_probs == np.amax(action_probs)).flatten()
+        return int(np.random.choice(max_indices))  # ties are split randomly
 
 
 def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
@@ -144,13 +144,13 @@ def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, ep
                 state_next_sample = tf.stack([state_next_history[i] for i in indices], axis=0)
                 rewards_sample = [rewards_history[i] for i in indices]
                 action_sample = [action_history[i] for i in indices]
-                done_sample = tf.convert_to_tensor([float(done_history[i]) for i in indices])
+                done_sample = np.array([float(done_history[i]) for i in indices])
 
                 # Build the updated Q-values for the sampled future states
                 # Use the target model for stability
-                future_rewards = model_target(state_next_sample, training=False)
+                future_rewards = model_target(state_next_sample, training=False).numpy()
                 # Q value = reward + discount factor * expected future reward
-                updated_q_values = rewards_sample + gamma * tf.reduce_max(future_rewards, axis=1) * (1 - done_sample)
+                updated_q_values = rewards_sample + gamma * np.amax(future_rewards, axis=1) * (1 - done_sample)
 
                 # If final frame set the last value to -1
                 # updated_q_values = updated_q_values * (1 - done_sample) #- done_sample
@@ -325,13 +325,13 @@ def deep_q_learning_self_practice(env, lr=5e-4, gamma=0.99, num_episodes=20000, 
                 state_next_sample = tf.stack([state_next_history[i] for i in indices], axis=0)
                 rewards_sample = [rewards_history[i] for i in indices]
                 action_sample = [action_history[i] for i in indices]
-                done_sample = tf.convert_to_tensor([float(done_history[i]) for i in indices])
+                done_sample = np.array([float(done_history[i]) for i in indices])
 
                 # Build the updated Q-values for the sampled future states
                 # Use the target model for stability
-                future_rewards = model_target(state_next_sample, training=False)
+                future_rewards = model_target(state_next_sample, training=False).numpy()
                 # Q value = reward + discount factor * expected future reward
-                updated_q_values = rewards_sample + gamma * tf.reduce_max(future_rewards, axis=1) * (1 - done_sample)
+                updated_q_values = rewards_sample + gamma * np.amax(future_rewards, axis=1) * (1 - done_sample)
 
                 # If final frame set the last value to -1
                 # updated_q_values = updated_q_values * (1 - done_sample) #- done_sample
