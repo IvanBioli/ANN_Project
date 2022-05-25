@@ -129,8 +129,8 @@ def stats_averaging(stats_dict_list, windows_size=250):
     for var in stats_dict_list[0].keys():  # for loop over all parameters
         stats = {}  # initialize the dictionary with the stats
         # compute means of final measurements of M_opt and M_rand
-        M_opt = np.mean([stats_dict[var][1] for stats_dict in stats_dict_list], axis=0)
-        M_rand = np.mean([stats_dict[var][2] for stats_dict in stats_dict_list], axis=0)
+        M_opt = np.median([stats_dict[var][1] for stats_dict in stats_dict_list], axis=0)
+        M_rand = np.median([stats_dict[var][2] for stats_dict in stats_dict_list], axis=0)
         # get the training stats for the current parameter
         (tmp_stats, _, _) = stats_dict_list[0][var]
         for key in tmp_stats.keys():  # for loop over all the keys of the current dictionary (stats_i in the example)
@@ -148,7 +148,7 @@ def stats_averaging(stats_dict_list, windows_size=250):
                                                     for stats_dict in stats_dict_list], q=75, axis=0)
             else:
                 # compute the mean directly from the dictionary
-                stats[key] = np.mean([stats_dict[var][0][key] for stats_dict in stats_dict_list], axis=0)
+                stats[key] = np.median([stats_dict[var][0][key] for stats_dict in stats_dict_list], axis=0)
                 # compute the percentiles' deviation directly from the dictionary
                 stats[key + '_25'] = np.percentile([stats_dict[var][0][key] for stats_dict in stats_dict_list],
                                                    q=25, axis=0)
@@ -286,7 +286,7 @@ def epsilon_greedy_action(grid, Q, epsilon):
         # with probability 1-epsilon choose the action with the highest immediate reward (exploitation)
         q = np.copy(Q[encode_state(grid)])
         q[np.logical_not(avail_mask)] = np.nan  # set the Q(state, action) with action currently non-available to nan
-        max_indices = np.argwhere(q == np.nanmax(q))  # best action(s) along the available ones
+        max_indices = np.argwhere(q == np.nanmax(q)).flatten()  # best action(s) along the available ones
         return int(np.random.choice(max_indices))  # ties are split randomly
 
 
