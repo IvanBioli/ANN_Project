@@ -1,4 +1,10 @@
+import platform
+
 from utils import *
+
+
+def is_cuda_available():
+    return "/GPU:0"
 
 
 class DeepQPlayer:
@@ -26,20 +32,21 @@ class DeepQPlayer:
 
     def act(self, grid, **kwargs):
         """
-        Performs a greedy move
+        Performs a greedy move, i.e. a (1-epsilon)-greedy action with epsilon equal to zero
         :param self: self
         :param grid: current state
         :param kwargs: keyword arguments
         :return: the action chosen greedily
         """
         grid = tf.expand_dims(grid_to_tensor(grid, self.player), axis=0)
-        action_probs = self.model(grid, training=False).numpy().flatten()
+        with tf.device("/device:cpu:0"):
+            action_probs = self.model(grid, training=False)
         # Take best action
-        max_indices = np.argwhere(action_probs == np.amax(action_probs)).flatten()
-        return int(np.random.choice(max_indices))  # ties are split randomly
+        max_indices = tf.where(action_probs[0] == tf.reduce_max(action_probs[0]))
+        return int(max_indices[np.random.randint(0, len(max_indices))])  # ties are split randomly
 
 
-def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
+def deep_q_learning_against_opt(env, lr=1e-4, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
                                 epsilon_exploration_rule=None, epsilon_opt=0.5, test_freq=None, verbose=False,
                                 batch_size=64, max_memory_length=10000, update_target_network=500, update_freq=1):
     """
@@ -80,7 +87,7 @@ def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, ep
     turns = np.array(['X', 'O'])
     # Stats of training
     episode_rewards = np.empty(num_episodes)
-    loss_train = np.empty(num_episodes)
+    loss_train = 1e50 * np.ones(num_episodes)
     if test_freq is not None:
         episode_Mopt = [measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))]
         episode_Mrand = [measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=1.))]
@@ -144,13 +151,14 @@ def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, ep
                 state_next_sample = tf.stack([state_next_history[i] for i in indices], axis=0)
                 rewards_sample = [rewards_history[i] for i in indices]
                 action_sample = [action_history[i] for i in indices]
-                done_sample = np.array([float(done_history[i]) for i in indices])
+                done_sample = tf.convert_to_tensor([float(done_history[i]) for i in indices])
 
                 # Build the updated Q-values for the sampled future states
                 # Use the target model for stability
-                future_rewards = model_target(state_next_sample, training=False).numpy()
-                # Q value = reward + discount factor * expected future reward
-                updated_q_values = rewards_sample + gamma * np.amax(future_rewards, axis=1) * (1 - done_sample)
+                with tf.device("/device:cpu:0"):
+                    future_rewards = model_target(state_next_sample, training=False)
+                    # Q value = reward + discount factor * expected future reward
+                    updated_q_values = rewards_sample + gamma * tf.reduce_max(future_rewards, axis=1) * (1 - done_sample)
 
                 # If final frame set the last value to -1
                 # updated_q_values = updated_q_values * (1 - done_sample) #- done_sample
@@ -159,10 +167,11 @@ def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, ep
                 masks = tf.one_hot(action_sample, num_actions)
 
                 with tf.GradientTape() as tape:
-                    # Train the model on the states and updated Q-values
-                    q_values = model(state_sample)
-                    # Apply the masks to the Q-values to get the Q-value for action taken
-                    q_action = tf.reduce_sum(tf.multiply(q_values, masks), axis=1)
+                    with tf.device("/device:cpu:0"):
+                        # Train the model on the states and updated Q-values
+                        q_values = model(state_sample)
+                        # Apply the masks to the Q-values to get the Q-value for action taken
+                        q_action = tf.reduce_sum(tf.multiply(q_values, masks), axis=1)
                     # Calculate loss between new Q-value and old Q-value
                     loss = loss_function(updated_q_values, q_action)
 
@@ -187,8 +196,9 @@ def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, ep
             model_target.set_weights(model.get_weights())
 
         episode_rewards[itr] = env.reward(player=my_player)
-        if len(done_history) > batch_size:
+        if len(done_history) >= batch_size:
             loss_train[itr] = loss
+
         # Testing the performance
         if (test_freq is not None) and ((itr+1) % test_freq == 0):
             M_opt = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))
@@ -208,7 +218,7 @@ def deep_q_learning_against_opt(env, lr=5e-4, gamma=0.99, num_episodes=20000, ep
     return model, stats
 
 
-def deep_q_learning_self_practice(env, lr=5e-4, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
+def deep_q_learning_self_practice(env, lr=1e-4, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
                                   epsilon_exploration_rule=None, test_freq=None, verbose=False,
                                   batch_size=64, max_memory_length=10000, update_target_network=500, update_freq=1):
     """
@@ -249,7 +259,7 @@ def deep_q_learning_self_practice(env, lr=5e-4, gamma=0.99, num_episodes=20000, 
     turns = np.array(['X', 'O'])
     # Stats of training
     episode_rewards = np.empty(num_episodes)
-    loss_train = np.empty(num_episodes)
+    loss_train = 1e50 * np.ones(num_episodes)
     if test_freq is not None:
         episode_Mopt = [measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))]
         episode_Mrand = [measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=1.))]
@@ -325,13 +335,14 @@ def deep_q_learning_self_practice(env, lr=5e-4, gamma=0.99, num_episodes=20000, 
                 state_next_sample = tf.stack([state_next_history[i] for i in indices], axis=0)
                 rewards_sample = [rewards_history[i] for i in indices]
                 action_sample = [action_history[i] for i in indices]
-                done_sample = np.array([float(done_history[i]) for i in indices])
+                done_sample = tf.convert_to_tensor([float(done_history[i]) for i in indices])
 
                 # Build the updated Q-values for the sampled future states
                 # Use the target model for stability
-                future_rewards = model_target(state_next_sample, training=False).numpy()
-                # Q value = reward + discount factor * expected future reward
-                updated_q_values = rewards_sample + gamma * np.amax(future_rewards, axis=1) * (1 - done_sample)
+                with tf.device("/device:cpu:0"):
+                    future_rewards = model_target(state_next_sample, training=False)
+                    # Q value = reward + discount factor * expected future reward
+                    updated_q_values = rewards_sample + gamma * tf.reduce_max(future_rewards, axis=1) * (1 - done_sample)
 
                 # If final frame set the last value to -1
                 # updated_q_values = updated_q_values * (1 - done_sample) #- done_sample
@@ -340,10 +351,11 @@ def deep_q_learning_self_practice(env, lr=5e-4, gamma=0.99, num_episodes=20000, 
                 masks = tf.one_hot(action_sample, num_actions)
 
                 with tf.GradientTape() as tape:
-                    # Train the model on the states and updated Q-values
-                    q_values = model(state_sample)
-                    # Apply the masks to the Q-values to get the Q-value for action taken
-                    q_action = tf.reduce_sum(tf.multiply(q_values, masks), axis=1)
+                    with tf.device("/device:cpu:0"):
+                        # Train the model on the states and updated Q-values
+                        q_values = model(state_sample)
+                        # Apply the masks to the Q-values to get the Q-value for action taken
+                        q_action = tf.reduce_sum(tf.multiply(q_values, masks), axis=1)
                     # Calculate loss between new Q-value and old Q-value
                     loss = loss_function(updated_q_values, q_action)
 
@@ -376,8 +388,9 @@ def deep_q_learning_self_practice(env, lr=5e-4, gamma=0.99, num_episodes=20000, 
             model_target.set_weights(model.get_weights())
 
         episode_rewards[itr] = env.reward(player=my_player)
-        if len(done_history) > batch_size:
+        if len(done_history) >= batch_size:
             loss_train[itr] = loss
+
         # Testing the performance
         if (test_freq is not None) and ((itr+1) % test_freq == 0):
             M_opt = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))
@@ -397,7 +410,7 @@ def deep_q_learning_self_practice(env, lr=5e-4, gamma=0.99, num_episodes=20000, 
     return model, stats
 
 
-def deep_q_learning(env, lr=5e-4, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
+def deep_q_learning(env, lr=1e-4, gamma=0.99, num_episodes=20000, epsilon_exploration=0.1,
                     epsilon_exploration_rule=None, epsilon_opt=0.5, test_freq=None, verbose=False,
                     batch_size=64, max_memory_length=10000, update_target_network=500, update_freq=1,
                     against_opt=False, self_practice=False):
