@@ -142,7 +142,7 @@ def deep_q_learning_against_opt(env, lr=1e-4, gamma=0.99, num_episodes=20000, ep
 
             state = state_next
             # Update after every update_freq steps and once batch size is over 64
-            if frame_count % update_freq == 0 and len(done_history) > batch_size:
+            if frame_count % update_freq == 0 and len(done_history) >= batch_size:
                 # Get indices of samples for replay buffers
                 indices = np.random.choice(range(len(done_history)), size=batch_size)
 
@@ -326,7 +326,7 @@ def deep_q_learning_self_practice(env, lr=1e-4, gamma=0.99, num_episodes=20000, 
 
             # Update after every update_freq steps and once batch size is over 64
             frame_count += 1
-            if frame_count % update_freq == 0 and len(done_history) > batch_size:
+            if frame_count % update_freq == 0 and len(done_history) >= batch_size:
                 # Get indices of samples for replay buffers
                 indices = np.random.choice(range(len(done_history)), size=batch_size)
 
