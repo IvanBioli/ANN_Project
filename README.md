@@ -50,7 +50,7 @@
   - [ ] Review della risposta nel report (Ivan) ---> Riletto, ma bisogna parlarne
 
 - [ ] **Question 4** (Ivan)
-  - [ ] Trovare il miglior n* (attorno a 19000, da giustificare).
+  - [ ] Trovare il miglior n* 9146 (da giustificare)
   - [x] Testare diversi epislon_opt
   - [x] Plot performance per diversi epsilon
   - [x] Commento (<250 parole)
@@ -70,7 +70,7 @@
   - [ ] Chiedere per inizializzazione dei Q-values
 
 
-- [ ] **Question 7**
+- [ ] **Question 7** (DA RIVEDERE QUANDO Q-LEARNING SELF-PRACTICE DEFINITIVO)
   - [x] Q-learning by self-practice
     - [x] Implementazione
     - [x] Documentazione (Fede)
@@ -80,20 +80,20 @@
   - [ ] Review della risposta nel report (Ivan) ---> Riletto, ma bisogna parlarne
 
 
-- [ ] **Question 8** (Fede)
+- [ ] **Question 8** (Fede) (DA RIVEDERE QUANDO Q-LEARNING SELF-PRACTICE DEFINITIVO)
   - [x] Usare epsilon(n)
   - [x] Plot performance per diversi n*.
   - [x] Aiuta rispetto a epsilon fisso? Effetto di n*?  Commento (<100 parole)
   - [x] Review della risposta nel report (Ivan)
 
  
-- [ ] **Question 9**
+- [ ] **Question 9** (DA RIVEDERE QUANDO Q-LEARNING SELF-PRACTICE DEFINITIVO)
   - [x] Usare epsilon(n)
   - [ ] Migliore performance?
   - [ ] Fare alla fine con seed fissato.
 
 
-- [ ] **Question 10**
+- [ ] **Question 10** (DA RIVEDERE QUANDO Q-LEARNING SELF-PRACTICE DEFINITIVO)
   - [x] Usare epsilon(n)
   - [x] Funzione per visualizzare Q-values su stato
     - [x] Implementazione (Fede)
@@ -118,7 +118,7 @@
   - [ ] Try other optimizations (<300 parole, alla fine)
 
 
-- [ ] **Question 11**
+- [ ] **Question 11** (Fede)
   - [x] Implementare DQN
     - [x] Implementation
     - [ ] Documentation (Fede)
@@ -126,19 +126,19 @@
   - [ ] Commento (<50 parole a figura)
 
 
-- [ ] **Question 12**
+- [ ] **Question 12** (Ivan)
   - [ ] Implementazione
   - [ ] Commento (<50 parole a figura)
 
   
-- [ ] **Question 13**
+- [ ] **Question 13** (Ivan)
   - [ ] Provare diversi n* (logspace/linspace?)
   - [ ] Plot performance (metrics) per diversi n*
   - [ ] Commento (<250 parole)
   - [ ] Settare l'hyperparameter n*
 
 
-- [ ] **Question 14**
+- [ ] **Question 14** (Fede)
   - [ ] Comparare DQN con epsilon-optimal
   - [ ] Plot performance
   - [ ] Commento (<250 parole)
@@ -148,7 +148,7 @@
   - [ ] Migliore performance
 
 
-- [ ] **Question 16**
+- [ ] **Question 16** (Ivan)
   - [ ] Implementare learning by self practice con DQN
     - [ ] Implementazione
     - [ ] Documentazione
@@ -156,7 +156,7 @@
   - [ ] Commento (<100 parole)
 
 
-- [ ] **Question 17**
+- [ ] **Question 17** (Fede)
   - [ ] Provare diversi n* (logspace/linspace?)
   - [ ] Plot performance (metrics) per diversi n*
   - [ ] Commento (<250 parole)
@@ -167,7 +167,7 @@
   - [ ] Migliore performance
 
 
-- [ ] **Question 19**
+- [ ] **Question 19** (Fede)
  - [ ] Usare epsilon(n)
   - [ ] Funzione per visualizzare Q-values su stato (riadattare la vecchia?)
     - [ ] Implementazione
@@ -179,10 +179,11 @@
 - [ ] **Question 20**
   - [ ] Tabella con: 
     - [ ] migliori performance
-    - [ ] training time (da fare su un unico computer)
+    - [ ] training time 
+    - [ ] Implementare training time computation
 
 
-- [ ] **Question 21**
+- [ ] **Question 21** (Insieme)
   - [ ] Comparison (<300 parole)
 
 
