@@ -14,33 +14,28 @@
 \maketitle
 
 \begin{abstract}
-In this report we present the results obtained from training an agent to play Tic-Tac-Toe both against quasi-optimal strategy (up to some user-defined degree of randomness) and by self-practice in an unsupervised fashion, then testing its performance against the optimal strategy and the fully random strategy. 
+In this report we present the results obtained from training an agent to play Tic-Tac-Toe both against quasi-optimal strategy (up to some user-defined degree of randomness) and by self-practice in an unsupervised fashion, then testing its performance against the optimal strategy and the fully random strategy. In the first section we show the results obtained by tabular Q-Learning, in the second section we show the results from Deep Q-Learning and we compare the two approaches in the last section.
 \end{abstract}
 
 \section{Introduction}
 \subsection{Notation}
 We use throughout the report the same notation as in the project instructions, if not stated otherwise.
 
-Moreover, in the following, we define as a \emph{win-booking state} every state in which the current player has the chance to win the game, either with the next move or in two moves with a fork, and similarly a \emph{block-win state} as every state in which the current player must block the chance of winning at the next turn of the adversary in order not to lose the game. Two examples of a \emph{win-booking state} and of a \emph{block-win state} are provided in \Cref{plot_question_10}.
+Moreover, in the following, we define as a \emph{win-booking state} every state in which the current player has the chance to win the game, either with the next move or in two moves with a fork, and similarly a \emph{block-win state} as every state in which the current player must block the chance of winning at the next turn of the adversary \textcolor{red}{in order not to lose the game}. Two examples of a \emph{win-booking state} and of a \emph{block-win state} are provided in \Cref{plot_question_10} a) and b) respectively.
 
 \section{Q-Learning}
-Before discussing the results obtained with tabular Q-Learning, we clarify that in this section, in order to reduce the oscillations in the metrics that might occur during a particular training run, we averaged the results over 10 complete training runs. This helped us in particular to dump the oscillations which we observed for the measurements of $\mopt$, hence to obtain clearer plots of the training metrics. If not stated otherwise, throughout this section plots must be considered as averages over 10 training runs, with shaded regions possibly representing the standard deviation.
-
-Furthermore, in most of the figures of the report, we then present only those values of the various parameters which we considered significant and representative of the main trends, referring to the notebook attached to the submission for the complete results for all the tested values.
+Before discussing the results obtained with tabular Q-Learning, we clarify that in this section, in order to reduce the oscillations in the metrics that might occur during a particular training run, we performed 10 complete training runs. This helped us in particular to dump the oscillations which we observed for the measurements of $\mopt$, hence to obtain clearer plots of the training metrics. In all the plots of the current section we show the median over the training runs together, and shaded regions showing the 25 and 75 percentile are possibly shown. Furthermore, in most of the figures of the report, we present only those values of the various parameters which we considered significant and representative of the main trends. We refer to the notebook attached to the submission for the complete results of all the tested values.
 
 \subsection*{Question 1}
-\Cref{plot_question1} shows an increase in average reward with experience, when training with $\epsilon = 0.1$ against \texttt{Opt(0.5)} for 20'000 games. At the end of training the average reward is positive, which indicates that the agent wins more games than it loses against \texttt{Opt(0.5)}. Hence the agent learns to play Tic-Tac-Toe.
-%, even if in a sub-optimal way. Indeed \mopt\  and \mrand\  are lower than the ones obtained by the optimal policy.
-% We choose here $\epsilon = 0.1$ as this enables us to carry out a fair comparison with the decaying exploration rule later on. Smaller values of $\epsilon$ were indeed performing better.
 \begin{figure}[h]
     \centering
-    \includegraphics[width = 0.85\linewidth]{code/figures/rewards_Q1.pdf}
-    \caption{Average reward for every 250 games during training with $\epsilon = 0.1$ against \texttt{Opt(0.5)} for 20'000 games.}
+    \includegraphics[width = 0.85\linewidth]{code/figures/rewards_epsilon_exploration_Q1.pdf}
+    \caption{Average reward for every 250 games during training with $\epsilon = 0.1$ against \texttt{Opt(0.5)}. An increase in average reward with experience is observed. At the end of training the average reward is positive, indicating that the agent wins more games than it loses against \texttt{Opt(0.5)}. The agent learns to play Tic-Tac-Toe.}
     \label{plot_question1}
 \end{figure}
 
 \subsection*{Question 2}
-\Cref{plot_question2} shows the average reward during training for different values of $n^{*}$. In particular, we choose three values (including $n^{\star} = 1$, which corresponds to fixed exploration rate $\epsilon = \epsmin$) for which a good amount of the training episodes is played with constant $(1-\epsilon_{min})$-greedy policy, and a fourth value for which the exploration rate remains considerably high throughout the episodes. It can be observed that using $n^{\star} > 1$ in a first stage actions are chosen randomly more frequently and consequently the reward is lower than the one obtained with fixed $\epsilon = \epsmin$. However it can be observed that when $\epsilon(n)$ reaches $\epsmin$ the average reward approaches the same values seen for fixed exploration rate , but with the advantage of having explored more evenly the state space. On the other hand, for very large values of $n^{\star}$ we never reach the constant $(1-\epsmin)$-greedy policy, and therefore the average reward attains lower values as the agent keeps paying the price of exploration, never reaching the performance of the $(1-\epsmin)$-greedy agent. 
+\Cref{plot_question2} shows the average reward during training for different values of $n^{*}$. In particular, we choose three values (including $n^{\star} = 1$, which corresponds to fixed exploration rate $\epsilon = \epsmin$) for which the final training episodes are played with constant $(1-\epsilon_{min})$-greedy policy, and a fourth value for which the exploration rate remains considerably high until the end of training. It can be observed that using $n^{\star} > 1$ in a first stage actions are chosen randomly more frequently and consequently the reward is lower than the one obtained with fixed $\epsilon = \epsmin$. However it can be observed that when $\epsilon(n)$ reaches $\epsmin$ the average reward approaches the same values seen for fixed exploration rate, but with the advantage of having explored more the state space. On the other hand, for very large values of $n^{\star}$ we never reach the constant $(1-\epsmin)$-greedy policy, and therefore the average reward attains lower values as the agent keeps paying the price of exploration.
 
 %% \Cref{secondplot_question2} analyses the reward trend for larger values of $n^{*}$, in particular values such that we never reach the constant $(1-\epsilon_{min})$-greedy policy. The average reward attains lower values as the agent keeps paying the price of exploration, never reaching the performance of the $(1-\epsilon_{min})$-greedy agent. For the same reason a stronger decay of $\epsilon$ achieves eventually the same reward as observed in \Cref{plot_question1}.
 
@@ -63,11 +58,11 @@ Furthermore, in most of the figures of the report, we then present only those va
 
 
 \subsection*{Question 4}
-\Cref{plot_question4} shows the performance measures \mopt\  and \mrand\  when training with Q-Learning against \texttt{Opt($\eopt$)} for different values of $\eopt$ and using decreasing exploration with $n^{*} = 19127$.
+Behaviour of the performance measures \mopt\  and \mrand\  when training against \texttt{Opt($\eopt$)} for different values of $\eopt$, and using decreasing exploration with $n^{*} = 9146$.
 
-When training against \texttt{Opt(0)} the agent quickly learns to draw (i.e. the estimated Q-values of block-win states converge quickly towards the true values because these states are encountered frequently) against the optimal player, and \mopt\  reaches 0. On the other hand, the performance against the random player \mrand\  does not improve significantly because, when playing against the optimal player, there is no possibility of ending up in a \emph{win-booking state}. Hence, all the $Q$-values $Q(s_t, a)$ with $s_t$ a win-booking state are equal to their initialization value zero and when the agent plays against the random policy and possibly reaches a win-booking state, it chooses the next move randomly. 
-Conversely, when training against \texttt{Opt(1)} \mrand\  quickly increases, while \mopt\  increases less sharply and without reaching zero. In this case, the agent learns to try to get a $+1$ reward by taking advantage of possible mistakes of his opponent, even if this implies occasionally losing the game. 
-Training against \texttt{Opt(0.5)} both \mopt\  and \mrand\  increase significantly. The agent is able to win against the random policy and to draw against the optimal one, but not as good as if trained against \texttt{Opt(0)} or \texttt{Opt(1)} respectively. The values $\eopt = 0.2$ and $\eopt = 0.8$ show intermediate results. 
+When training against \texttt{Opt(0)} the agent quickly learns to draw against the optimal player, and \mopt\  reaches 0. In contrast, the performance against the random player \mrand\  does not improve significantly because, when playing against the optimal player, there is no possibility of ending up in a \emph{win-booking state}. Hence, all the $Q$-values $Q(s_t, a)$ with $s_t$ a win-booking state remain equal to their initialization value zero and when the agent plays against the random policy and possibly reaches a win-booking state, it chooses the next action randomly. 
+Conversely, when training against \texttt{Opt(1)} \mrand\  quickly increases, while \mopt\  increases very slowly without reaching zero. In this case, the agent learns to try to get a $+1$ reward by taking advantage of possible mistakes of his opponent, even if this implies occasionally losing the game. 
+Training against \texttt{Opt(0.5)} both \mopt\  and \mrand\  increase significantly. The agent is able to win against the random policy and to draw against the optimal one, but not as good as if trained against \texttt{Opt(0)} or \texttt{Opt(1)} respectively. The values \textcolor{red}{$\eopt = 0.2$ and $\eopt = 0.8$} show intermediate results. 
 
 In conclusion, the agent learns to gain optimal rewards (in expectation) against the opponent it is trained against. Indeed the optimal $Q$-values depend on the transition probabilities, which vary with the opponent. If compared with the agent trained against \texttt{Opt(0.5)}, choosing extreme values of $\eopt$ makes the agent gain little in one of the two performance measures and lose much in the other, resulting in a worse general performance.
 
@@ -79,7 +74,7 @@ In conclusion, the agent learns to gain optimal rewards (in expectation) against
 \end{figure}
 
 \subsection*{Question 5}
-The highest values of \mopt\  and \mrand\  training with Q-Learning for $20000$ games against \texttt{Opt($\eopt$)} are achieved for \textcolor{red}{$\eopt = ...$} using decreasing exploration with $n^{\star} = 19127$, and they are equal to \textcolor{red}{$\mopt = ...., \, \mrand = ...$}.
+The highest values of \mopt\  and \mrand\  training with Q-Learning for $20000$ games against \texttt{Opt($\eopt$)} are achieved for \textcolor{red}{$\eopt = ...$} using decreasing exploration with $n^{\star} = 9146$, and they are equal to \textcolor{red}{$\mopt = ...., \, \mrand = ...$}.
 
 \subsection*{Question 6}
 We claim that $Q_1(s,a)$ and $Q_2(s,a)$ do not have the same values, as suggested by the experimental results shown in \emph{Question 4}.
@@ -90,7 +85,7 @@ Agent 1 during training never encounters win-booking states, hence at the end of
 On the contrary, Agent 2 encounters win-booking states during training and we expect $Q_2(s,a) = 1$ (possibly discounted by $\gamma$) for actions that make the agent win, hence $Q_2(s,a) \neq Q_1(s,a)$. Furthermore we can expect $Q_2(s,a) \neq Q_1(s,a) = -1$ for actions that bring the opponent in a win-booking state, because the \texttt{Opt(1)} plays randomly and might not take the chance to win.
 
 \subsection*{Question 7}
-\Cref{plot_question7} shows the behaviour of \mopt\ and \mrand\ for different exploration rates $\epsilon$ of the learning agent. We observe that by training the agent with greedy policy its performance is poor both against \texttt{Opt(0)} and \texttt{Opt(1)} due to a poor exploration of the state space. It suffices to slightly increase $\epsilon$ (e.g. in expectation only a non-greedy action every 100) to improve majorly. On the other hand, a too large exploration rate causes poor performances for both \mopt\ and \mrand\ : indeed we expect that the empirical Q-values $Q(s_t, a)$, where $s_t$ is either a win-booking state or a block-win state, are not good estimates of the true ones.
+\Cref{plot_question7} shows the behaviour of \mopt\ and \mrand\ for different exploration rates $\epsilon$ of the learning agent. We observe that by training the agent with greedy policy its performance is poor both against \texttt{Opt(0)} and \texttt{Opt(1)} due to a poor exploration of the state space. It suffices to slightly increase $\epsilon$ (e.g. in expectation only a non-greedy action every 100) to improve majorly. On the other hand, a too large exploration rate causes poor performances for both \mopt\ and \mrand\ : \textcolor{red}{indeed we expect that the empirical Q-values $Q(s_t, a)$, where $s_t$ is either a win-booking state or a block-win state, are not good estimates of the true ones.}
 %% unable to be deterministic in crucial moves and hence its behaviour against \texttt{Opt(0)} remains oscillatory, whereas its performance against \texttt{Opt(1)} is always tied or exceeded by smaller $\epsilon$ values.
 \begin{figure}[h]
     \centering
@@ -148,15 +143,48 @@ It can be argued that the agent learned the game quite well. In the explored sce
 \end{figure}
 
 \section{Deep Q-Learning}
+Similarly to what has been done in the previous section for Q-Learning, also for the Deep Q-Learning experiments we average over multiple training runs. The plots show the median over 4 training runs together with the 25 and 75 percentiles. Moreover, also in this section we show in the plots only those values of the parameters which were representative of the main trends, referring to the notebook attached in the submission for the complete results of all the tested values.
 \subsection*{Question 11}
+\textcolor{red}{\Cref{plot_question11} shows an increase in average reward with experience, when training with $\epsilon = 0.1$ against \texttt{Opt(0.5)} for 20'000 games. At the end of training the average reward is positive, which indicates that the agent wins more games than it loses \textcolor{red}{against \texttt{Opt(0.5)}}. Hence the agent learns to play Tic-Tac-Toe.}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width = \linewidth]{code/figures/rewards_epsilon_exploration_Q11.pdf}
+    \caption{Average reward for every 250 games during training with $\epsilon = 0.1$ against \texttt{Opt(0.5)} for 20'000 games.}
+    \label{plot_question11}
+\end{figure}
+
 \subsection*{Question 12}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width = \linewidth]{code/figures/performance_dqn_n_star.pdf}
+    \caption{\textbf{: b}ehaviour of \mopt\  and \mrand\  every 250 training episodes for different values of $n^{*}$.}
+    \label{plot_question13}
+\end{figure}
+
 \subsection*{Question 13}
+\Cref{plot_question13} shows the effect of the decay speed $n^{*}$ on the trend of the performance measures \mopt\  and \mrand. 
+
+It can be seen that for $n^* = 1$, i.e. constant rate of exploration $\epsilon = \epsmin = 0.1$, \mopt\ increase rapidly in the initial stages of training and reaches the optimal value $\mopt = 0$. In particular, the higher is the value of $n^*$, i.e. the lower is the decay of the exploration rate, the slower is the convergence of \mopt to the optimal value  $\mopt = 0$. Conversely, when using  using $n^* = 1$ \mrand\ has a more gentle growth and flattens after reaching a sub-optimal plateau. Using higher values of $n^* \gg 1$ helps in achieving a higher value of \mrand, with a comparable final performance for all the values shown in the plot.
+
+Furthermore, it can be observed that due to a higher rate of random moves, in the initial stages of training the variance of the metrics \mopt\ and \mrand\ is higher for larger values of $n^*$.
+
+In conclusion, using a decreasing exploration rate $\epsilon$ helps compared to a fixed rate $\epsilon = \epsmin$, which results in a lower final value of \mrand. However, choosing $n^*$ too high, i.e. $n^* = 40'000$, increases the training variance and does not provide benefits in terms of the performance measures \mopt\ and \mrand. Intermediate values of $n^*$, in our case $n^*=10'000,\,20'000$, are the ones providing the better trade-off between exploration and exploitation. In the following question, we will use the value $n^* = 20'000$. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width = \linewidth]{code/figures/performance_dqn_n_star.pdf}
+    \caption{\emph{Question 13}: behaviour of \mopt\  and \mrand\  every 250 training episodes for different values of $n^{*}$.}
+    \label{plot_question13}
+\end{figure}
 \subsection*{Question 14}
 \subsection*{Question 15}
 \subsection*{Question 16}
 \subsection*{Question 17}
 \subsection*{Question 18}
 \subsection*{Question 19}
+
+\section{Comparing Q-Learning with Deep Q-Learning}
 \subsection*{Question 20}
 \subsection*{Question 21}
 

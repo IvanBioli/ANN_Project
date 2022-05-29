@@ -37,8 +37,3 @@
   \immediate\write18{texcount -1 -sum -merge -q #1.tex output.bbl > #1-words.sum }%
   \input{#1-words.sum} words%
 }
-
-\newcommand{\quickcharcount}[1]{%
-  \immediate\write18{texcount -1 -sum -merge -char -q #1.tex output.bbl > #1-chars.sum }%
-  \input{#1-chars.sum} characters (not including spaces)%
-}
