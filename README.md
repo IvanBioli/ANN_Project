@@ -6,9 +6,9 @@
 - [ ] Merge finale dei due notebook per riproducibilità
 - [ ] Tenere solamente dizionari finali e ultima run del notebook finale per controllare tutto
 - [ ] Documentazione di tutto il codice, rivedere
-- [ ] Spiegare ulteriormente oscillazioni di M_opt
+- [x] Spiegare ulteriormente oscillazioni di M_opt
 - [ ] Preparare file separato con conteggio parole
-- [ ] Legenda unica per plot rewards e loss?
+- [x] Legenda unica per plot rewards e loss?
 
 ## QUESTIONS
 ### 2. Q-Learning
