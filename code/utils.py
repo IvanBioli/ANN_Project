@@ -136,7 +136,7 @@ def stats_averaging(stats_dict_list, windows_size=250):
         for key in tmp_stats.keys():  # for loop over all the keys of the current dictionary (stats_i in the example)
             if key == 'rewards' or key == 'loss':
                 # for the rewards, compute the mean by calling the running average performance on each dictionary
-                stats[key] = np.mean([running_average(stats_dict[var][0][key],
+                stats[key] = np.median([running_average(stats_dict[var][0][key],
                                                       windows_size=windows_size, no_idx=True)
                                       for stats_dict in stats_dict_list], axis=0)
                 # compute the 25 and 75 percentiles of the values obtained in the training runs
@@ -146,6 +146,10 @@ def stats_averaging(stats_dict_list, windows_size=250):
                 stats[key + '_75'] = np.percentile([running_average(stats_dict[var][0][key],
                                                                     windows_size=windows_size, no_idx=True)
                                                     for stats_dict in stats_dict_list], q=75, axis=0)
+                if key == 'loss':
+                    stats['loss'] = stats['loss'][1:]
+                    stats['loss_25'] = stats['loss_25'][1:]
+                    stats['loss_75'] = stats['loss_75'][1:]
             else:
                 # compute the mean directly from the dictionary
                 stats[key] = np.median([stats_dict[var][0][key] for stats_dict in stats_dict_list], axis=0)
@@ -198,7 +202,10 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
             if key == 'rewards' or key == 'loss':
                 idx = int(key == 'loss')  # idx = 0 for reward and idx = 1 for loss
                 running_average = stats[key]
-                x_1 = np.arange(0, len(running_average)*windows_size, windows_size)
+                if key == 'rewards':
+                    x_1 = np.arange(0, len(running_average)*windows_size, windows_size)
+                else:
+                    x_1 = np.arange(windows_size, (len(running_average)+1) * windows_size, windows_size)
                 color = next(ax_1[0, idx]._get_lines.prop_cycler)['color']
                 ax_1[0, idx].plot(x_1, running_average, label="$" +
                                                               var_legend_name + " = " + str(var) + "$", color=color)
@@ -209,7 +216,7 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                     if np.abs(x_1 - 7/8 * var).min() < windows_size:
                         # no plot if the nearest value is too far away (think of n_star = 40000)
                         ax_1[0, idx].plot(x_1[find_nearest], running_average[find_nearest], marker="o", color=color)
-                        ax_1[0, idx].vlines(x=x_1[find_nearest], ymin=-1, ymax=1, color=color, ls='--')
+                        ax_1[0, idx].vlines(x=x_1[find_nearest], ymin=min(running_average), ymax=max(running_average), color=color, ls='--')
                 # Legend and axis names
                 if key == 'reward':
                     ax_1[0, idx].set_ylim([-1, 1])
@@ -231,7 +238,7 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                     find_nearest = np.abs(x_performance-7/8 * var).argmin()
                     if np.abs(x_performance - 7/8 * var).min() < windows_size:
                         ax[idx].plot(x_performance[find_nearest], stats[key][find_nearest], marker="o", color=color)
-                        ax[idx].vlines(x=x_performance[find_nearest], ymin=-1., ymax=idx, color=color, ls='--')
+                        ax[idx].vlines(x=x_performance[find_nearest], ymin=min(stats[key]), ymax=max(stats[key]), color=color, ls='--')
                 if perc:
                     ax[idx].fill_between(x_performance, stats[key+'_25'], stats[key+'_75'], alpha=0.2)
                 # Legend and axis names
