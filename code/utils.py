@@ -223,7 +223,11 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                 ax_1[0, idx].set_xlabel('Episode')
                 ax_1[0, idx].set_ylabel(key.capitalize())
                 ax_1[0, idx].set_title('Average ' + key + ' during training')
-                ax_1[0, idx].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
+                if 'loss' in keys and 'rewards' in keys:
+                    ax_1.flatten()[-2].legend(loc='upper center', bbox_to_anchor=(1.1, -0.15), fancybox=True, shadow=True,
+                                            ncol=5, fontsize=10)  # unique legend for the two plots
+                else:
+                    ax_1[0, idx].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
                                     fancybox=True, shadow=True, ncol=4, fontsize=10)  # legend below outside the plot
 
             # Plot of M_opt and M_rand during training
