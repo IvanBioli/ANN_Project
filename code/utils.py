@@ -218,8 +218,6 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                         ax_1[0, idx].plot(x_1[find_nearest], running_average[find_nearest], marker="o", color=color)
                         ax_1[0, idx].vlines(x=x_1[find_nearest], ymin=min(running_average), ymax=max(running_average), color=color, ls='--')
                 # Legend and axis names
-                if key == 'reward':
-                    ax_1[0, idx].set_ylim([-1, 1])
                 ax_1[0, idx].set_xlabel('Episode')
                 ax_1[0, idx].set_ylabel(key.capitalize())
                 ax_1[0, idx].set_title('Average ' + key + ' during training')
@@ -252,7 +250,7 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                 ax[0].set_xlabel('Episode')
                 ax[0].set_ylabel('$M_{opt}$')
                 ax[0].set_title('$M_{opt}$ during training')
-                ax[1].set_ylim(top=1)
+                #ax[1].set_ylim(None, 1)
                 ax[1].set_xlabel('Episode')
                 ax[1].set_ylabel('$M_{rand}$')
                 ax[1].set_title('$M_{rand}$ during training')
