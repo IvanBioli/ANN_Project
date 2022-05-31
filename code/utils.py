@@ -74,6 +74,7 @@ def encode_state(state):
     :param state: numpy.ndarray
     :return: the bytes' representation of the state
     """
+    #assert(state.shape == (3,3))
     return state.tobytes()
 
 
@@ -310,8 +311,9 @@ def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
     :return:
     """
     text_lut = {0: np.nan, 1: 'X', -1: 'O'}
-    q_vals = Q[encode_state(grid)][:]
-    q_vals = q_vals.round(decimals=2)  # to avoid overlaps in the ggplot
+    avail_indices, avail_mask = available(grid)
+    q_vals = np.copy(Q[encode_state(grid)]).round(decimals=2)
+    q_vals[np.logical_not(avail_mask)] = np.nan
     min_value = np.min(q_vals)  # get minimum value for the legend
     max_value = np.max(q_vals)  # get maximum value for the legend
     plot_data = pd.DataFrame({'x': np.tile([1, 2, 3], 3), 'y': np.repeat([1, 2, 3], 3),
@@ -417,24 +419,30 @@ def plot_deep_qtable(grid, model, save=False, saving_name=None, show_legend=Fals
     :return:
     """
     text_lut = {0: np.nan, 1: 'X', -1: 'O'}
-    tensor_grid = grid_to_tensor(grid, 'X')
+    num_X = np.count_nonzero(grid == 1.)
+    num_O = np.count_nonzero(grid == -1.)
+    if num_X > num_O:
+        player = 'O'
+    else:
+        player = 'X'
+    tensor_grid = grid_to_tensor(grid, player)
     tensor_grid = tf.expand_dims(tensor_grid, axis=0)
-    q_vals = model(tensor_grid, training=False)[0]
-    q_vals = np.array(q_vals).round(decimals=2)
-    # q_vals = q_vals.round(decimals=2)  # to avoid overlaps in the ggplot
+    q_vals = np.round(model.predict(tensor_grid)[0].astype('float64'),decimals=2)
+    avail_indices, avail_mask = available(grid)
+    q_vals[np.logical_not(avail_mask)] = np.nan
     min_value = np.min(q_vals)  # get minimum value for the legend
     max_value = np.max(q_vals)  # get maximum value for the legend
     plot_data = pd.DataFrame({'x': np.tile([1, 2, 3], 3), 'y': np.repeat([1, 2, 3], 3),
                               'board_state': [text_lut[val] for val in grid.flatten()],
                               'Q': q_vals})  # creating the dataframe to be passed to ggplot
     plot = ggplot(plot_data, aes(x='x', y='y')) + \
-        geom_tile(aes(fill='Q'), show_legend=show_legend) + \
-        geom_text(aes(label='board_state'), color='white', size=30) + \
-        geom_text(aes(label="Q"), show_legend=False) + \
-        scale_fill_gradient2(limits=(min_value, max_value)) + \
-        scale_y_reverse() + \
-        theme(figure_size=(2, 2), axis_text=element_blank(), axis_ticks=element_blank(),
-              strip_text_x=element_blank(), axis_title=element_blank())
+           geom_tile(aes(fill='Q'), show_legend=show_legend) + \
+           geom_text(aes(label='board_state'), color='white', size=30) + \
+           geom_text(aes(label="Q"), show_legend=False) + \
+           scale_fill_gradient2(limits=(min_value, max_value)) + \
+           scale_y_reverse() + \
+           theme(figure_size=(2, 2), axis_text=element_blank(), axis_ticks=element_blank(),
+                 strip_text_x=element_blank(), axis_title=element_blank())
 
     print(plot)
 
