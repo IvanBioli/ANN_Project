@@ -140,6 +140,14 @@ def deep_q_learning_against_opt(env, lr=1e-4, gamma=0.99, num_episodes=20000, ep
             done_history.append(done)
             rewards_history.append(reward)
 
+            # Limit the state and reward history
+            if len(rewards_history) > max_memory_length:
+                del rewards_history[:1]
+                del state_history[:1]
+                del state_next_history[:1]
+                del action_history[:1]
+                del done_history[:1]
+
             state = state_next
             # Update after every update_freq steps and once batch size is over 64
             if frame_count % update_freq == 0 and len(done_history) >= batch_size:
@@ -179,13 +187,6 @@ def deep_q_learning_against_opt(env, lr=1e-4, gamma=0.99, num_episodes=20000, ep
                 grads = tape.gradient(loss, model.trainable_variables)
                 optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
-            # Limit the state and reward history
-            if len(rewards_history) > max_memory_length:
-                del rewards_history[:1]
-                del state_history[:1]
-                del state_next_history[:1]
-                del action_history[:1]
-                del done_history[:1]
             if done:
                 break
 
