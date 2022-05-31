@@ -21,16 +21,15 @@
 
 - [x] **Question 4**
   
-- [ ] **Question 5**
+- [ ] **Question 5** (Fede)
 
 - [x] **Question 6**
 
 - [x] **Question 7** 
 
-- [ ] **Question 8**
- - [ ] Togliere 1000 
+- [ ] **Question 8** (Fede)
  
-- [ ] **Question 9**
+- [ ] **Question 9** (Fede)
 
 - [ ] **Question 10** (Ivan)
 
@@ -40,17 +39,17 @@
 
 - [ ] **Question 12** (Ivan)
   
-- [x] **Question 13** (Rileggere)
+- [x] **Question 13** (Rileggere, entrambi)
 
 - [ ] **Question 14** (Ivan)
 
-- [ ] **Question 15**
+- [ ] **Question 15** (Fede)
 
-- [x] **Question 16** (Rileggere)
+- [x] **Question 16** (Rileggere, entrambi)
 
-- [x] **Question 17** (Rileggere)
+- [x] **Question 17** (Rileggere, entrambi)
 
-- [ ] **Question 18**
+- [x] **Question 18** (controllare che valori vengano sempre gli stessi)
 
 - [ ] **Question 19** (Ivan)
 
