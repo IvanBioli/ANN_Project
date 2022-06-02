@@ -189,6 +189,7 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
     # creating the environment for the two plots
     if 'loss' in keys and 'rewards' in keys:
         fig_1, ax_1 = plt.subplots(1, 2, figsize=(13.4, 4.8), squeeze=False)
+        fig_1.tight_layout(pad = 7.)
         fig_1.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)  # adjust the spacing between subplots
     elif 'loss' in keys or 'rewards' in keys:
         fig_1, ax_1 = plt.subplots(1, 1, squeeze=False)
@@ -220,15 +221,20 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                         ax_1[0, idx].vlines(x=x_1[find_nearest], ymin=min(running_average), ymax=max(running_average),
                                             color=color, ls='--')
                 # Legend and axis names
-                ax_1[0, idx].set_xlabel('Episode')
-                ax_1[0, idx].set_ylabel(key.capitalize())
-                ax_1[0, idx].set_title('Average ' + key + ' during training')
                 if 'loss' in keys and 'rewards' in keys:
+                    ax_1[0, idx].set_xlabel('Episode', fontsize='x-large')
+                    ax_1[0, idx].set_ylabel(key.capitalize(), fontsize='xx-large')
+                    ax_1[0, idx].set_title('Average ' + key + ' during training', fontsize='xx-large')
+                    ax_1[0, idx].tick_params(axis='x', labelsize='x-large')
+                    ax_1[0, idx].tick_params(axis='y', labelsize='x-large')
                     ax_1.flatten()[-2].legend(loc='upper center', bbox_to_anchor=(1.1, -0.15), fancybox=True,
-                                              shadow=True, ncol=5, fontsize=10)  # unique legend for the two plots
+                                              shadow=True, ncol=5, fontsize='xx-large')  # unique legend for the two plots
                 else:
+                    ax_1[0, idx].set_xlabel('Episode')
+                    ax_1[0, idx].set_ylabel(key.capitalize())
+                    ax_1[0, idx].set_title('Average ' + key + ' during training')
                     ax_1[0, idx].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
-                                        fancybox=True, shadow=True, ncol=4, fontsize=10)  # legend outside the plot
+                                        fancybox=True, shadow=True, ncol=4)  # legend outside the plot
 
             # Plot of M_opt and M_rand during training
             if key == 'test_Mopt' or key == 'test_Mrand':
@@ -250,15 +256,21 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                 ax[0].hlines(y=0, xmin=x_performance[0], xmax=x_performance[-1],
                              color='r', linestyle='--')  # plot also the zero line for M_opt (highest M_opt achievable)
                 ax[0].set_ylim([-1, 0.1])
-                ax[0].set_xlabel('Episode')
-                ax[0].set_ylabel('$M_{opt}$')
-                ax[0].set_title('$M_{opt}$ during training')
+                ax[0].set_xlabel('Episode',fontsize='x-large')
+                ax[0].set_ylabel('$M_{opt}$',fontsize='xx-large')
+                ax[0].set_title('$M_{opt}$ during training',fontsize='xx-large')
+                ax[0].locator_params(axis='x', nbins=5)
+                ax[0].tick_params(axis='x', labelsize='x-large')
+                ax[0].tick_params(axis='y', labelsize='x-large')
                 # ax[1].set_ylim(None, 1)
-                ax[1].set_xlabel('Episode')
-                ax[1].set_ylabel('$M_{rand}$')
-                ax[1].set_title('$M_{rand}$ during training')
+                ax[1].set_xlabel('Episode',fontsize='x-large')
+                ax[1].set_ylabel('$M_{rand}$',fontsize='xx-large')
+                ax[1].set_title('$M_{rand}$ during training',fontsize='xx-large')
+                ax[1].locator_params(axis='x', nbins=5)
+                ax[1].tick_params(axis='x', labelsize='x-large')
+                ax[1].tick_params(axis='y', labelsize='x-large')
                 ax.flatten()[-2].legend(loc='upper center', bbox_to_anchor=(1.1, -0.15), fancybox=True, shadow=True,
-                                        ncol=5, fontsize=10)  # unique legend for the two plots
+                                        ncol=5, fontsize='xx-large')  # unique legend for the two plots
 
         print(var_name + " =", var, ": \tM_opt = ", M_opt, "\tM_rand = ", M_rand)  # print the performance
     plt.show()
