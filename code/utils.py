@@ -41,7 +41,7 @@ def measure_performance(player_1, player_2, num_episodes=500):
             try:
                 grid, _, _ = env.step(move, print_grid=False)  # updating the environment
             except ValueError:
-                env.end = True
+                env.end = True  # the current player chose an unavailable action, thus reward = -1
                 if env.current_player == 'X':
                     env.winner = 'O'
                 else:
@@ -72,7 +72,8 @@ def encode_state(state):
     """
     Construct Python bytes containing the raw data bytes in the array representing the state.
     :param state: numpy.ndarray
-    :return: the bytes' representation of the state
+    :return:
+        - the bytes' representation of the state
     """
     return state.tobytes()
 
@@ -281,11 +282,12 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
 
 def epsilon_greedy_action(grid, Q, epsilon):
     """
-    Performs a (1-epsilon)-greedy action starting from a given state and given Q-values
+    Performs an epsilon-greedy action starting from a given state and given Q-values
     :param grid: current state
     :param Q: current Q-values
     :param epsilon: exploration parameter
-    :return: the chosen action
+    :return:
+        - the chosen action
     """
     # get the available positions
     avail_indices, avail_mask = available(grid)
@@ -303,7 +305,7 @@ def epsilon_greedy_action(grid, Q, epsilon):
 
 def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
     """
-    Generates and saves a simil heatmap for the Q-values
+    Generates and saves a heatmap for the Q-values
     :param grid: current state
     :param Q: current Q-values
     :param save: True to save figures
@@ -314,7 +316,7 @@ def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
     text_lut = {0: np.nan, 1: 'X', -1: 'O'}
     avail_indices, avail_mask = available(grid)
     q_vals = np.copy(Q[encode_state(grid)]).round(decimals=2)
-    q_vals[np.logical_not(avail_mask)] = np.nan
+    q_vals[np.logical_not(avail_mask)] = np.nan  # for unavailable actions
     min_value = np.min(q_vals)  # get minimum value for the legend
     max_value = np.max(q_vals)  # get maximum value for the legend
     plot_data = pd.DataFrame({'x': np.tile([1, 2, 3], 3), 'y': np.repeat([1, 2, 3], 3),
@@ -329,7 +331,7 @@ def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
         theme(figure_size=(2, 2), axis_text=element_blank(), axis_ticks=element_blank(),
               strip_text_x=element_blank(), axis_title=element_blank())
 
-    print(plot)
+    print(plot)  # show the plot
 
     # saving onto file
     if save:
@@ -360,15 +362,17 @@ def heatmaps_subplots(grids, Q, save):
 # Network defined in the project description
 def create_q_model():
     """
-
+    Creates a simple MLP with 2 hidden layers of 128 neurons each which takes as input the state representation
+    The activation function at the hidden layers is ReLU while there is linear activation at the output layer
     :return:
+        - the MLP model
     """
     hidden_neurons = 128
     num_actions = 9
     # Inputs of shape = (3, 3, 2)
     inputs = layers.Input(shape=(3, 3, 2,))
 
-    layer0 = layers.Flatten()(inputs)
+    layer0 = layers.Flatten()(inputs)  # flattening
     # Two fully connected hidden layers each with 128 neurons and ReLU activation
     layer1 = layers.Dense(units=hidden_neurons, activation="relu")(layer0)
     layer2 = layers.Dense(units=hidden_neurons, activation="relu")(layer1)
@@ -379,6 +383,14 @@ def create_q_model():
 
 
 def grid_to_tensor(grid, player):
+    """
+    Converts a grid of 'X' and 'O' into the desired input representation of the neural network
+    Creates a tensor of shape (3, 3) for player='X' or 'O' with 1's where the player has played, 0's otherwise.
+    The combination of such tensors for two players is given as input to the network
+    :param grid: grid
+    :param player: the player
+    :return:
+    """
     if player == 'X':
         return tf.convert_to_tensor(np.stack((np.where(grid == 1, 1, 0), np.where(grid == -1, 1, 0)), -1))
     else:
@@ -387,13 +399,13 @@ def grid_to_tensor(grid, player):
 
 def dqn_epsilon_greedy(model, state_tensor, epsilon):
     """
-
-    :param model:
-    :param state_tensor:
-    :param epsilon:
+    Chooses an epsilon-greedy action according to the current model (i.e. estimated Q-values)
+    :param model: the current model
+    :param state_tensor: tensor representation of the current state, compatible with the desired network input
+    :param epsilon: exploration rate
     :return:
+        - the chosen action
     """
-    # num_actions = 9
     # Use epsilon-greedy for exploration
     if epsilon > np.random.uniform(0, 1):
         # Take random action
@@ -429,9 +441,9 @@ def plot_deep_qtable(grid, model, save=False, saving_name=None, show_legend=Fals
         player = 'X'
     tensor_grid = grid_to_tensor(grid, player)
     tensor_grid = tf.expand_dims(tensor_grid, axis=0)
-    q_vals = np.round(model.predict(tensor_grid)[0].astype('float64'), decimals=2)
+    q_vals = np.round(model.predict(tensor_grid)[0].astype('float64'), decimals=2)  # compute output of the network
     avail_indices, avail_mask = available(grid)
-    q_vals[np.logical_not(avail_mask)] = np.nan
+    q_vals[np.logical_not(avail_mask)] = np.nan  # for unavailable actions
     min_value = np.min(q_vals)  # get minimum value for the legend
     max_value = np.max(q_vals)  # get maximum value for the legend
     plot_data = pd.DataFrame({'x': np.tile([1, 2, 3], 3), 'y': np.repeat([1, 2, 3], 3),
@@ -446,7 +458,7 @@ def plot_deep_qtable(grid, model, save=False, saving_name=None, show_legend=Fals
         theme(figure_size=(2, 2), axis_text=element_blank(), axis_ticks=element_blank(),
               strip_text_x=element_blank(), axis_title=element_blank())
 
-    print(plot)
+    print(plot)  # show the plot
 
     # saving onto file
     if save:

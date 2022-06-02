@@ -1,10 +1,4 @@
-import platform
-
 from utils import *
-
-
-def is_cuda_available():
-    return "/GPU:0"
 
 
 class DeepQPlayer:
@@ -51,12 +45,8 @@ def deep_q_learning_against_opt(env, lr=1e-4, gamma=0.99, num_episodes=20000, ep
                                 batch_size=64, max_memory_length=10000, update_target_network=500, update_freq=1):
     """
     This function trains a Deep Q-agent to play Tic-Tac-Toe against the optimal strategy
-    :param update_freq: update frequency (frames)
-    :param update_target_network: how often to update the target network (num games)
-    :param max_memory_length: replay buffer size
-    :param batch_size: batch size for the sampling when updating
-    :param lr: learning rate
     :param env: the environment
+    :param lr: learning rate
     :param gamma: discount factor
     :param num_episodes: number of training episodes
     :param epsilon_exploration: exploration rate
@@ -64,7 +54,13 @@ def deep_q_learning_against_opt(env, lr=1e-4, gamma=0.99, num_episodes=20000, ep
     :param epsilon_opt: degree of greediness of the optimal player
     :param test_freq: test frequency
     :param verbose: if True prints the statistics during training
+    :param update_freq: update frequency (frames)
+    :param update_target_network: how often to update the target network (num games)
+    :param max_memory_length: replay buffer size
+    :param batch_size: batch size for the sampling when updating
     :return:
+        - model: the model after training with DQN (i.e. the weights and biases of the MLP)
+        - stats: dictionary of statistics collected during training
     """
     num_actions = 9
 
@@ -76,19 +72,20 @@ def deep_q_learning_against_opt(env, lr=1e-4, gamma=0.99, num_episodes=20000, ep
     done_history = []
     frame_count = 0
 
-    model = create_q_model()
-    model_target = create_q_model()
+    model = create_q_model()  # create network
+    model_target = create_q_model()  # create target network
 
     # Adam optimizer
     optimizer = keras.optimizers.Adam(learning_rate=lr)
-    # Using huber loss for stability
+    # Using huber loss for stability (\delta = 1 by default)
     loss_function = keras.losses.Huber()
 
     turns = np.array(['X', 'O'])
     # Stats of training
-    episode_rewards = np.empty(num_episodes)
-    loss_train = 1e50 * np.ones(num_episodes)
+    episode_rewards = np.empty(num_episodes)  # dummy initialization
+    loss_train = 1e50 * np.ones(num_episodes)  # dummy initialization
     if test_freq is not None:
+        # measure the performance against Opt(0) and Opt(1) for the initial model and weights initialization (baseline)
         episode_Mopt = [measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))]
         episode_Mrand = [measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=1.))]
     else:
@@ -108,9 +105,8 @@ def deep_q_learning_against_opt(env, lr=1e-4, gamma=0.99, num_episodes=20000, ep
         if env.current_player == player_opt.player:
             move = player_opt.act(state)
             state, _, _ = env.step(move)
-        # state = np.array(state)
+
         for i in range(num_actions):
-            # frame_count += 1
 
             state_tensor = grid_to_tensor(state, my_player)
             state_tensor = tf.expand_dims(state_tensor, axis=0)
@@ -121,15 +117,15 @@ def deep_q_learning_against_opt(env, lr=1e-4, gamma=0.99, num_episodes=20000, ep
             try:
                 state_adv, _, _ = env.step(action)
             except ValueError:
-                env.end = True
+                env.end = True  # the agent chose an unavailable action, thus reward = -1
                 env.winner = player_opt.player
             if not env.end:
                 action_adv = player_opt.act(state_adv)
                 state_next, _, _ = env.step(action_adv)
             else:
-                state_next = state  # better choice of this update
+                state_next = state  # not used anyway if the game has ended
 
-            reward = env.reward(player=my_player)
+            reward = env.reward(player=my_player)  # reward
             done = env.end
 
             frame_count += 1
@@ -149,7 +145,7 @@ def deep_q_learning_against_opt(env, lr=1e-4, gamma=0.99, num_episodes=20000, ep
                 del done_history[:1]
 
             state = state_next
-            # Update after every update_freq steps and once batch size is over 64
+            # Update after every update_freq steps and there are enough samples in the replay buffer
             if frame_count % update_freq == 0 and len(done_history) >= batch_size:
                 # Get indices of samples for replay buffers
                 indices = np.random.choice(range(len(done_history)), size=batch_size)
@@ -166,10 +162,7 @@ def deep_q_learning_against_opt(env, lr=1e-4, gamma=0.99, num_episodes=20000, ep
                 with tf.device("/device:cpu:0"):
                     future_rewards = model_target(state_next_sample, training=False)
                     # Q value = reward + discount factor * expected future reward
-                    updated_q_values = rewards_sample + gamma * tf.reduce_max(future_rewards, axis=1) * (1 - done_sample)
-
-                # If final frame set the last value to -1
-                # updated_q_values = updated_q_values * (1 - done_sample) #- done_sample
+                    updated_q_values = rewards_sample + gamma * tf.reduce_max(future_rewards, axis=1) * (1 - done_sample)  # targets
 
                 # Create a mask as to calculate the loss on the updated Q-values
                 masks = tf.one_hot(action_sample, num_actions)
@@ -194,11 +187,11 @@ def deep_q_learning_against_opt(env, lr=1e-4, gamma=0.99, num_episodes=20000, ep
             # update the target network with new weights
             if verbose:
                 print("******* Updating target network *******")
-            model_target.set_weights(model.get_weights())
+            model_target.set_weights(model.get_weights())  # set new weights of the target net
 
-        episode_rewards[itr] = env.reward(player=my_player)
+        episode_rewards[itr] = env.reward(player=my_player)  # reward of the current episode
         if len(done_history) >= batch_size:
-            loss_train[itr] = loss
+            loss_train[itr] = loss  # get training loss
 
         # Testing the performance
         if (test_freq is not None) and ((itr+1) % test_freq == 0):
@@ -224,20 +217,22 @@ def deep_q_learning_self_practice(env, lr=1e-4, gamma=0.99, num_episodes=20000, 
                                   batch_size=64, max_memory_length=10000, update_target_network=500, update_freq=1):
     """
 
-    This function learns an agent to play Tic-Tac-Toe by training it with DQN against itself in a supervised fashion
-    :param update_freq: update frequency (frames)
-    :param update_target_network: how often to update the target network (num games)
-    :param max_memory_length: replay buffer size
-    :param batch_size: batch size for the sampling when updating
-    :param lr: learning rate
+    This function learns an agent to play Tic-Tac-Toe by training it with DQN against itself in an unsupervised fashion
     :param env: the environment
+    :param lr: learning rate
     :param gamma: discount factor
     :param num_episodes: number of training episodes
     :param epsilon_exploration: exploration rate
     :param epsilon_exploration_rule: rule for decaying exploration (if not None)
     :param test_freq: test frequency
     :param verbose: if True prints the statistics during training
+    :param update_freq: update frequency (frames)
+    :param update_target_network: how often to update the target network (num games)
+    :param max_memory_length: replay buffer size
+    :param batch_size: batch size for the sampling when updating
     :return:
+        - model: the model after training with DQN (i.e. the weights and biases of the MLP)
+        - stats: dictionary of statistics collected during training
     """
     num_actions = 9
 
@@ -249,19 +244,20 @@ def deep_q_learning_self_practice(env, lr=1e-4, gamma=0.99, num_episodes=20000, 
     done_history = []
     frame_count = 0
 
-    model = create_q_model()
-    model_target = create_q_model()
+    model = create_q_model()  # create network
+    model_target = create_q_model()  # create target network
 
     # Adam optimizer
     optimizer = keras.optimizers.Adam(learning_rate=lr)
-    # Using huber loss for stability
+    # Using huber loss for stability (\delta = 1 by default)
     loss_function = keras.losses.Huber()
 
     turns = np.array(['X', 'O'])
     # Stats of training
-    episode_rewards = np.empty(num_episodes)
-    loss_train = 1e50 * np.ones(num_episodes)
+    episode_rewards = np.empty(num_episodes)  # dummy initialization
+    loss_train = 1e50 * np.ones(num_episodes)  # dummy initialization
     if test_freq is not None:
+        # measure the performance against Opt(0) and Opt(1) for the initial model and weights initialization (baseline)
         episode_Mopt = [measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))]
         episode_Mrand = [measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=1.))]
     else:
@@ -294,7 +290,7 @@ def deep_q_learning_self_practice(env, lr=1e-4, gamma=0.99, num_episodes=20000, 
                 next_state, _, _ = env.step(action_adv)
                 # next_state_tensor = grid_to_tensor(next_state, adv_player)
             except ValueError:
-                env.end = True
+                env.end = True  # the agent chose an unavailable action, thus reward = -1
                 env.winner = curr_player
             done_adv = env.end
             if done_adv:  # The adversarial won the game or chose the wrong move
@@ -325,7 +321,7 @@ def deep_q_learning_self_practice(env, lr=1e-4, gamma=0.99, num_episodes=20000, 
             state = state_adv
             state_adv = next_state
 
-            # Update after every update_freq steps and once batch size is over 64
+            # Update after every update_freq steps and when enough samples are in the replay buffer
             frame_count += 1
             if frame_count % update_freq == 0 and len(done_history) >= batch_size:
                 # Get indices of samples for replay buffers
@@ -343,10 +339,7 @@ def deep_q_learning_self_practice(env, lr=1e-4, gamma=0.99, num_episodes=20000, 
                 with tf.device("/device:cpu:0"):
                     future_rewards = model_target(state_next_sample, training=False)
                     # Q value = reward + discount factor * expected future reward
-                    updated_q_values = rewards_sample + gamma * tf.reduce_max(future_rewards, axis=1) * (1 - done_sample)
-
-                # If final frame set the last value to -1
-                # updated_q_values = updated_q_values * (1 - done_sample) #- done_sample
+                    updated_q_values = rewards_sample + gamma * tf.reduce_max(future_rewards, axis=1) * (1 - done_sample)  # targets
 
                 # Create a mask as to calculate the loss on the updated Q-values
                 masks = tf.one_hot(action_sample, num_actions)
@@ -386,11 +379,11 @@ def deep_q_learning_self_practice(env, lr=1e-4, gamma=0.99, num_episodes=20000, 
             # update the target network with new weights
             if verbose:
                 print("******* Updating target network *******")
-            model_target.set_weights(model.get_weights())
+            model_target.set_weights(model.get_weights())  # set new weights of the target net
 
-        episode_rewards[itr] = env.reward(player=my_player)
+        episode_rewards[itr] = env.reward(player=my_player)  # reward
         if len(done_history) >= batch_size:
-            loss_train[itr] = loss
+            loss_train[itr] = loss  # training loss
 
         # Testing the performance
         if (test_freq is not None) and ((itr+1) % test_freq == 0):
@@ -451,7 +444,7 @@ def deep_train_avg(var_name, var_values, deep_q_learning_params_list, num_avg=10
             start = time.time()
             # get the dictionary of the current parameters for the Q-learning
             deep_q_learning_params = deep_q_learning_params_list[idx]
-            # perform Q-learning with the current parameters
+            # perform Deep Q-learning with the current parameters
             model, stats = deep_q_learning(**deep_q_learning_params)
             # measure the final performance
             M_opt = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))

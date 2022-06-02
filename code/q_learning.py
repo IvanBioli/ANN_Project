@@ -1,6 +1,7 @@
 from utils import *
 from deep_q_learning import *
 
+
 class QPlayer:
     """
     Class to implement a player that plays according to the greedy policy defined
@@ -93,20 +94,20 @@ def q_learning_against_opt(env, alpha=0.05, gamma=0.99, num_episodes=20000, epsi
             if not env.end:
                 move = player_opt.act(next_state)   # Adversarial move
                 next_state, _, _ = env.step(move)
-            # Sarsa update rule
+            # Q-Learning update rule
             reward = env.reward(player=my_player)
             if not env.end:
                 next_action = epsilon_greedy_action(next_state, Q, epsilon_exploration_rule(itr+1))
                 next_greedy_action = epsilon_greedy_action(next_state, Q, 0)
                 target = reward + gamma * Q[encode_state(next_state)][next_greedy_action]
             else:
-                target = reward
-            Q[encode_state(state)][action] += alpha * (target - Q[encode_state(state)][action])
+                target = reward  # the fictitious Q-value of Q(next_state)[\cdot] is zero
+            Q[encode_state(state)][action] += alpha * (target - Q[encode_state(state)][action])  # update Q-value
             # Preparing for the next move
             state = next_state
             action = next_action
 
-        episode_rewards[itr] = env.reward(player=my_player)
+        episode_rewards[itr] = env.reward(player=my_player)  # reward of the current episode
 
         # Testing the performance
         if (test_freq is not None) and ((itr+1) % test_freq == 0):
@@ -168,28 +169,27 @@ def q_learning_self_practice(env, alpha=0.05, gamma=0.99, num_episodes=20000, ep
             return epsilon_exploration  # if no exploration rule is given, it is the constant one
 
     for itr in range(num_episodes):
-        my_player = turns[itr % 2]
+        my_player = turns[itr % 2]  # switch every game the first turn
         env.reset()
         # First two turns outside the while loop (at least five turns are played)
-        state, _, _ = env.observe()  # my state
-        action = epsilon_greedy_action(state, Q, epsilon_exploration_rule(itr+1))  # my first action
+        state, _, _ = env.observe()  # agent's first state
+        action = epsilon_greedy_action(state, Q, epsilon_exploration_rule(itr+1))  # agent's first action
         state_adv, _, _ = env.step(action)  # the adversary first state
         action_adv = epsilon_greedy_action(state_adv, Q, epsilon_exploration_rule(itr + 1))  # adversary act
         while not env.end:
             state_adv, _, _ = env.observe()
             next_state, _, _ = env.step(action_adv)
-            reward = env.reward(player=env.current_player)
+            reward = env.reward(player=env.current_player)  # reward of the current player
             if not env.end:
-                assert reward == 0
                 next_action = epsilon_greedy_action(next_state, Q, epsilon_exploration_rule(itr+1))
                 next_greedy_action = epsilon_greedy_action(next_state, Q, 0)
-                target = reward + gamma * Q[encode_state(next_state)][next_greedy_action]
+                target = reward + gamma * Q[encode_state(next_state)][next_greedy_action]  # set target
             else:
-                assert reward <= 0
-                target = reward
+                target = reward  # fictitious Q-value equal to zero for next_state
+                # adversarial update
                 Q[encode_state(state_adv)][action_adv] += alpha * (-reward - Q[encode_state(state_adv)][action_adv])
 
-            Q[encode_state(state)][action] += alpha * (target - Q[encode_state(state)][action])
+            Q[encode_state(state)][action] += alpha * (target - Q[encode_state(state)][action])  # update
 
             action = action_adv
             state = state_adv
@@ -254,13 +254,15 @@ def train_avg(var_name, var_values, q_learning_params_list, dqn=False, num_avg=1
             # get the dictionary of the current parameters for the Q-learning
             q_learning_params = q_learning_params_list[idx]
             if not dqn:
-                # perform Q-learning with the current parameters
+                # train a Q-learning agent with the current parameters
                 Q, stats = q_learning(**q_learning_params)
                 # measure the final performance
                 M_opt = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=0.))
                 M_rand = measure_performance(QPlayer(Q=Q), OptimalPlayer(epsilon=1.))
             else:
+                # train a Deep Q-Learning agent with the current parameters
                 model, stats = deep_q_learning(**q_learning_params)
+                # measure the final performance
                 M_opt = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))
                 M_rand = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=1.))
             print("M_opt =", M_opt)
