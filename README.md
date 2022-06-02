@@ -10,6 +10,7 @@
 - [ ] Preparare file separato con conteggio parole (Fede)
 - [x] Legenda unica per plot rewards e loss?
 - [ ] Come facciamo per mostrare che va meglio alpha = 0.25?
+- [ ] Teniamo train_avg con dqn parametro o deep_train_avg? Funzionano entrambe
 
 ## QUESTIONS
 ### 2. Q-Learning
