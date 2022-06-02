@@ -1,4 +1,71 @@
+from tqdm import tqdm
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
 from utils import *
+
+# Network defined in the project description
+def create_q_model():
+    """
+    Creates a simple MLP with 2 hidden layers of 128 neurons each which takes as input the state representation
+    The activation function at the hidden layers is ReLU while there is linear activation at the output layer
+    :return:
+        - the MLP model
+    """
+    hidden_neurons = 128
+    num_actions = 9
+    # Inputs of shape = (3, 3, 2)
+    inputs = layers.Input(shape=(3, 3, 2,))
+
+    layer0 = layers.Flatten()(inputs)  # flattening
+    # Two fully connected hidden layers each with 128 neurons and ReLU activation
+    layer1 = layers.Dense(units=hidden_neurons, activation="relu")(layer0)
+    layer2 = layers.Dense(units=hidden_neurons, activation="relu")(layer1)
+    # Output with linear activation function
+    action = layers.Dense(num_actions, activation="linear")(layer2)
+
+    return keras.Model(inputs=inputs, outputs=action)
+
+
+def grid_to_tensor(grid, player):
+    """
+    Converts a grid of 'X' and 'O' into the desired input representation of the neural network
+    Creates a tensor of shape (3, 3) for player='X' or 'O' with 1's where the player has played, 0's otherwise.
+    The combination of such tensors for two players is given as input to the network
+    :param grid: grid
+    :param player: the player
+    :return:
+    """
+    if player == 'X':
+        return tf.convert_to_tensor(np.stack((np.where(grid == 1, 1, 0), np.where(grid == -1, 1, 0)), -1))
+    else:
+        return tf.convert_to_tensor(np.stack((np.where(grid == -1, 1, 0), np.where(grid == 1, 1, 0)), -1))
+
+
+def dqn_epsilon_greedy(model, state_tensor, epsilon):
+    """
+    Chooses an epsilon-greedy action according to the current model (i.e. estimated Q-values)
+    :param model: the current model
+    :param state_tensor: tensor representation of the current state, compatible with the desired network input
+    :param epsilon: exploration rate
+    :return:
+        - the chosen action
+    """
+    # Use epsilon-greedy for exploration
+    if epsilon > np.random.uniform(0, 1):
+        # Take random action
+        avail_indices = np.argwhere(state_tensor[0, :, :, 0].numpy().flatten() ==
+                                    state_tensor[0, :, :, 1].numpy().flatten()).flatten()
+        return int(np.random.choice(avail_indices))
+    else:
+        # Predict action Q-values
+        # From environment state
+        action_probs = model(state_tensor, training=False).numpy().flatten()
+        # Take best action
+        q_max = np.amax(action_probs)
+        max_indices = np.argwhere(action_probs == q_max).flatten()
+        return int(np.random.choice(max_indices))  # ties are split randomly
 
 
 class DeepQPlayer:

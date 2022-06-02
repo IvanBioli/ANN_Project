@@ -69,7 +69,7 @@ model, stats = deep_q_learning(env, alpha=alpha, gamma=gamma, epsilon_exploratio
 - [ ] Rinominare notebook definitivo
 - [ ] Aggiungere requirements.txt per sns e altri pacchetti aggiunti, preparare bene ReadMe (Fede)
 - [x] Trovare modo per aggiungere legenda dopo a tutti i plot (altrimenti bisogna salvare a mano tutto)
-- [ ] Rivedere le figsize (Ivan)
+- [x] Rivedere le figsize (Ivan)
 - [ ] Rileggere/completare introduzione nel report
 - [x] Merge finale dei due notebook per riproducibilità
 - [x] Tenere solamente dizionari finali e ultima run del notebook finale per controllare tutto (Ivan)
@@ -77,8 +77,9 @@ model, stats = deep_q_learning(env, alpha=alpha, gamma=gamma, epsilon_exploratio
 - [x] Spiegare ulteriormente oscillazioni di M_opt
 - [ ] Preparare file separato con conteggio parole (Fede)
 - [x] Legenda unica per plot rewards e loss?
-- [ ] Come facciamo per mostrare che va meglio alpha = 0.25? (Ivan: NON LO FACCIAMO VEDERE)
-- [ ] Teniamo train_avg con dqn parametro o deep_train_avg? Funzionano entrambe (Ivan: unica funzione con parametro meglio)
+- [x] Come facciamo per mostrare che va meglio alpha = 0.25? (Ivan: NON LO FACCIAMO VEDERE)
+- [x] Teniamo train_avg con dqn parametro o deep_train_avg? Funzionano entrambe (Ivan: unica funzione con parametro meglio)
+- [x] Riorganizzare codice (Ivan)
 
 ## QUESTIONS
 ### 2. Q-Learning
