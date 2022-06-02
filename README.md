@@ -1,4 +1,20 @@
 # CS-456 Artificial Neural Networks, Mini-project 1
+This repository contains the implementation of Q-Learning and Deep Q-Learning algorithms for training an agent to play Tic-Tac-Toe.
+
+## Requirements
+
+## Reproducibility
+
+## Report 
+
+## Remarks
+
+
+## Authors
+- Federico Betti
+- Ivan Bioli
+
+## REMAINING TO DO
 - [ ] Aggiungere requirements.txt per sns e altri pacchetti aggiunti, preparare bene ReadMe (Fede)
 - [x] Trovare modo per aggiungere legenda dopo a tutti i plot (altrimenti bisogna salvare a mano tutto)
 - [ ] Rivedere le figsize (Ivan)
@@ -64,7 +80,3 @@
 
 - [ ] **Question 21** (Entrambi scrivono una brutta su Overleaf)
   - [ ] Comparison (<300 parole)
-
-## Authors
-- Federico Betti
-- Ivan Bioli
