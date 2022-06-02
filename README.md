@@ -1,16 +1,8 @@
 # CS-456 Artificial Neural Networks, Mini-project 1
 This repository contains the implementation of Q-Learning and Deep Q-Learning algorithms for training an agent to play Tic-Tac-Toe.
 
-## Setup
-
-All instructions are relative to the root directory of the repository.
-
-### Installation
-1. Clone the following repository:
-```python
-git clone --recursive https://github.com/IvanBioli/ANN_Project
-``` 
-1. Detailed requirements for the needed packages are available in requirements.txt. To install the needed packages, please run:
+## Requirements
+Detailed requirements for the needed packages are available in requirements.txt. To install the needed packages, please run:
 ```
 pip install -r requirements.txt
 ```
