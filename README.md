@@ -28,7 +28,11 @@ train = True
 load = not train
 ```
 
-### Example of usage for the Q-Learning and DQN algorithms
+For the questions concerning the optimal values of the performance measures, we both show a sample run for the optimal values of the parameter and then we load again the results from dictionaries where the results presented in the report are stored.
+
+
+
+### Example of usage
 - Q-Learning training
 ```python
 env = TictactoeEnv()  # set the environment
@@ -51,9 +55,7 @@ against_opt = True  # or self_practice = True, depending on the desired training
 model, stats = deep_q_learning(env, alpha=alpha, gamma=gamma, epsilon_exploration=epsilon_exploration, test_freq=test_freq, against_opt=against_opt)  # return model network and training stats
 ```
 
-For the questions in which the optimal values of the performance measures, we both show a sample run for the optimal values of the parameter and then we load again the results from dictionaries where the results presented in the report are stored.
-
-## Report 
+## Report
 
 ## Remarks
 
@@ -62,6 +64,9 @@ For the questions in which the optimal values of the performance measures, we bo
 - Ivan Bioli
 
 ## REMAINING TO DO
+- [ ] Aggiungere report nella folder
+- [ ] Sistemare requirements
+- [ ] Rinominare notebook definitivo
 - [ ] Aggiungere requirements.txt per sns e altri pacchetti aggiunti, preparare bene ReadMe (Fede)
 - [x] Trovare modo per aggiungere legenda dopo a tutti i plot (altrimenti bisogna salvare a mano tutto)
 - [ ] Rivedere le figsize (Ivan)
@@ -119,11 +124,7 @@ For the questions in which the optimal values of the performance measures, we bo
 - [x] **Question 19** (Rileggere)
 
 ### 4. Comparing Q-Learning with Deep Q-Learning
-- [ ] **Question 20** (Fede)
-  - [ ] Tabella con: 
-    - [ ] migliori performance
-    - [ ] training time 
-    - [ ] Implementare training time computation
+- [x] **Question 20** (Fede)
 
 - [ ] **Question 21** (Entrambi scrivono una brutta su Overleaf)
   - [ ] Comparison (<300 parole)
