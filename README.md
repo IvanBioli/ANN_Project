@@ -2,9 +2,36 @@
 This repository contains the implementation of Q-Learning and Deep Q-Learning algorithms for training an agent to play Tic-Tac-Toe.
 
 ## Requirements
+Detailed requirements are available in requirements.txt.
+## Installation
+- Clone the following repository: git clone --recursive https://github.com/IvanBioli/ANN_Project
+- Go to directory and install the requirements: pip install -r requirements.txt
+## Example of usage
+- Q-Learning training
+```python
+env = TictactoeEnv()  # set the environment
+alpha = 0.05  # learning rate
+gamma = 0.99  # discount factor
+epsilon_exploration = 0.1  # exploration rate
+test_freq = 250  # testing frequency during training
+against_opt = True  # or self_practice = True, depending on the desired training method (note that one of the two must be set, otherwise ValueError is raised)
+Q, stats = q_learning(env, alpha=alpha, gamma=gamma, epsilon_exploration=epsilon_exploration, test_freq=test_freq, against_opt=against_opt)  # return Q-values and training stats
+```
 
-## Reproducibility
+- Deep Q-Learning training
 
+```python
+env = TictactoeEnv()  # set the environment
+alpha = 1e-4  # learning rate
+gamma = 0.99  # discount factor
+epsilon_exploration = 0.1  # exploration rate
+test_freq = 250  # testing frequency during training
+against_opt = True  # or self_practice = True, depending on the desired training method (note that one of the two must be set, otherwise ValueError is raised)
+model, stats = deep_q_learning(env, alpha=alpha, gamma=gamma, epsilon_exploration=epsilon_exploration, test_freq=test_freq, against_opt=against_opt)  # return model network and training stats
+```
+
+## Reproducing the results
+We provide a unique notebook containing the answers to all the questions of the project (except for Question 6). The notebook should be used as follows: in the very first cells, setting Load=True and then running all the cells will produce for most questions both the plot presented in the report (see below) and a second plot showing all the experimented values. Since the results presented in the report are For 
 ## Report 
 
 ## Remarks
