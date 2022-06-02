@@ -1,43 +1,30 @@
 # CS-456 Artificial Neural Networks, Mini-project 1
 This repository contains the implementation of Q-Learning and Deep Q-Learning algorithms for training an agent to play Tic-Tac-Toe.
 
-## Requirements
-Detailed requirements are available in requirements.txt.
-## Installation
-- Clone the following repository:
+## Setup
+
+All instructions are relative to the root directory of the repository.
+
+### Installation
+1. Clone the following repository:
 ```python
 git clone --recursive https://github.com/IvanBioli/ANN_Project
 ``` 
-- Go to directory and install the requirements:
-```python
+1. Detailed requirements for the needed packages are available in requirements.txt. To install the needed packages, please run:
+```
 pip install -r requirements.txt
 ```
 
-## Example of usage
-- Q-Learning training
-```python
-env = TictactoeEnv()  # set the environment
-alpha = 0.05  # learning rate
-gamma = 0.99  # discount factor
-epsilon_exploration = 0.1  # exploration rate
-test_freq = 250  # testing frequency during training
-against_opt = True  # or self_practice = True, depending on the desired training method (note that one of the two must be set, otherwise ValueError is raised)
-Q, stats = q_learning(env, alpha=alpha, gamma=gamma, epsilon_exploration=epsilon_exploration, test_freq=test_freq, against_opt=against_opt)  # return Q-values and training stats
-```
+## Repository Description
+* `figures` - description
+* `report` - description
+* `results` - description
+* `code` - description
+  * `file1.py` - description
+  * `file2.ipynb` - description
 
-- Deep Q-Learning training
-
-```python
-env = TictactoeEnv()  # set the environment
-alpha = 1e-4  # learning rate
-gamma = 0.99  # discount factor
-epsilon_exploration = 0.1  # exploration rate
-test_freq = 250  # testing frequency during training
-against_opt = True  # or self_practice = True, depending on the desired training method (note that one of the two must be set, otherwise ValueError is raised)
-model, stats = deep_q_learning(env, alpha=alpha, gamma=gamma, epsilon_exploration=epsilon_exploration, test_freq=test_freq, against_opt=against_opt)  # return model network and training stats
-```
-
-## Reproducing the results
+## Usage
+### Reproducing the results in the report
 We provide a unique notebook containing the answers to all the questions of the project (except for Question 6). The notebook should be used as follows: concerning the plots presented in the report (see below), setting in the very first cells
 ```python
 Train = False
@@ -53,12 +40,34 @@ and in the following cell, we recommend for computational time reasons setting
 num_avg = 1
 ```
 
+### Example of usage for the Q-Learning and DQN algorithms
+- Q-Learning training
+```python
+env = TictactoeEnv()  # set the environment
+alpha = 0.05  # learning rate
+gamma = 0.99  # discount factor
+epsilon_exploration = 0.1  # exploration rate
+test_freq = 250  # testing frequency during training
+against_opt = True  # or self_practice = True, depending on the desired training method (note that one of the two must be set, otherwise ValueError is raised)
+Q, stats = q_learning(env, alpha=alpha, gamma=gamma, epsilon_exploration=epsilon_exploration, test_freq=test_freq, against_opt=against_opt)  # return Q-values and training stats
+```
+
+- Deep Q-Learning training
+```python
+env = TictactoeEnv()  # set the environment
+alpha = 1e-4  # learning rate
+gamma = 0.99  # discount factor
+epsilon_exploration = 0.1  # exploration rate
+test_freq = 250  # testing frequency during training
+against_opt = True  # or self_practice = True, depending on the desired training method (note that one of the two must be set, otherwise ValueError is raised)
+model, stats = deep_q_learning(env, alpha=alpha, gamma=gamma, epsilon_exploration=epsilon_exploration, test_freq=test_freq, against_opt=against_opt)  # return model network and training stats
+```
+
 For the questions in which the optimal values of the performance measures, we both show a sample run for the optimal values of the parameter and then we load again the results from dictionaries where the results presented in the report are stored.
 
 ## Report 
 
 ## Remarks
-
 
 ## Authors
 - Federico Betti
