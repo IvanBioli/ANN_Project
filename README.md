@@ -4,8 +4,15 @@ This repository contains the implementation of Q-Learning and Deep Q-Learning al
 ## Requirements
 Detailed requirements are available in requirements.txt.
 ## Installation
-- Clone the following repository: git clone --recursive https://github.com/IvanBioli/ANN_Project
-- Go to directory and install the requirements: pip install -r requirements.txt
+- Clone the following repository:
+```python
+git clone --recursive https://github.com/IvanBioli/ANN_Project
+``` 
+- Go to directory and install the requirements:
+```python
+pip install -r requirements.txt
+```
+
 ## Example of usage
 - Q-Learning training
 ```python
@@ -31,7 +38,23 @@ model, stats = deep_q_learning(env, alpha=alpha, gamma=gamma, epsilon_exploratio
 ```
 
 ## Reproducing the results
-We provide a unique notebook containing the answers to all the questions of the project (except for Question 6). The notebook should be used as follows: in the very first cells, setting Load=True and then running all the cells will produce for most questions both the plot presented in the report (see below) and a second plot showing all the experimented values. Since the results presented in the report are For 
+We provide a unique notebook containing the answers to all the questions of the project (except for Question 6). The notebook should be used as follows: concerning the plots presented in the report (see below), setting in the very first cells
+```python
+Train = False
+Load = not Train
+```
+will load direcly our results from the provided dictionaries in the folder results and will therefore show for most questions both the plot presented in the report (see below) and a second plot showing all the experimented values. On the other hand, since our results are obtained as an average over 10 training runs for Q-Learning and 4 runs for Deep Q-Learning, if one wants to perform training simply set
+```python
+Train = True
+Load = not Train
+```
+and in the following cell, we recommend for computational time reasons setting
+```python
+num_avg = 1
+```
+
+For the questions in which the optimal values of the performance measures, we both show a sample run for the optimal values of the parameter and then we load again the results from dictionaries where the results presented in the report are stored.
+
 ## Report 
 
 ## Remarks
