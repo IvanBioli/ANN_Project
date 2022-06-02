@@ -74,7 +74,6 @@ def encode_state(state):
     :param state: numpy.ndarray
     :return: the bytes' representation of the state
     """
-    #assert(state.shape == (3,3))
     return state.tobytes()
 
 
@@ -138,8 +137,8 @@ def stats_averaging(stats_dict_list, windows_size=250):
             if key == 'rewards' or key == 'loss':
                 # for the rewards, compute the mean by calling the running average performance on each dictionary
                 stats[key] = np.median([running_average(stats_dict[var][0][key],
-                                                      windows_size=windows_size, no_idx=True)
-                                      for stats_dict in stats_dict_list], axis=0)
+                                                        windows_size=windows_size, no_idx=True)
+                                        for stats_dict in stats_dict_list], axis=0)
                 # compute the 25 and 75 percentiles of the values obtained in the training runs
                 stats[key + '_25'] = np.percentile([running_average(stats_dict[var][0][key],
                                                                     windows_size=windows_size, no_idx=True)
@@ -217,17 +216,18 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                     if np.abs(x_1 - 7/8 * var).min() < windows_size:
                         # no plot if the nearest value is too far away (think of n_star = 40000)
                         ax_1[0, idx].plot(x_1[find_nearest], running_average[find_nearest], marker="o", color=color)
-                        ax_1[0, idx].vlines(x=x_1[find_nearest], ymin=min(running_average), ymax=max(running_average), color=color, ls='--')
+                        ax_1[0, idx].vlines(x=x_1[find_nearest], ymin=min(running_average), ymax=max(running_average),
+                                            color=color, ls='--')
                 # Legend and axis names
                 ax_1[0, idx].set_xlabel('Episode')
                 ax_1[0, idx].set_ylabel(key.capitalize())
                 ax_1[0, idx].set_title('Average ' + key + ' during training')
                 if 'loss' in keys and 'rewards' in keys:
-                    ax_1.flatten()[-2].legend(loc='upper center', bbox_to_anchor=(1.1, -0.15), fancybox=True, shadow=True,
-                                            ncol=5, fontsize=10)  # unique legend for the two plots
+                    ax_1.flatten()[-2].legend(loc='upper center', bbox_to_anchor=(1.1, -0.15), fancybox=True,
+                                              shadow=True, ncol=5, fontsize=10)  # unique legend for the two plots
                 else:
                     ax_1[0, idx].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
-                                    fancybox=True, shadow=True, ncol=4, fontsize=10)  # legend below outside the plot
+                                        fancybox=True, shadow=True, ncol=4, fontsize=10)  # legend outside the plot
 
             # Plot of M_opt and M_rand during training
             if key == 'test_Mopt' or key == 'test_Mrand':
@@ -241,7 +241,8 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                     find_nearest = np.abs(x_performance-7/8 * var).argmin()
                     if np.abs(x_performance - 7/8 * var).min() < windows_size:
                         ax[idx].plot(x_performance[find_nearest], stats[key][find_nearest], marker="o", color=color)
-                        ax[idx].vlines(x=x_performance[find_nearest], ymin=min(stats[key]), ymax=max(stats[key]), color=color, ls='--')
+                        ax[idx].vlines(x=x_performance[find_nearest], ymin=min(stats[key]), ymax=max(stats[key]),
+                                       color=color, ls='--')
                 if perc:
                     ax[idx].fill_between(x_performance, stats[key+'_25'], stats[key+'_75'], alpha=0.2)
                 # Legend and axis names
@@ -251,7 +252,7 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                 ax[0].set_xlabel('Episode')
                 ax[0].set_ylabel('$M_{opt}$')
                 ax[0].set_title('$M_{opt}$ during training')
-                #ax[1].set_ylim(None, 1)
+                # ax[1].set_ylim(None, 1)
                 ax[1].set_xlabel('Episode')
                 ax[1].set_ylabel('$M_{rand}$')
                 ax[1].set_title('$M_{rand}$ during training')
@@ -396,7 +397,8 @@ def dqn_epsilon_greedy(model, state_tensor, epsilon):
     # Use epsilon-greedy for exploration
     if epsilon > np.random.uniform(0, 1):
         # Take random action
-        avail_indices = np.argwhere(state_tensor[0, :, :, 0].numpy().flatten() ==  state_tensor[0, :, :, 1].numpy().flatten()).flatten()
+        avail_indices = np.argwhere(state_tensor[0, :, :, 0].numpy().flatten() ==
+                                    state_tensor[0, :, :, 1].numpy().flatten()).flatten()
         return int(np.random.choice(avail_indices))
     else:
         # Predict action Q-values
@@ -427,7 +429,7 @@ def plot_deep_qtable(grid, model, save=False, saving_name=None, show_legend=Fals
         player = 'X'
     tensor_grid = grid_to_tensor(grid, player)
     tensor_grid = tf.expand_dims(tensor_grid, axis=0)
-    q_vals = np.round(model.predict(tensor_grid)[0].astype('float64'),decimals=2)
+    q_vals = np.round(model.predict(tensor_grid)[0].astype('float64'), decimals=2)
     avail_indices, avail_mask = available(grid)
     q_vals[np.logical_not(avail_mask)] = np.nan
     min_value = np.min(q_vals)  # get minimum value for the legend
@@ -436,13 +438,13 @@ def plot_deep_qtable(grid, model, save=False, saving_name=None, show_legend=Fals
                               'board_state': [text_lut[val] for val in grid.flatten()],
                               'Q': q_vals})  # creating the dataframe to be passed to ggplot
     plot = ggplot(plot_data, aes(x='x', y='y')) + \
-           geom_tile(aes(fill='Q'), show_legend=show_legend) + \
-           geom_text(aes(label='board_state'), color='white', size=30) + \
-           geom_text(aes(label="Q"), show_legend=False) + \
-           scale_fill_gradient2(limits=(min_value, max_value)) + \
-           scale_y_reverse() + \
-           theme(figure_size=(2, 2), axis_text=element_blank(), axis_ticks=element_blank(),
-                 strip_text_x=element_blank(), axis_title=element_blank())
+        geom_tile(aes(fill='Q'), show_legend=show_legend) + \
+        geom_text(aes(label='board_state'), color='white', size=30) + \
+        geom_text(aes(label="Q"), show_legend=False) + \
+        scale_fill_gradient2(limits=(min_value, max_value)) + \
+        scale_y_reverse() + \
+        theme(figure_size=(2, 2), axis_text=element_blank(), axis_ticks=element_blank(),
+              strip_text_x=element_blank(), axis_title=element_blank())
 
     print(plot)
 
