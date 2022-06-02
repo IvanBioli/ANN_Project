@@ -52,8 +52,8 @@ We provide a unique notebook containing the answers to all the questions of the 
 - [x] Spiegare ulteriormente oscillazioni di M_opt
 - [ ] Preparare file separato con conteggio parole (Fede)
 - [x] Legenda unica per plot rewards e loss?
-- [ ] Come facciamo per mostrare che va meglio alpha = 0.25?
-- [ ] Teniamo train_avg con dqn parametro o deep_train_avg? Funzionano entrambe
+- [ ] Come facciamo per mostrare che va meglio alpha = 0.25? (Ivan: NON LO FACCIAMO VEDERE)
+- [ ] Teniamo train_avg con dqn parametro o deep_train_avg? Funzionano entrambe (Ivan: unica funzione con parametro meglio)
 
 ## QUESTIONS
 ### 2. Q-Learning
@@ -76,17 +76,17 @@ We provide a unique notebook containing the answers to all the questions of the 
  
 - [x] **Question 9**
 
-- [ ] **Question 10** (Ivan)
+- [x] **Question 10** (Rileggere)
 
 ### 3. Deep Q-Learning
 
 - [x] **Question 11**
 
-- [ ] **Question 12** (Ivan)
+- [ ] **Question 12** (Insieme)
   
 - [x] **Question 13** (Rileggere, entrambi)
 
-- [ ] **Question 14** (Ivan)
+- [x] **Question 14** (Rileggere)
 
 - [x] **Question 15**
 
@@ -96,7 +96,7 @@ We provide a unique notebook containing the answers to all the questions of the 
 
 - [x] **Question 18**
 
-- [ ] **Question 19** (Ivan)
+- [x] **Question 19** (Rileggere)
 
 ### 4. Comparing Q-Learning with Deep Q-Learning
 - [ ] **Question 20** (Fede)
