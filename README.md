@@ -15,21 +15,21 @@
 
 - [x] **Question 1**
 
-- [ ] **Question 2** (Fede)
+- [x] **Question 2** (Rileggere)
 
-- [ ] **Question 3** (Fede)
+- [x] **Question 3** (Rileggere)
 
 - [x] **Question 4**
   
-- [ ] **Question 5** (Fede)
+- [x] **Question 5**
 
 - [x] **Question 6**
 
 - [x] **Question 7** 
 
-- [ ] **Question 8** (Fede)
+- [x] **Question 8** (Rileggere)
  
-- [ ] **Question 9** (Fede)
+- [x] **Question 9**
 
 - [ ] **Question 10** (Ivan)
 
@@ -43,13 +43,13 @@
 
 - [ ] **Question 14** (Ivan)
 
-- [ ] **Question 15** (Fede)
+- [x] **Question 15**
 
 - [x] **Question 16** (Rileggere, entrambi)
 
 - [x] **Question 17** (Rileggere, entrambi)
 
-- [x] **Question 18** (controllare che valori vengano sempre gli stessi)
+- [x] **Question 18**
 
 - [ ] **Question 19** (Ivan)
 
