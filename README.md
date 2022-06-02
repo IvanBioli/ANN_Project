@@ -19,17 +19,13 @@ pip install -r requirements.txt
 ### Reproducing the results in the report
 We provide a unique notebook containing the answers to all the questions of the project (except for Question 6). The notebook should be used as follows: concerning the plots presented in the report (see below), setting in the very first cells
 ```python
-Train = False
-Load = not Train
+train = False
+load = not train
 ```
 will load direcly our results from the provided dictionaries in the folder results and will therefore show for most questions both the plot presented in the report (see below) and a second plot showing all the experimented values. On the other hand, since our results are obtained as an average over 10 training runs for Q-Learning and 4 runs for Deep Q-Learning, if one wants to perform training simply set
 ```python
-Train = True
-Load = not Train
-```
-and in the following cell, we recommend for computational time reasons setting
-```python
-num_avg = 1
+train = True
+load = not train
 ```
 
 ### Example of usage for the Q-Learning and DQN algorithms
