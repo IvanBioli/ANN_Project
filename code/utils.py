@@ -83,3 +83,36 @@ def return_lambda_explor(epsilon_min, epsilon_max, n_star):
     return lambda n: np.max([epsilon_min, epsilon_max * (1 - n/n_star)])
 
 
+def compute_training_time(stats_dict, optimal_params, percentage=0.8, dqn=False, test_freq=250):
+    """
+    Compute T_train as the maximum between the values obtained for M_opt and M_rand
+    :param stats_dict: dictionary containing all the results of interest, including those of optimal_params
+    :param optimal_params: the optimal parameters
+    :param percentage: percentage at which T_train is calculated
+    :param dqn: True if T_train is computed from DQN statistics
+    :param test_freq: to round the number of episodes defining T_train
+    :return:
+        - T_train for all the training runs
+    """
+    # get the statistics for the optimal parameter
+    num_avg = 4 if dqn else 10
+    stats_dict_best_param = [stats_dict[i][optimal_params] for i in range(num_avg)]
+    final_m_opt = [stats_dict_best_param[i][1] for i in range(num_avg)]
+    test_m_opt = [stats_dict_best_param[i][0]['test_Mopt'] for i in range(num_avg)]
+    final_m_rand = [stats_dict_best_param[i][2] for i in range(num_avg)]
+    test_m_rand = [stats_dict_best_param[i][0]['test_Mrand'] for i in range(num_avg)]
+
+    # Compute training time
+    starting_m_opt = [test_m_opt[i][0] for i in range(num_avg)]
+    train_times_m_opt = np.array([np.where(np.array(test_m_opt[i]) > starting_m_opt[i]
+                                           + percentage * (final_m_opt[i]-starting_m_opt[i]))[0][0]
+                                  for i in range(num_avg)])
+    train_times_m_opt = train_times_m_opt * test_freq
+    starting_m_rand = [test_m_rand[i][0] for i in range(num_avg)]
+    train_times_m_rand = np.array([np.where(np.array(test_m_rand[i]) > starting_m_rand[i]
+                                            + percentage * (final_m_rand[i]-starting_m_rand[i]))[0][0]
+                                   for i in range(num_avg)])
+    train_times_m_rand = train_times_m_rand * test_freq
+    train_times = [np.maximum(train_times_m_opt[i], train_times_m_rand[i]) for i in range(num_avg)]
+
+    return final_m_opt, final_m_rand, train_times
