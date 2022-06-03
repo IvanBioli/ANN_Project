@@ -20,22 +20,20 @@ pip install -r requirements.txt
 * `report` - Folder containing the report of the obtained results
 * `requirements.txt` - Requirements text file 
 
-## Usage
+## Usage and reproducibility
 ### Reproducing the results in the report
-We provide a unique notebook containing the answers to all the questions of the project (except for Question 6). The notebook should be used as follows: concerning the plots presented in the report (see below), setting in the very first cells
+We provide a unique notebook containing the answers to all the questions of the project (except for Question 6, the theoretical one). The notebook should be used as follows: to show the plots presented in the report, setting in the very first cells
 ```python
 train = False
 load = not train
 ```
-will load direcly our results from the provided dictionaries in the folder results and will therefore show for most questions both the plot presented in the report (see below) and a second plot showing all the experimented values. On the other hand, since our results are obtained as an average over 10 training runs for Q-Learning and 4 runs for Deep Q-Learning, if one wants to perform training simply set
+will load direcly our results from the provided dictionaries in the folder `results` and will show both the plot presented in the report and a second plot showing all the experimented values. On the other hand, if one wants to perform training simply set
 ```python
 train = True
 load = not train
 ```
 
-For the questions concerning the optimal values of the performance measures, we both show a sample run for the optimal values of the parameter and then we load again the results from dictionaries where the results presented in the report are stored.
-
-
+For the questions concerning the optimal values of the performance measures, we remark that our results are obtained from averaging over 10 training runs for Q-Learning and 4 runs for Deep Q-Learning. Thus, for these questions we both show a sample run for the optimal values of the parameter to show the correct training of the agent and in the successive cell we then load the results from the dictionaries where the results presented in the report are stored.
 
 ### Example of usage
 - Q-Learning training
@@ -61,8 +59,7 @@ model, stats = deep_q_learning(env, alpha=alpha, gamma=gamma, epsilon_exploratio
 ```
 
 ## Report
-
-## Remarks
+The report of all the obtained results can be found in the folder `report`.
 
 ## Authors
 - Federico Betti
