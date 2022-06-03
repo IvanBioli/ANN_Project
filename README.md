@@ -15,6 +15,7 @@ pip install -r requirements.txt
   *  `deep_q_learning.py` - Contains implementations for the Deep Q-Learning Algorithm
   *  `q_learning.py` - Contains implementations for the Q-Learning Algorithm
   *  `utils.py` - Utilities and support functions
+  *  `tic_env.py` - Implementation of the environment
   *  `visualization.py` - Plotting functions
   *  `train_multiple_runs.py` - Contains functions to perform multiple training runs and computing average statistics
 * `report` - Folder containing the report of the obtained results
