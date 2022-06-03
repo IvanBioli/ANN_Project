@@ -8,12 +8,17 @@ pip install -r requirements.txt
 ```
 
 ## Repository Description
-* `figures` - description
-* `report` - description
-* `results` - description
-* `code` - description
-  * `file1.py` - description
-  * `file2.ipynb` - description
+* `code` - Folder containing all the implementations
+  * `figures` - Contains all the plots presented in the report
+  * `results` - Contains all the dictionaries with the results for each question
+  *  `Definitive.ipynb` - Notebook for reproducibility of the results
+  *  `deep_q_learning.py` - Contains implementations for the Deep Q-Learning Algorithm
+  *  `q_learning.py` - Contains implementations for the Q-Learning Algorithm
+  *  `utils.py` - Utilities and support functions
+  *  `visualization.py` - Plotting functions
+  *  `train_multiple_runs.py` - Contains functions to perform multiple training runs and computing average statistics
+* `report` - Folder containing the report of the obtained results
+* `requirements.txt` - Requirements text file 
 
 ## Usage
 ### Reproducing the results in the report
