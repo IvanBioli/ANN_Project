@@ -11,7 +11,7 @@ pip install -r requirements.txt
 * `code` - Folder containing all the implementations
   * `figures` - Contains all the plots presented in the report
   * `results` - Contains all the dictionaries with the results for each question
-  *  `Definitive.ipynb` - Notebook for reproducibility of the results
+  *  `Reproduce.ipynb` - Notebook for reproducibility of the results
   *  `deep_q_learning.py` - Contains implementations for the Deep Q-Learning Algorithm
   *  `q_learning.py` - Contains implementations for the Q-Learning Algorithm
   *  `utils.py` - Utilities and support functions
