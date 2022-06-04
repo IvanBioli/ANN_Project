@@ -35,6 +35,7 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
         fig_1, ax_1 = plt.subplots(1, 1, squeeze=False)
     if 'test_Mopt' in keys:
         fig_performance, ax = plt.subplots(1, 2, figsize=(13.4, 4.8))
+        fig_performance.tight_layout(pad=7.)
         fig_performance.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)  # adjust spacing between subplots
 
     for var in vec_var:

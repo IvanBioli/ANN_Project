@@ -84,25 +84,19 @@ def return_lambda_explor(epsilon_min, epsilon_max, n_star):
     return lambda n: np.max([epsilon_min, epsilon_max * (1 - n/n_star)])
 
 
-def compute_training_time(stats_dict, optimal_params, percentage=0.8, test_freq=250, dqn=False, against_opt=False,
-                          self_practice=False):
+def compute_training_time(stats_dict, optimal_params, num_avg, percentage=0.8, test_freq=250, quantiles=False):
     """
     Compute T_train as the maximum between the values obtained for M_opt and M_rand
     :param stats_dict: dictionary containing all the results of interest, including those of optimal_params
     :param optimal_params: the optimal parameters
+    :param num_avg: number of training runs on which to average
     :param percentage: percentage at which T_train is calculated
-    :param dqn: True if T_train is computed from DQN statistics
+    :param quantiles: True to print the quantiles
     :param test_freq: to round the number of episodes defining T_train
-    :param against_opt: for the statistic print below
-    :param self_practice: for the statistic print below
     :return:
-        - print median and percentiles' of T_train for all the training runs
+        - print median (and possibly quantiles) of T_train for all the training runs
     """
-    if against_opt + self_practice != 1:
-        raise ValueError("Please, select a training method")
 
-    # get the statistics for the optimal parameter
-    num_avg = 4 if dqn else 10
     stats_dict_best_param = [stats_dict[i][optimal_params] for i in range(num_avg)]
     final_m_opt = [stats_dict_best_param[i][1] for i in range(num_avg)]
     test_m_opt = [stats_dict_best_param[i][0]['test_Mopt'] for i in range(num_avg)]
@@ -122,24 +116,10 @@ def compute_training_time(stats_dict, optimal_params, percentage=0.8, test_freq=
     train_times_m_rand = train_times_m_rand * test_freq
     train_times = [np.maximum(train_times_m_opt[i], train_times_m_rand[i]) for i in range(num_avg)]
 
-    if dqn:
-        if against_opt:
-            print('*********************', ' DQN BY EXPERTS - AVERAGE STATS ', '*********************')
-        else:
-            print('*********************', ' DQN SELF-PRACTICE - AVERAGE STATS ', '*********************')
-
-        print("Median:\t M_opt = ", np.round(np.median(final_m_opt), decimals=2),
+    print("Median:\t M_opt = ", np.round(np.median(final_m_opt), decimals=2),
               "\t M_rand = ", np.round(np.median(final_m_rand), decimals=2),
               "\t T_train = ", np.round(np.median(train_times), decimals=2))
-    else:
-        if against_opt:
-            print('*********************', ' Q_LEARNING BY EXPERTS - AVERAGE STATS ', '*********************')
-        else:
-            print('*********************', ' Q_LEARNING SELF-PRACTICE - AVERAGE STATS ', '*********************')
-
-        print("Median:\t M_opt = ", np.round(np.median(final_m_opt), decimals=2),
-              "\t M_rand = ", np.round(np.median(final_m_rand), decimals=2),
-              "\t T_train = ", np.round(np.median(train_times), decimals=2))
+    if quantiles:
         print("25th quantile:\t M_opt = ", np.round(np.percentile(final_m_opt, q=25), decimals=2),
               "\t M_rand = ", np.round(np.percentile(final_m_rand, q=25), decimals=2),
               "\t T_train = ", np.round(np.percentile(train_times, q=25), decimals=2))
