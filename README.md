@@ -69,6 +69,7 @@ The report of all the obtained results can be found in the folder `report`.
 ## REMAINING TO DO
 - [ ] Aggiungere report nella folder
 - [ ] Sistemare requirements
+- [ ] Dire di lasciare save_figs e save_stats a False quando loro lo runnano?
 - [x] Rinominare notebook definitivo (Fede)
 - [ ] Rileggere ReadMe
 - [ ] Rileggere/completare introduzione nel report
