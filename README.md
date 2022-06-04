@@ -76,13 +76,8 @@ The report of all the obtained results can be found in the folder `report`.
 ## REMAINING TO DO
 - [ ] Aggiungere report nella folder
 - [ ] Sistemare requirements
-- [x] Dire di lasciare save_figs e save_stats a False quando loro lo runnano? (SI)
-- [x] Rinominare notebook definitivo (Fede)
-- [ ] Rileggere ReadMe (Ivan: riletto e sistemato)
-- [x] Rileggere/completare introduzione nel report
+- [ ] Dire di lasciare save_figs e save_stats a False quando loro lo runnano? (SI) (Va bene, lo facciamo domenica)
 - [ ] Ultima run del notebook finale per controllare tutto (Ivan)
-- [ ] Preparare file separato con conteggio parole (Fede)
-- [x] Togliere alpha = 0.25? (Fede)
-- [x] Riorganizzare codice (Ivan)
+- [ ] Preparare file separato con conteggio parole (lo facciamo domenica)
 - [ ] Rileggere tutte le domande del report
-- [x] Funzione esterna per T_train? (Fede)
+- [ ] Eliminare cose vecchie dalla repo
