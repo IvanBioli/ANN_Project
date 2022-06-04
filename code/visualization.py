@@ -18,6 +18,7 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
         and the exploration rate becomes constant
     :param perc: True to show the 25 and 75 percentiles of the different measurements from many training runs
     :param windows_size: windows size for averaging rewards
+    :return:
     """
     # averaging over multiple training runs
     stats_dict = stats_averaging(stats_dict_list, windows_size=windows_size)

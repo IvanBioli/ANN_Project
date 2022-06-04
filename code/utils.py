@@ -7,7 +7,8 @@ def measure_performance(player_1, player_2, num_episodes=500):
     :param player_1: first player (usually a QPlayer member)
     :param player_2: second player (usually a OptimalPlayer member)
     :param num_episodes: number of episodes played
-    :return: percentage of wins of player_1 against player_2
+    :return:
+        - percentage of wins of player_1 against player_2
     """
     meas = 0
     turns = np.array(['X', 'O'])

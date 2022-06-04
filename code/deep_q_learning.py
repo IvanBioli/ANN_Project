@@ -36,6 +36,7 @@ def grid_to_tensor(grid, player):
     :param grid: grid
     :param player: the player
     :return:
+        - the tensor to be given as input to the network
     """
     if player == 'X':
         return tf.convert_to_tensor(np.stack((np.where(grid == 1, 1, 0), np.where(grid == -1, 1, 0)), -1))
@@ -97,7 +98,8 @@ class DeepQPlayer:
         :param self: self
         :param grid: current state
         :param kwargs: keyword arguments
-        :return: the action chosen greedily
+        :return:
+            - the action chosen greedily
         """
         grid = tf.expand_dims(grid_to_tensor(grid, self.player), axis=0)
         with tf.device("/device:cpu:0"):
