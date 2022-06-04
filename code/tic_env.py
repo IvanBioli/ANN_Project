@@ -184,7 +184,7 @@ class OptimalPlayer:
     def center(self, grid):
         """
         Pick the center if its available,
-        if it's the first step of the game, center or corner are all optimial.
+        if it's the first step of the game, center or corner are all optimal.
         """
 
         if np.abs(grid).sum() == 0:

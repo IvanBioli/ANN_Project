@@ -1,7 +1,7 @@
-import numpy as np
 from tic_env import OptimalPlayer
 from collections import defaultdict
 from utils import *
+
 
 def encode_state(state):
     """

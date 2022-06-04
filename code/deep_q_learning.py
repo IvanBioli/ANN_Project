@@ -1,9 +1,9 @@
 from tqdm import tqdm
-import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 from utils import *
+
 
 # Network defined in the project description
 def create_q_model():
@@ -490,48 +490,48 @@ def deep_q_learning(env, lr=1e-4, gamma=0.99, num_episodes=20000, epsilon_explor
                                              batch_size, max_memory_length, update_target_network, update_freq)
 
 
-def deep_train_avg(var_name, var_values, deep_q_learning_params_list, num_avg=10, save_stats=True):
-    """
-    Function that computes all the quantities of interest averaging over many training runs
-    :param var_name: name of the parameter
-    :param var_values: values for the parameter var_name
-    :param deep_q_learning_params_list: list of dictionaries with the parameters
-        for the deep Q-learning for each value of var_name, for example {'test_freq': 250, 'self_practice': True, ...}
-    :param num_avg: number of training runs
-    :param save_stats: True to save the stats
-    :return:
-        - stats_dict_list: list of dictionaries which contain all the stats for the different values of var_name
-    """
-    stats_dict_list = []
-    for i in range(num_avg):
-        print('************** RUN', i+1, 'OF', num_avg, '**************')
-        stats_dict = {}  # initialize the dictionary for the current training run
-        for (idx, var) in enumerate(var_values):
-            print("------------- Training with " + var_name + " =", var, "-------------")
-            start = time.time()
-            # get the dictionary of the current parameters for the Q-learning
-            deep_q_learning_params = deep_q_learning_params_list[idx]
-            # perform Deep Q-learning with the current parameters
-            model, stats = deep_q_learning(**deep_q_learning_params)
-            # measure the final performance
-            M_opt = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))
-            M_rand = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=1.))
-            print("M_opt =", M_opt)
-            print("M_rand =", M_rand)
-            # insert the stats of the current parameter in the dictionary of the current run
-            stats_dict.update({var: (stats, M_opt, M_rand)})
-            elapsed = time.time() - start
-            print("Training with " + var_name + " =", var, " took:",
-                  time.strftime("%Hh%Mm%Ss", time.gmtime(elapsed)), "\n\n")
-        # append the dictionary of the current run to the overall list
-        stats_dict_list.append(stats_dict)
-
-        # saving onto file
-        if save_stats:
-            output_folder = os.path.join(os.getcwd(), 'results')  # set the folder
-            os.makedirs(output_folder, exist_ok=True)
-            fname = output_folder + '/stats_dict_' + var_name + '_list.pkl'
-            with open(fname, 'wb') as handle:
-                pickle.dump(stats_dict_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-    return stats_dict_list
+# def deep_train_avg(var_name, var_values, deep_q_learning_params_list, num_avg=10, save_stats=True):
+#     """
+#     Function that computes all the quantities of interest averaging over many training runs
+#     :param var_name: name of the parameter
+#     :param var_values: values for the parameter var_name
+#     :param deep_q_learning_params_list: list of dictionaries with the parameters
+#         for the deep Q-learning for each value of var_name, for example {'test_freq': 250, 'self_practice': True, ...}
+#     :param num_avg: number of training runs
+#     :param save_stats: True to save the stats
+#     :return:
+#         - stats_dict_list: list of dictionaries which contain all the stats for the different values of var_name
+#     """
+#     stats_dict_list = []
+#     for i in range(num_avg):
+#         print('************** RUN', i+1, 'OF', num_avg, '**************')
+#         stats_dict = {}  # initialize the dictionary for the current training run
+#         for (idx, var) in enumerate(var_values):
+#             print("------------- Training with " + var_name + " =", var, "-------------")
+#             start = time.time()
+#             # get the dictionary of the current parameters for the Q-learning
+#             deep_q_learning_params = deep_q_learning_params_list[idx]
+#             # perform Deep Q-learning with the current parameters
+#             model, stats = deep_q_learning(**deep_q_learning_params)
+#             # measure the final performance
+#             M_opt = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=0.))
+#             M_rand = measure_performance(DeepQPlayer(model=model), OptimalPlayer(epsilon=1.))
+#             print("M_opt =", M_opt)
+#             print("M_rand =", M_rand)
+#             # insert the stats of the current parameter in the dictionary of the current run
+#             stats_dict.update({var: (stats, M_opt, M_rand)})
+#             elapsed = time.time() - start
+#             print("Training with " + var_name + " =", var, " took:",
+#                   time.strftime("%Hh%Mm%Ss", time.gmtime(elapsed)), "\n\n")
+#         # append the dictionary of the current run to the overall list
+#         stats_dict_list.append(stats_dict)
+#
+#         # saving onto file
+#         if save_stats:
+#             output_folder = os.path.join(os.getcwd(), 'results')  # set the folder
+#             os.makedirs(output_folder, exist_ok=True)
+#             fname = output_folder + '/stats_dict_' + var_name + '_list.pkl'
+#             with open(fname, 'wb') as handle:
+#                 pickle.dump(stats_dict_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
+#
+#     return stats_dict_list

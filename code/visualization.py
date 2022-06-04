@@ -1,9 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 from plotnine import *
-from utils import *
-from q_learning import *
-from deep_q_learning import *
 from train_multiple_runs import *
 
 
@@ -31,7 +28,7 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
     # creating the environment for the two plots
     if 'loss' in keys and 'rewards' in keys:
         fig_1, ax_1 = plt.subplots(1, 2, figsize=(13.4, 4.8), squeeze=False)
-        fig_1.tight_layout(pad = 7.)
+        fig_1.tight_layout(pad=7.)
         fig_1.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)  # adjust the spacing between subplots
     elif 'loss' in keys or 'rewards' in keys:
         fig_1, ax_1 = plt.subplots(1, 1, squeeze=False)
@@ -98,16 +95,16 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
                 ax[0].hlines(y=0, xmin=x_performance[0], xmax=x_performance[-1],
                              color='r', linestyle='--')  # plot also the zero line for M_opt (highest M_opt achievable)
                 ax[0].set_ylim([-1, 0.1])
-                ax[0].set_xlabel('Episode',fontsize='x-large')
-                ax[0].set_ylabel('$M_{opt}$',fontsize='xx-large')
-                ax[0].set_title('$M_{opt}$ during training',fontsize='xx-large')
+                ax[0].set_xlabel('Episode', fontsize='x-large')
+                ax[0].set_ylabel('$M_{opt}$', fontsize='xx-large')
+                ax[0].set_title('$M_{opt}$ during training', fontsize='xx-large')
                 ax[0].locator_params(axis='x', nbins=5)
                 ax[0].tick_params(axis='x', labelsize='x-large')
                 ax[0].tick_params(axis='y', labelsize='x-large')
                 # ax[1].set_ylim(None, 1)
-                ax[1].set_xlabel('Episode',fontsize='x-large')
-                ax[1].set_ylabel('$M_{rand}$',fontsize='xx-large')
-                ax[1].set_title('$M_{rand}$ during training',fontsize='xx-large')
+                ax[1].set_xlabel('Episode', fontsize='x-large')
+                ax[1].set_ylabel('$M_{rand}$', fontsize='xx-large')
+                ax[1].set_title('$M_{rand}$ during training', fontsize='xx-large')
                 ax[1].locator_params(axis='x', nbins=5)
                 ax[1].tick_params(axis='x', labelsize='x-large')
                 ax[1].tick_params(axis='y', labelsize='x-large')
@@ -132,6 +129,8 @@ def plot_stats(stats_dict_list, vec_var, var_name, var_legend_name, save=False, 
 
 
 "PLOT FUNCTIONS FOR TABULAR Q LEARNING"
+
+
 def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
     """
     Generates and saves a heatmap for the Q-values
@@ -186,6 +185,7 @@ def heatmaps_subplots(grids, Q, save):
 
 
 "PLOT FUNCTIONS FOR DEEP Q LEARNING"
+
 
 def plot_deep_qtable(grid, model, save=False, saving_name=None, show_legend=False):
     """

@@ -1,5 +1,4 @@
-import numpy as np
-from tic_env import TictactoeEnv, OptimalPlayer
+from tic_env import *
 
 
 def measure_performance(player_1, player_2, num_episodes=500):
