@@ -70,12 +70,11 @@ The report of all the obtained results can be found in the folder `report`.
 - [ ] Aggiungere report nella folder
 - [ ] Sistemare requirements
 - [x] Rinominare notebook definitivo (Fede)
-- [ ] Aggiungere requirements.txt per sns e altri pacchetti aggiunti, preparare bene ReadMe (Fede)
+- [ ] Rileggere ReadMe
 - [ ] Rileggere/completare introduzione nel report
 - [ ] Ultima run del notebook finale per controllare tutto (Ivan)
-- [x] Spiegare ulteriormente oscillazioni di M_opt
 - [ ] Preparare file separato con conteggio parole (Fede)
-- [x] Come facciamo per mostrare che va meglio alpha = 0.25? (Ivan: NON LO FACCIAMO VEDERE) (Fede: LO HO TOLTO ANCHE DAL REPORT)
+- [x] Togliere alpha = 0.25? (Fede)
 - [x] Riorganizzare codice (Ivan)
 - [ ] Rileggere tutte le domande del report
-- [ ] Funzione esterna per T_train?
+- [x] Funzione esterna per T_train? (Fede)
