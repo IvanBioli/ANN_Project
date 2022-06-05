@@ -98,8 +98,8 @@ Conversely, Agent 2 encounters \emph{win-booking states} during training and hen
 \end{figure}
 
 
-\subsection*{Question 8  \textcolor{Green}{100 words}}
-Similarly to \emph{Question 3}, from \Cref{plot_question8} it can be seen that decreasing $\epsilon$ helps training compared to a fixed one if the chosen value of $n^{\star}$ is representative of a well-designed exploration-exploitation trade-off. By prioritizing exploitation during training, i.e. using $n^{\star} = 1$, the agent gets stuck choosing sub-optimal actions. Using larger values of the $n^{\star}$ helps in improving \mrand, but using too high values negatively affects $\mopt$. The best trade-off between the two performance measures is given by $n^{\star} = 24460$.  
+\subsection*{Question 8}
+Similarly to \emph{Question 3}, from \Cref{plot_question8} it can be seen that decreasing $\epsilon$ helps training compared to a fixed one if the chosen value of $n^{\star}$ is representative of a well-designed exploration-exploitation trade-off. By prioritizing exploitation during training, i.e. using $n^{\star} = 1$, the agent gets stuck choosing sub-optimal actions. Using larger values of the $n^{\star}$ helps in improving \mrand, but using too high values negatively affects $\mopt$. The best trade-off between the two performance measures is given by $n^{\star} = 24460$, and the final performance is superior to the one obtained using fixed exploration rate $\epsilon = 0.5$.  
 %\begin{itemize}
 %    \item Mrand cresce bene in scala
 %    \item Mopt si intreccia come nella domanda precedente
@@ -115,10 +115,10 @@ Similarly to \emph{Question 3}, from \Cref{plot_question8} it can be seen that d
 \end{figure}
 
 \subsection*{Question 9}
-The highest values of \mopt\  and \mrand\  training with Q-Learning by self practice for $20000$ games have been achieved using decreasing exploration with $n^{\star} = 24460$ and learning rate $\alpha = 0.05$, and they are equal to $\mopt = -0.07, \, \mrand = 0.87$.
+The highest values of \mopt\  and \mrand\  training with Q-Learning by self practice for $20000$ games have been achieved using decreasing exploration with $n^{\star} = 24460$. They are equal to $\mopt = -0.07, \, \mrand = 0.87$ (median over 10 runs).
 
-\subsection*{Question 10  \textcolor{Green}{200 words}}
-In \Cref{fig_heatmap_1} the highest $Q$-value correctly corresponds to the action that makes the agent (player X) win, but it is not equal to $1$. Furthermore, picking any of the other two empty corners would correspond to a fork, but the estimated $Q$-values are lower than $\gamma = 0.99$. Similarly, in \Cref{fig_heatmap_3} the agent correctly picks the center doing a fork, which brings to victory in one more move, but the Q-value of this action is far from $\gamma$, and the estimates for other win-leading moves such as the south-east corner are even worse. In \Cref{fig_heatmap_2} the agent (player O) correctly blocks the win of the adversary, predicting a negative reward for any other action.
+\subsection*{Question 10}
+In \Cref{fig_heatmap_1} the highest $Q$-value correctly corresponds to the action that makes the agent (player X) win, but it is not equal to $1$. Furthermore, picking any of the other two empty corners would correspond to a fork, but the estimated $Q$-values are much lower than $\gamma = 0.99$. Similarly, in \Cref{fig_heatmap_3} the agent correctly picks the center doing a fork, which brings to victory in one more move, but the Q-value of this action is far from $\gamma$, and the estimates for other win-leading moves such as the south-east corner are even worse. In \Cref{fig_heatmap_2} the agent (player O) correctly blocks the win of the adversary, predicting a negative reward for any other action.
 
 It can be argued that the agent learned the game fairly well, as in the above described scenarios it plays one of the possible correct actions. However, the number of state-action pairs is too high to be sufficiently explored in $20000$ training episodes with tabular Q-Learning, hence the estimated $Q$-values did not converge to their true values, i.e. the ones satisfying the Bellman equation. 
 
@@ -149,11 +149,11 @@ It can be argued that the agent learned the game fairly well, as in the above de
 \end{figure}
 
 \section{Deep Q-Learning}
-In this section, we present the results obtained training the agent by Deep Q-Learning. Similarly to the previous section, the presented results are obtained from an average over multiple training runs. Due to longer training times, we limited ourselves to 4 training runs for each of the question. In the following plots solid lines represent the median, while shaded areas the 25 and 75 percentiles. Again, we show in the plots only the values of the parameters which were representative of the main training trends, referring to the notebook attached in the submission for the complete results of all the tested values. 
+In this section, we present the results obtained by training the agent with Deep Q-Learning (DQN). Similarly to the previous section, the results are obtained from an average over multiple training runs. Due to longer training times, we limited ourselves to 4 training runs for each of the question. In the following plots solid lines represent the median, while shaded areas the 25 and 75 percentiles. Again, we show only the values of the parameters which are representative of the main training trends, referring to the notebook attached to the submission for the results of all the tested values. 
 
-We fine tuned the learning rate and from a grid search the optimal valued turned out to be $\alpha = 10^{-4}$ for both the learning by experts and the learning by self-practice.
+We fine tuned the learning rate and the optimal value turned out to be $\alpha = 10^{-4}$ for both the learning by experts and the learning by self-practice.
 
-\subsection*{Question 11 \textcolor{Green}{50 words}}
+\subsection*{Question 11}
 See \Cref{plot_question11}.
 \begin{figure}[h]
     \centering
@@ -162,22 +162,22 @@ See \Cref{plot_question11}.
     \label{plot_question11}
 \end{figure}
 
-\subsection*{Question 12 \textcolor{red}{50 words}}
+\subsection*{Question 12}
 See \Cref{plot_question12}. 
 \begin{figure}[h]
     \centering
     \includegraphics[width = \linewidth]{code/figures/rewards_epsilon_exploration_Q12.pdf}
-    \caption{Training with $\epsilon = 0.1$ and  using only the latest transition, the loss is significantly higher than in \Cref{plot_question11} and decreases from the beginning, as the buffer is immediately full. Moreover, the reward increases less steeply and attains a lower value. Hence using a replay buffer and a larger batch-size helps training.}
+    \caption{Using only the latest transition, the loss is significantly higher than in \Cref{plot_question11} and decreases from the beginning. The reward increases less steeply and attains a lower value. Hence using a replay buffer and a larger batch-size helps learning by avoiding temporally correlated weight updates.}
     \label{plot_question12}
 \end{figure}
 
-\subsection*{Question 13  \textcolor{Green}{250 words}}
+\subsection*{Question 13}
 \Cref{plot_question13} shows the effect of the exploration decay rate $n^{\star}$ on the performance measures \mopt\  and \mrand.
-It can be seen that for $n^{\star} = 1$, i.e. constant rate of exploration $\epsilon = \epsmin$, \mopt\ increases rapidly in the initial stages of training. On the other hand, the higher the value of $n^{\star}$, the slower the convergence of \mopt\ to the optimal value $\mopt = 0$. 
+It can be seen that for $n^{\star} = 1$, i.e. constant rate of exploration $\epsilon = \epsmin$, \mopt\ increases rapidly in the initial stages of training. In general, the higher the value of $n^{\star}$, the slower the convergence of \mopt\ to the optimal value $\mopt = 0$. 
 For all the experimented values of $n^{\star}$ the performance measure \mrand\ rapidly grows above the value $\mrand = 0$, i.e. the agent learns the rules of the game and stops choosing unavailable actions. When using $n^{\star} = 1$ \mrand\ has a more gentle growth and flattens after reaching a sub-optimal plateau. Using larger values of $n^{\star} \gg 1$ helps in achieving a higher \mrand, with a comparable final performance for all values shown in the plot.
-Furthermore, in the initial stages of training the metrics \mopt\ and \mrand\ show larger oscillations for higher values of $n^{\star}$, due to a greater rate of random moves.
+Furthermore, in the initial stages of training the metric \mopt\ shows larger oscillations for higher values of $n^{\star}$, due to a greater rate of random moves.
 
-In conclusion, using a decreasing exploration rate $\epsilon$ helps compared to a fixed rate $\epsilon = \epsmin$, which results in a lower final value of \mrand. However, choosing $n^{\star}$ too high, e.g. $n^{\star} = 40000$, increases the training variance and does not provide benefits in terms of the performance measures \mopt\ and \mrand. Intermediate values of $n^{\star}$, in our case $n^{\star}=10000,\,20000$, are the ones providing the better trade-off between exploration and exploitation. Thus for the following question we choose $n^{\star} = 20000$.
+In conclusion, using a decreasing exploration rate $\epsilon$ helps compared to a fixed rate $\epsilon = \epsmin$, which results in a lower final value of \mrand. However, choosing $n^{\star}$ too high, e.g. $n^{\star} = 40000$, increases the training variance and does not provide benefits in terms of the performance measures \mopt\ and \mrand. Intermediate values of $n^{\star}$, in our case $n^{\star}=10000,\,20000$, are the ones providing the best trade-off. Thus for the following question we choose $n^{\star} = 20000$.
 
 \begin{figure}[h]
     \centering
@@ -185,7 +185,7 @@ In conclusion, using a decreasing exploration rate $\epsilon$ helps compared to 
     \caption{\emph{Question 13}: behaviour of \mopt\  and \mrand\  every 250 training episodes for different values of $n^{\star}$.}
     \label{plot_question13}
 \end{figure}
-\subsection*{Question 14 \textcolor{Green}{250 words}}
+\subsection*{Question 14}
 As shown in \Cref{plot_question14}, training with $\eopt = 0$ the agent quickly learns to draw against the optimal player and \mopt \ stabilizes at $0$ in the early stages of training. Conversely, the performance against the random player \mrand\  does not improve significantly and remains below zero. Indeed \texttt{Opt(0)} has a deterministic policy, thus when training against it there is no chance of visiting some of the possible states, such as \emph{win-booking states}. When, during testing, the agent plays against the random policy and possibly reaches one of these states, it chooses the next move almost randomly and might even choose one of the unavailable actions, thus the negative average reward. 
 
 Increasing $\eopt$, \mrand\ significantly improves for all values of \eopt, with a slightly more gentle growth for smaller values of \eopt. However, increasing it too much makes learning unstable and degrades the performance measure \mopt. Indeed, for the extreme case $\eopt = 1$, the agent learns to try to get a $+1$ rewards by taking advantage of possible wrong moves of the adversary. This implies exposing itself to the risk of losing the game: while the chance is frequently not taken by the random player during training, it negatively affects \mopt\ when testing. 
@@ -201,7 +201,7 @@ Coherently with the results of \emph{Question 4}, it can be argued that when lea
 \subsection*{Question 15}
 The highest values of \mopt\  and \mrand\  training with DQN for $20000$ games against \texttt{Opt($\eopt$)} have been achieved for $\eopt = 0.5$, using decreasing exploration with $n^{\star} = 20000$ and learning rate $\alpha = 10^{-4}$. They are equal to $\mopt = 0, \, \mrand = 0.94$ (median over $4$ runs).
 
-\subsection*{Question 16 \textcolor{Green}{100 words}}
+\subsection*{Question 16}
 \Cref{plot_question16} shows that for $\epsilon = 0$, i.e. greedy policy, the agent does not learn to play as it gets stuck playing sub-optimal actions. On the contrary, taking $\epsilon > 0$ both \mopt\ and \mrand\ significantly increase during training and the agent learns to play Tic-Tac-Toe. Coherently with the results of \emph{Question 7}, too high values of $\epsilon$ lead to a worse performance against the optimal player, while too low values result in a less sharp increase of \mrand. 
 %As expected since we are training the agent by playing against itself, this trend is similar to the one obtained when training against \texttt{Opt($\eopt$)} for different values of $\eopt$. 
 Thus, the best trade-off between the two performance measures was obtained with $\epsilon = 0.5$.
@@ -211,22 +211,25 @@ Thus, the best trade-off between the two performance measures was obtained with 
     \caption{Behaviour of \mopt\ and \mrand\ for different values of the exploration rate $\epsilon$.}
     \label{plot_question16}
 \end{figure}
-\subsection*{Question 17  \textcolor{Green}{100 words}}
-\Cref{plot_question17} shows that all values of the decaying exploration rate have similar performances, reaching the optimal value $\mopt = 0$ towards the end of training. On the other hand, choosing constant rate of exploration $\epsilon = \epsmin$, \mrand \ flattens at a sub-optimal level. Hence using a decreasing $\epsilon$ helps training. However, a too high exploration rate, e.g. using $n^{\star} = 40000$, results in more oscillating values of \mopt. The best trade-off between exploration and exploitation was given by $n^{\star} = 10000$.    
+\subsection*{Question 17}
+\Cref{plot_question17} shows that all values of the decaying exploration rate have similar performances in terms of \mopt, reaching the optimal value $\mopt = 0$ towards the end of training. However, a too high exploration rate, e.g. using $n^{\star} = 40000$, results in a more oscillating trend due to a greater rate of random moves.
+
+On the other hand, choosing constant rate of exploration $\epsilon = \epsmin$, \mrand \ flattens at a sub-optimal level, while the performance is similar for $n^{\star} = 10000, 20000, 40000$. Hence, using decreasing exploration with intermediate values of $n^{\star}$ helps training.
+The best trade-off between the two performance measures was given by $n^{\star} = 10000$.    
 \begin{figure}[h]
     \centering
     \includegraphics[width = \linewidth]{code/figures/performance_n_star_dqn_self.pdf}
-    \caption{Behaviour of \mopt\ and \mrand\ for different values of $n^{\star}$: the vertical lines correspond to the episode at which the agent starts choosing moves with the minimum rate of exploration $\epsmin$.}
+    \caption{Behaviour of \mopt\ and \mrand\ for different values of $n^{\star}$.}
     \label{plot_question17}
 \end{figure}
 
 \subsection*{Question 18}
-The highest values of \mopt\  and \mrand\  training with DQN by self practice for $20000$ games have been achieved using decreasing exploration with $n^{\star} = 10000$ and learning rate $\alpha = 10^{-4}$, and they are equal to $\mopt = 0, \, \mrand = 0.91$ (median over $4$ runs).
+The highest values of \mopt\  and \mrand\  training with DQN by self practice for $20000$ games have been achieved using decreasing exploration with $n^{\star} = 10000$ and learning rate $\alpha = 10^{-4}$. They are equal to $\mopt = 0, \, \mrand = 0.91$ (median over $4$ runs).
 
-\subsection*{Question 19  \textcolor{Green}{200 words}}
-In \Cref{fig_deep_heatmap_1}, the highest $Q$-value correctly corresponds to the move that makes the agent (player X) win, but it is higher than the reward $r = +1$. Moreover, playing in any of the other two empty corners corresponds to a fork, thus the related $Q$-values are correctly positive, even if not equal to the optimal value $\gamma$. In \Cref{fig_deep_heatmap_2} the agent (player O) blocks the opponent's win and predicts a strongly negative reward for all other actions. Finally, in \Cref{fig_deep_heatmap_3} the agent (player X) correctly picks one of the two possible fork moves, and both have a $Q$-value close to one.
+\subsection*{Question 19}
+In \Cref{fig_deep_heatmap_1}, the highest $Q$-value correctly corresponds to the move that makes the agent (player X) win, but it is higher than the reward $r = +1$. Moreover, playing in any of the other two empty corners corresponds to a fork, thus the related $Q$-values are correctly positive, even if not equal to the true value $\gamma = 0.99$. In \Cref{fig_deep_heatmap_2} the agent (player O) blocks the opponent's win and predicts a strongly negative reward for all other actions. Finally, in \Cref{fig_deep_heatmap_3} the agent (player X) correctly picks one of the two possible fork moves, and both have a $Q$-value close to one.
 
-In conclusion, it can be argued that the agent learned the game well: in the above described board arrangements, the agent picks one of the possible correct actions and the $Q$-values do make sense. However, as expected since we are using a neural network to approximate the $Q$-values, the $Q$-values do not exactly match the optimal ones and in particular they do not range in the interval $[-1,1]$.
+In conclusion, it can be argued that the agent learned the game well: in the above described board arrangements, the agent picks one of the possible correct actions and the $Q$-values do make sense. However, as expected since we are using a neural network to approximate the $Q$-values, the $Q$-values do not exactly match the true ones and in particular they do not necessarily range in the interval $[-1,1]$.
 
 \begin{figure}[h]
      \centering
@@ -272,19 +275,19 @@ See \Cref{tab_performance}.
 \caption{Best performance and corresponding training time for $Q$-Learning (median over 10 runs) and DQN (median over 4 runs).}
 \label{tab_performance}
 \end{table}
-\subsection*{Question 21  \textcolor{green}{300 words}}
-From \Cref{tab_performance} it can be observed that when the learning agent has a "teacher", both Q-Learning and DQN reach the optimal value $\mopt = 0$, but the final performance of DQN is superior in terms of both the metrics \mopt\ and \mrand. However, DQN provides the greatest advantages when learning by self-practice. Indeed, in addition to a higher \mrand, DQN stably reaches the optimal value $\mopt = 0$, while Q-Learning does not. 
+\subsection*{Question 21}
+From \Cref{tab_performance} it can be observed that when the learning agent has a "teacher", both Q-Learning and DQN reach the optimal value $\mopt = 0$, but the final performance of DQN is superior in terms of \mrand. However, DQN provides the greatest advantages when learning by self-practice: in addition to a higher \mrand, DQN stably reaches the optimal value $\mopt = 0$, while Q-Learning does not. 
 
-DQN showed a more oscillatory behaviour during training, especially in terms of \mopt\ and in the early stages of training. This is mainly due to the fact that the actions' Q-values for different states are not independent, as if using a look-up table, but share the same weights. Therefore, the weight updates affect all the Q-values, leading to a more unstable learning. Moreover, in the early stages of training the replay buffer is not sufficiently full and instability might also be caused by partially temporally correlated weight updates. 
+DQN showed a more oscillatory behaviour during training, especially in terms of \mopt\ and in the early stages of training. This is mainly due to the fact that the actions' Q-values for different states are not independent, as if using a look-up table, but share the same weights. Therefore, the weight updates affect all the Q-values, leading to a more unstable learning. Moreover, in the early stages of training the replay buffer is not completely full and instability might also be caused by partially temporally correlated weight updates. 
 
-Furthermore, the training time was consistently lower for DQN and the heatmaps showed estimated Q-values closer to the true ones for DQN. This is even more striking if one takes into account that the agent trained with DQN had also to "learn the rules of the game". This faster learning can be explained by the representation of the Q-values using shared weights, which allows to modify also the Q-values of unseen state-action pairs, and by the use of replay buffer, which helps reducing the sample complexity.
+Furthermore, the training time was consistently lower for DQN and the heatmaps showed estimated Q-values closer to the true ones for DQN. This is even more striking if one takes into account that the agent trained with DQN had also to "learn the rules of the game", because actions' selection was not constrained to only available moves. This faster learning can be explained by the representation of the Q-values using shared weights, which allows to modify also the Q-values of unseen state-action pairs, and by the use of replay buffer, which reduces the sample complexity.
 
-In conclusion, it can be argued that since the state space is discrete but contains a too high number of state-action pairs to be exhaustively explored in 20000 games, modelling Q-values by a neural networks and learning the weights, such as in DQN, allows to have a faster and more reliable learning if compared to tabular Q-Learning.
+In conclusion, it can be argued that since the state space is discrete but contains a too high number of state-action pairs to be exhaustively explored in 20000 games, modelling Q-values by a neural network and learning the weights, such as in DQN, allows to have a faster and more reliable learning compared to tabular Q-Learning.
 
 \nocite{*}
 \printbibliography
 
-\clearpage
-\detailtexcount{main}
+%\clearpage
+%\detailtexcount{main}
 
 \end{document}
