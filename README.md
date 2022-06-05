@@ -72,12 +72,3 @@ The report of all the obtained results can be found in the folder `report`.
 ## Authors
 - Federico Betti
 - Ivan Bioli
-
-## REMAINING TO DO
-- [ ] Aggiungere report nella folder
-- [x] Sistemare requirements
-- [x] Dire di lasciare save_figs e save_stats a False quando loro lo runnano? (SI) (Va bene, lo facciamo domenica)
-- [x] Ultima run del notebook finale per controllare tutto (Ivan)
-- [ ] Preparare file separato con conteggio parole (lo facciamo domenica)
-- [ ] Rileggere tutte le domande del report
-- [x] Eliminare cose vecchie dalla repo
