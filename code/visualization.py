@@ -154,8 +154,8 @@ def plot_qtable(grid, Q, save=False, saving_name=None, show_legend=False):
                               'Q': q_vals})  # creating the dataframe to be passed to ggplot
     plot = ggplot(plot_data, aes(x='x', y='y')) + \
         geom_tile(aes(fill='Q'), show_legend=show_legend) + \
-        geom_text(aes(label='board_state'), color='white', size=30) + \
-        geom_text(aes(label="Q"), show_legend=False) + \
+        geom_text(aes(label='board_state'), color='white', size=30, na_rm=True) + \
+        geom_text(aes(label="Q"), show_legend=False, na_rm=True) + \
         scale_fill_gradient2(limits=(min_value, max_value)) + \
         scale_y_reverse() + \
         theme(figure_size=(2, 2), axis_text=element_blank(), axis_ticks=element_blank(),
@@ -218,8 +218,8 @@ def plot_deep_qtable(grid, model, save=False, saving_name=None, show_legend=Fals
                               'Q': q_vals})  # creating the dataframe to be passed to ggplot
     plot = ggplot(plot_data, aes(x='x', y='y')) + \
         geom_tile(aes(fill='Q'), show_legend=show_legend) + \
-        geom_text(aes(label='board_state'), color='white', size=30) + \
-        geom_text(aes(label="Q"), show_legend=False) + \
+        geom_text(aes(label='board_state'), color='white', size=30, na_rm=True) + \
+        geom_text(aes(label="Q"), show_legend=False, na_rm=True) + \
         scale_fill_gradient2(limits=(min_value, max_value)) + \
         scale_y_reverse() + \
         theme(figure_size=(2, 2), axis_text=element_blank(), axis_ticks=element_blank(),
